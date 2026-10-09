@@ -26,14 +26,15 @@ th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:to
 <main>
 <a class="back" href="index.html">← Back to Idle Airport</a>
 <h1>Privacy Policy</h1>
-<p class="meta"><b>Idle Airport</b> · by Idle Games USA · Effective date: October 7, 2026 · Last updated: October 7, 2026</p>
+<p class="meta"><b>Idle Airport</b> · by Idle Games USA · Effective date: October 7, 2026 · Last updated: October 9, 2026</p>
 
 <p>This policy explains what information the mobile game <b>Idle Airport</b> (the “Game”) stores and what information third-party services used by the Game may collect. “We”, “us” and “Idle Games USA” refer to the developer of the Game. Contact: <a href="mailto:idlegamesusa@gmail.com">idlegamesusa@gmail.com</a>.</p>
-<p class="note"><b>Status note (October 7, 2026):</b> the Android app is in testing on Google Play. Optional rewarded video ads provided by <b>Google AdMob</b> are active in the Android app, and Google’s User Messaging Platform shows a consent form where required (for example in the European Economic Area, the United Kingdom and Switzerland). Optional in-app purchases use Google Play Billing; they are switched on only when the products are available in Google Play. From app version 1.2.0, the Android app also offers <b>optional</b> Google Play Games sign-in for leaderboards and cloud saves, and an optional reminder notification. We do not operate a backend server for the Game and we do not use any analytics service of our own.</p>
+<p class="note"><b>Status note (October 9, 2026):</b> the Android app is in testing on Google Play. Optional rewarded video ads provided by <b>Google AdMob</b> are active in the Android app, and Google’s User Messaging Platform shows a consent form where required (for example in the European Economic Area, the United Kingdom and Switzerland). Optional in-app purchases use Google Play Billing; they are switched on only when the products are available in Google Play. From app version 1.2.0, the Android app also offers <b>optional</b> Google Play Games sign-in for leaderboards and cloud saves, and an optional reminder notification. From app version 1.3.0, the Game also uses a small game server that we run on <b>Google Firebase</b> for leaderboards, limited-time events, redeem codes and purchase checks (see “Game server” below). We do not use any analytics service of our own.</p>
 
 <h2>1. Summary</h2>
 <ul>
-<li>No account or sign-up is needed to play. Signing in to Google Play Games is optional.</li>
+<li>No account or sign-up is needed to play. Signing in to Google Play Games is optional. From version 1.3.0 the Game creates an anonymous game-server account for you automatically (a random ID, no email or password).</li>
+<li>Your pilot name, your pilot’s look and your scores are shown to other players on the in-game leaderboards.</li>
 <li>Your game progress is saved <b>locally on your device</b>.</li>
 <li>We do not sell your personal information.</li>
 <li>The Android app shows optional rewarded ads from Google AdMob. Optional purchases use Google Play Billing. Optional leaderboards and cloud saves use Google Play Games Services. These services are provided by Google and are governed by Google’s own policies as well as this one.</li>
@@ -54,6 +55,17 @@ th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:to
 
 <p><b>App updates:</b> the Android app may use Google Play’s in-app update feature to tell you when a newer version is available in Google Play. This check is made by the Google Play Store on your device.</p>
 
+<h2>2a. Game server (Google Firebase), from version 1.3.0</h2>
+<p>From app version 1.3.0 (and the matching web version), the Game talks to a small game server that Idle Games USA runs on <b>Google Firebase</b> (Firebase Authentication, Cloud Functions and Cloud Firestore, hosted by Google in the United States). It is used for the in-game leaderboards (Ranks), limited-time events and their schedule, event prizes, redeem codes and checking purchases. The Game keeps working without it (for example offline).</p>
+<table><tr><th>Data</th><th>Why</th><th>Who can see it</th></tr>
+<tr><td><b>Firebase account ID</b>: a random anonymous ID created automatically by Firebase Authentication the first time the Game reaches the server (no email, phone number or password). Firebase also processes your IP address and basic device/app information to run the service and protect it from abuse.</td><td>To keep your leaderboard entry, redeemed codes and prizes linked to you.</td><td>Us (Idle Games USA) and Google as our service provider.</td></tr>
+<tr><td><b>Public leaderboard profile</b>: your pilot name, your pilot’s look (face, hair, outfit, cap, glasses, frame and title you equipped), your prestige level and gate count, and your scores (lifetime cash, this week’s cash, and tonnes shipped in a cargo event).</td><td>To show the Ranks boards (weekly, lifetime and event) and to pay event prizes to the top players.</td><td><b>Other players</b> see your pilot name, look, scores and rank on the leaderboards. Pick a pilot name that is not your real name if you prefer.</td></tr>
+<tr><td><b>Play Games player ID</b> (only if you are signed in to Google Play Games)</td><td>To recognise the same player across reinstalls and to keep leaderboards fair.</td><td>Us. Not shown to other players.</td></tr>
+<tr><td><b>Redeem codes</b>: the codes you redeem and when.</td><td>So each code works once per player and within its limits.</td><td>Us.</td></tr>
+<tr><td><b>Purchase checks</b>: for in-app purchases, the product, order ID, Google Play purchase token and time.</td><td>To confirm with Google Play that a purchase is genuine, that it is delivered once, and to remove items from refunded or charged-back purchases.</td><td>Us and Google. We never receive your card or payment details.</td></tr>
+<tr><td><b>Event prize records</b>: your final event rank and the prize delivered.</td><td>So a prize is delivered exactly once.</td><td>Us.</td></tr>
+</table>
+<p>The server also checks scores for plausibility; scores that grow faster than the Game allows may be hidden from the leaderboards. We do not use this data for advertising and we do not sell it. Leaderboard entries of players who have not played for 12 months may be removed. To have your server data deleted, email <a href="mailto:idlegamesusa@gmail.com">idlegamesusa@gmail.com</a> with the player ID shown in the Game’s Settings (Redeem code section).</p>
 <h2>3. Information collected by third-party services</h2>
 <p>The Android version of the Game uses Google AdMob, Google Play Billing for optional purchases, and Google Play Games Services for optional sign-in, leaderboards and cloud saves. These providers act under their own privacy policies and may collect information directly from your device.</p>
 <table>
@@ -78,16 +90,16 @@ th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:to
 
 <h2>6. Data retention and deletion</h2>
 <ul>
-<li><b>Local data:</b> game progress and backups are stored on your device. There are no accounts with us. Uninstalling the Game or clearing its data deletes them. The Game’s Settings also offer “Reset progress”.</li>
+<li><b>Local data:</b> game progress and backups are stored on your device. There is no sign-up with us (the anonymous game-server account is described in section 2a). Uninstalling the Game or clearing its data deletes them. The Game’s Settings also offer “Reset progress”.</li>
 <li><b>Third-party data:</b> data held by Google (AdMob, Play Billing, Play Games leaderboard scores and cloud saves) is retained according to Google’s policies. You can manage or delete your Play Games data, including saved games, in the Google Play Games app and your Google Account settings (for example, Play Games → Settings → Delete Play Games account &amp; data).</li>
-<li><b>Server-held data:</b> we do not currently operate a server that stores player data. If we later hold any such data, you can ask us to delete it by emailing <a href="mailto:idlegamesusa@gmail.com">idlegamesusa@gmail.com</a>; we will respond within a reasonable time (and within 30 days where the law requires).</li>
+<li><b>Server-held data:</b> leaderboard entries, redeemed codes, purchase checks and prize records on our Firebase game server (section 2a) are kept while you play and removed when no longer needed (inactive leaderboard entries after 12 months; purchase records as long as needed for refunds and accounting). You can ask us to delete your server data by emailing <a href="mailto:idlegamesusa@gmail.com">idlegamesusa@gmail.com</a> with your player ID from the Game’s Settings; we will respond within a reasonable time (and within 30 days where the law requires).</li>
 </ul>
 
 <h2>7. Security</h2>
-<p>We keep the amount of data we handle to a minimum, and progress stays on your device unless you choose cloud saves. Data sent over the network by the app (update checks, the settings file) and by Google’s services (such as AdMob) is encrypted in transit using HTTPS/TLS. No method of storage or transmission is completely secure, so we cannot guarantee absolute security.</p>
+<p>We keep the amount of data we handle to a minimum, and progress stays on your device unless you choose cloud saves. Data sent over the network by the app (update checks, the settings file, the game server) and by Google’s services (such as AdMob) is encrypted in transit using HTTPS/TLS. No method of storage or transmission is completely secure, so we cannot guarantee absolute security.</p>
 
 <h2>8. International users, GDPR and CCPA</h2>
-<p><b>EEA, UK and Switzerland (GDPR/UK GDPR):</b> you may have the right to access, correct, delete, restrict or object to the processing of your personal data, to withdraw consent at any time, and to complain to your local data-protection authority. Where we rely on consent (for example, personalized ads), you can withdraw it through the consent form or your device settings. Since we do not currently hold server-side personal data about you, most requests concerning ads, billing and Play Games should be directed to Google as well.</p>
+<p><b>EEA, UK and Switzerland (GDPR/UK GDPR):</b> you may have the right to access, correct, delete, restrict or object to the processing of your personal data, to withdraw consent at any time, and to complain to your local data-protection authority. Where we rely on consent (for example, personalized ads), you can withdraw it through the consent form or your device settings. For data on our game server (section 2a), contact us; requests concerning ads, billing and Play Games can also be directed to Google.</p>
 <p><b>California (CCPA/CPRA) and other US states:</b> you may have the right to know what personal information is collected, to request deletion or correction, and to opt out of the “sale” or “sharing” of personal information. We do not sell personal information. Advertising partners such as Google AdMob may use identifiers for interest-based advertising; you can opt out using the device controls in section 4. We will not discriminate against you for exercising your rights.</p>
 <p>To exercise any right, email <a href="mailto:idlegamesusa@gmail.com">idlegamesusa@gmail.com</a>. The Game is operated from the United States, and information handled by Google may be processed in the United States and other countries.</p>
 
