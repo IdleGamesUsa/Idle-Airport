@@ -1181,7 +1181,7 @@ function drawA(g,t){const ti=ST.cur,T=TERMS[ti],Lo=layoutA(ti),lockedT=ti>=ST.te
    pips(g,st.lx,st.y-6,pi);g.fillStyle='#e6edf7';g.font='700 10px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(G.ipm+'/min',st.lx,st.y+7)}
   else if(sNow==='aff'){pill(g,st.cx,st.y,G.cost,'aff',{big:1,pulse:p});g.fillStyle=K.green;g.font='800 9px system-ui,sans-serif';g.textAlign='center';g.fillText('TAP TO UNLOCK',st.cx,st.y+20)}
   else pill(g,st.cx,st.y,G.cost,sNow==='next'?'next':'lock')}
- drawTraffic(g,t);
+ const tp=taxiPose(Lo.taxi,t,24);if(tp)drawPlane(g,1,1,tp.x,tp.y,tp.a,Lo.s*(1+.15*tp.lift),t,{alpha:tp.al});
  return Lo}
 function tbarA(){const ti=ST.cur,T=TERMS[ti],lockedT=ti>=ST.term,nx=ti+1<5?TERMS[ti+1]:null;
  const dots=TERMS.map((x,i)=>'<i class="'+(i===ti?'on':i<ST.term?'own':i===ST.term?'nx':'')+'" style="--c:'+x.acc+'">'+x.short+(i>=ST.term?' 🔒':'')+'</i>').join('');
@@ -1256,7 +1256,7 @@ function drawC(g,t){const ti=ST.cur,T=TERMS[ti],Lo=layoutC(ti),{cx,cy}=Lo,locked
   if(sN==='own'){g.save();g.fillStyle='#0b1220c8';rrect(g,st.lx-17,st.ly-6,34,12,6);g.fill();g.restore();pips(g,st.lx,st.ly,ST.g[ti][st.g],1.8)}
   else if(sN==='aff'){pill(g,st.cx,st.cy,G.cost,'aff',{big:1,pulse:p})}
   else pill(g,st.cx,st.cy,G.cost,sN==='next'?'next':'lock')}
- const tp=taxiPose([[cx+166,cy],[cx+166*Math.cos(.5),cy+166*Math.sin(.5)],[cx+166*Math.cos(1.05),cy+166*Math.sin(1.05)],[cx+12,cy+166],[cx,452],[24,452],[24,487],[470,487]],t,24);if(tp)drawPlane(g,1,1,tp.x,tp.y,tp.a,Lo.s*(1+.15*tp.lift),t,{alpha:tp.al});
+ drawTraffic(g,t);
  return Lo}
 function tbarC(){const ti=ST.cur,T=TERMS[ti];
  const chips=TERMS.map((x,i)=>{const cls=i===ti?'on own':i<ST.term?'own':i===ST.term?'nx':'';return'<button class="tc '+cls+'" data-k="setT" data-a="'+i+'" style="--c:'+x.acc+'"><div class="o">'+x.short+(i>=ST.term?'<em>🔒</em>':'')+'</div><span>'+(i<ST.term?ownedN(i)+'/10':REAL.T[i].termCost)+'</span></button>'}).join('');
@@ -1379,7 +1379,7 @@ function stepTraffic(dt){
   p.v+= (vt-p.v)*Math.min(1,dt*(p.ph==='land'?1.6:2));let nd=p.d+p.v*dt;
   const LU=TR.find(q=>q.ph==='to'&&(q.y<RY-.5||q.x>XE-90));const lead=ld||(LU?{d:D_HOLD,len:LU.len+24}:null);
   if(lead){const lim=lead.d-(lead.len+p.len)/2-10;if(nd>lim){nd=Math.max(p.d,lim);p.v=Math.min(p.v,20)}}
-  if(nd>=D_HOLD&&p.ph!=='hold'&&p.d<D_HOLD+1){nd=Math.min(nd,D_HOLD);if(nd>=D_HOLD){p.ph='hold';p.v=0}}
+  if(p.ph==='hold'){nd=p.d;p.v=0}else if(nd>=D_HOLD){nd=D_HOLD;p.ph='hold';p.v=0}
   if(p.ph==='land'&&nd>D_EXIT+p.len)p.ph='taxi';
   p.d=nd;const[x,y,a]=rpos(p.d);p.x=x;p.y=y;p.a=angLerp(p.a,a,Math.min(1,dt*4))}
  // runway control
