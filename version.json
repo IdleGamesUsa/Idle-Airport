@@ -1,13 +1,13 @@
 {
-  "build": 202610101928,
-  "sha256": "a20b9ea4373382c9610db31a89d355f1149a34f67ee744ac9c440d7cb6d32eef",
-  "size": 557132,
-  "file": "game-v24.html",
+  "build": 202610111451,
+  "sha256": "09faeac50422e8b11623c3524b307f1dca573104713bc78a600321b202e0e715",
+  "size": 559200,
+  "file": "game-v25.html",
   "minVersionCode": 5,
   "bootSelector": "nav",
   "source": "ota",
-  "gameBuild": 24,
+  "gameBuild": 25,
   "label": "1.3.0",
-  "builtAtUtc": "2026-10-10T19:28:37Z",
-  "sig": "ZhYDlj/NLajcydfUN6XPOKnfo3cOSMYy+q9s6RTMNZt4o7oBUQusLxgPU7HOz40vz2yNlL0CY5ldS19Ulla7Tw=="
+  "builtAtUtc": "2026-10-11T14:51:13Z",
+  "sig": "/17onA+HlmOfIbsOZYxB5YuurMtWxi1FHJfYOwOahE1kDr9FZupKYVqukawibwMEkB4SV/wiz1n3YkGXBZnGPg=="
 }
