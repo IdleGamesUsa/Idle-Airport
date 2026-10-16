@@ -48,28 +48,28 @@ const ENEMY={
 // ================= levels =================
 // theme keys drive bg.js palettes + decor; block = decor cells you can't build on
 const LEVELS=[
- {name:'Backyard',theme:'yard',coins:150,waves:10,dens:0.22,hp:0.22,intro:{ant:1,grass:2,beetle:5},boss:0,
+ {name:'Backyard',theme:'yard',coins:150,waves:10,dens:0.33,hp:0.33,intro:{ant:1,grass:2,beetle:5,wasp:7},boss:0,
   paths:[[[-1,2],[6,2],[6,7],[2,7],[2,11],[5,11],[5,14.7]]],block:[[0,9],[8,10],[8,11]]},
- {name:'Flower Bed',theme:'flower',coins:150,waves:10,dens:0.29,hp:0.29,intro:{wasp:4},boss:0,
+ {name:'Flower Bed',theme:'flower',coins:150,waves:10,dens:0.38,hp:0.38,intro:{wasp:4},boss:0,
   paths:[[[-1,1],[7,1],[7,3],[1,3],[1,6],[7,6],[7,8],[1,8],[1,11],[7,11],[7,13],[4,13],[4,14.7]]],block:[[8,4],[0,10]]},
- {name:'Pond Edge',theme:'pond',coins:160,waves:11,dens:0.14,hp:0.14,intro:{cat:3},boss:0,
+ {name:'Pond Edge',theme:'pond',coins:160,waves:11,dens:0.3,hp:0.3,intro:{cat:3},boss:0,
   paths:[[[-1,1],[2,1],[2,6],[4,6],[4,10],[1,10],[1,12],[6,12],[6,14.7]],[[9,2],[6,2],[6,6],[4,6],[4,10],[1,10],[1,12],[6,12],[6,14.7]]],block:[[3,3],[4,3],[5,3],[3,4],[4,4],[5,4]]},
- {name:'Pumpkin Patch',theme:'pumpkin',coins:160,waves:11,dens:0.21,hp:0.21,intro:{},boss:7000,
+ {name:'Pumpkin Patch',theme:'pumpkin',coins:160,waves:11,dens:0.43,hp:0.43,intro:{},boss:7000,
   paths:[[[-1,1],[1,1],[1,12],[3,12],[3,1],[5,1],[5,12],[7,12],[7,14.7]]],block:[[8,3],[8,7],[0,13]]},
- {name:'Split Path',theme:'herb',coins:170,waves:12,dens:0.15,hp:0.15,intro:{},boss:0,
+ {name:'Split Path',theme:'herb',coins:170,waves:12,dens:0.245,hp:0.245,intro:{},boss:0,
   paths:[[[-1,1],[4,1],[4,3],[1,3],[1,8],[4,8],[4,11],[2,11],[2,14.7]],[[-1,1],[4,1],[4,3],[7,3],[7,8],[4,8],[4,11],[2,11],[2,14.7]]],block:[[3,5],[4,5],[5,5],[4,6]]},
- {name:'Night Garden',theme:'night',coins:190,waves:12,dens:0.09,hp:0.09,intro:{},boss:6000,
+ {name:'Night Garden',theme:'night',coins:190,waves:12,dens:0.2,hp:0.2,intro:{},boss:6000,
   paths:[[[-1,3],[3,3],[3,9],[1,9],[1,14.7]],[[9,1],[6,1],[6,6],[7,6],[7,11],[5,11],[5,14.7]]],block:[[4,6],[0,6]]},
- {name:'Rock Garden',theme:'rock',coins:180,waves:13,dens:0.31,hp:0.31,intro:{},boss:0,
+ {name:'Rock Garden',theme:'rock',coins:180,waves:13,dens:0.6,hp:0.6,intro:{},boss:0,
   paths:[[[-1,1],[7,1],[7,9],[1,9],[1,4],[5,4],[5,12],[3,12],[3,14.7]]],block:[[3,6],[3,7],[0,12],[8,12]]},
- {name:'Sunflower Field',theme:'sunflower',coins:200,waves:14,dens:0.14,hp:0.14,armor:0,intro:{},boss:8000,
+ {name:'Sunflower Field',theme:'sunflower',coins:200,waves:14,dens:0.245,hp:0.245,armor:0,intro:{},boss:8000,
   paths:[[[-1,1],[4,1],[4,12],[6,12],[6,14.7]],[[9,4],[4,4],[4,12],[6,12],[6,14.7]],[[-1,9],[4,9],[4,12],[6,12],[6,14.7]]],block:[[1,5],[7,8],[8,8]]},
- {name:'Mushroom Grove',theme:'mushroom',coins:210,waves:15,dens:0.135,hp:0.135,intro:{},boss:9000,
+ {name:'Mushroom Grove',theme:'mushroom',coins:210,waves:15,dens:0.315,hp:0.315,intro:{},boss:9000,
   paths:[[[-1,1],[3,1],[3,4],[1,4],[1,7],[4,7],[4,14.7]],[[9,1],[5,1],[5,4],[7,4],[7,7],[4,7],[4,14.7]]],block:[[4,2],[4,3],[0,10],[8,11]]},
- {name:'Survival',theme:'storm',coins:250,waves:Infinity,dens:0.12,hp:0.12,intro:{},boss:2000,survival:true,
+ {name:'Survival',theme:'storm',coins:250,waves:Infinity,dens:0.2,hp:0.2,intro:{},boss:2000,survival:true,
   paths:[[[-1,2],[5,2],[5,6],[2,6],[2,10],[6,10],[6,14.7]],[[9,4],[7,4],[7,10],[6,10],[6,14.7]]],block:[[3,3],[8,12]]}];
 let LEVEL=LEVELS[0],LVI=0;
-const RWX=.3,GROUPGAP=1.6,CONGA=8; // v6: many more bugs in tight conga lines; kill reward x0.3 (fractional carry)
+const RWX=2.5,GROUPGAP=1.6,CONGA=8; // v6: many more bugs in tight conga lines; kill reward x0.3 (fractional carry)
 const BUGCOST={ant:1,grass:1.3,beetle:2.6,wasp:1.5,cat:2.1},BUGIV={ant:.6,grass:.6,beetle:1.1,wasp:.85,cat:1.15};
 // which bug types are unlocked by (level, wave): campaign spreads introductions out
 function poolAt(li,w){const p=[];const seen=(t)=>{for(let i=0;i<li;i++)if(LEVELS[i].intro[t])return true;const iw=LEVELS[li].intro[t];return iw!=null&&w>=iw;};
@@ -82,10 +82,10 @@ function getWave(w){const L=LEVEL,li=LVI;let s=li*977+w*131+5;const R=()=>(s=(s*
  const newT=pool.find(t=>LEVELS[li].intro[t]===w);const P=L.survival?(w-1)/9:(w-1)/(L.waves-1);
  let total=Math.round(L.survival?(14+3.2*w):(L.cnt||1)*(12+36*P)*(1+li*.05));const T0=total,groups=[];
  if(newT){const n=Math.max(6,Math.round(total*.4/Math.sqrt(BUGCOST[newT])));groups.push([newT,n,BUGIV[newT]*.4]);total-=n;}
- R();R();let cand=pool.filter(t=>t!==newT&&(w>2||t==='ant'||t==='grass'));if(!cand.length)cand=['ant'];for(let i=cand.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}const k=Math.min(cand.length,w<3?1:w<6?2:3);const pick=cand.slice(0,k);if(w>=5&&cand.includes('beetle')&&!pick.includes('beetle'))pick[k-1]='beetle'; // v6: armored line in every wave 5+ (counters frog/gnome spam)
+ R();R();let cand=pool.filter(t=>t!==newT&&(w>2||t==='ant'||t==='grass'));if(!cand.length)cand=['ant'];for(let i=cand.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}const k=Math.min(cand.length,w<3?1:w<6?2:3);const pick=cand.slice(0,k);if(w>=5&&cand.includes('beetle')&&!pick.includes('beetle'))pick[k-1]='beetle';if(w>=4&&w%2===0&&cand.includes('wasp')&&!pick.includes('wasp')&&newT!=='wasp')pick[0]=pick[0]==='beetle'&&k>1?(pick[1]='wasp',pick[0]):'wasp'; // v7: flyers every other wave (counters flytrap/dragon spam) // v6: armored line in every wave 5+ (counters frog/gnome spam)
  pick.forEach((t,i)=>{const share=i===k-1?total:total/(k-i)*(.7+R()*.6);const sh=Math.min(total,share),n=Math.max(4,Math.round(sh/Math.sqrt(BUGCOST[t])));total-=sh;groups.push([t,t==='beetle'?Math.max(n,Math.round(T0*(L.armor??(.15+li*.03)))):n,BUGIV[t]*.32]);});
  if(isBossWave(w))groups.push(['slug',L.survival?Math.ceil(w/20):1,3]);return groups;}
-let HPSCALE=.5,BOSSHP=7500; // bug HP = base x levelHP x (1 + HPSCALE x (wave-1)) [x 1.06^(w-12) in survival], rounded to 5
+let HPSCALE=1.5,BOSSHP=7500; // bug HP = base x levelHP x (1 + HPSCALE x (wave-1)) [x 1.06^(w-12) in survival], rounded to 5
 const waveHP=(type,w)=>{const L=LEVEL;if(type==='slug')return Math.round((L.boss||BOSSHP)*L.hp*(L.survival?(1+.25*(w-5)):1)*(BOSSHP/7500)/50)*50;
  let m=L.hp*(1+HPSCALE*9*(L.survival?(w-1)/9:(w-1)/(L.waves-1)));if(L.survival&&w>12)m*=Math.pow(1.06,w-12);return Math.round(ENEMY[type].hp*m/5)*5;};
 const WAVES={get length(){return LEVEL.waves}};
@@ -588,7 +588,7 @@ newGame();
 const CD=12;
 function startWave(){if(G.inWave||G.wave>=LEVEL.waves)return;if(G.countdown>0&&G.wave>0){const b=Math.ceil(G.countdown);G.coins+=b;G.lastEarly+=b;if(b)floatTxt(W/2,BARY-30,'+'+b+' early!','#ffe680');}
  sfx('horn',0);const w=getWave(G.wave+1);G.wave++;G.inWave=true;G.countdown=0;G.spawnQ=[];let t=0;
- let line=0;for(const[g,n,iv]of w){for(let i=0;i<n;i++){if(i&&i%CONGA===0){t+=GROUPGAP*.6;line++;}G.spawnQ.push({type:g,t,pi:g==='slug'?PATHS.reduce((b,P,i)=>P.len>PATHS[b].len?i:b,0):line%PATHS.length});t+=iv;}t+=GROUPGAP;line++;}{const tot=Math.max(1,t-GROUPGAP),k=tot<10?10/tot:tot>26?26/tot:1;if(k!==1)for(const q of G.spawnQ)q.t*=k;}G.spawnT=0;G.build=null;
+ let line=0;for(const[g,n,iv]of w){for(let i=0;i<n;i++){if(i&&i%CONGA===0){t+=GROUPGAP*.6;line++;}G.spawnQ.push({type:g,t,pi:g==='slug'?PATHS.reduce((b,P,i)=>P.len>PATHS[b].len?i:b,0):line%PATHS.length});t+=iv;}t+=GROUPGAP;line++;}{const tot=Math.max(1,t-GROUPGAP),k=tot<8?8/tot:tot>20?20/tot:1;if(k!==1)for(const q of G.spawnQ)q.t*=k;}G.spawnT=0;G.build=null;
  const bw=isBossWave(G.wave),nt=w.find(([g])=>LEVEL.intro[g]===G.wave);G.banner={t:0,text:bw?'BOSS WAVE!':'Wave '+G.wave,sub:bw?'The Slug King approaches':nt?'New bug: '+ENEMY[nt[0]].name+'!':waveSub(w),col:bw?'#ff5a4a':nt?'#8ae0ff':'#ffd23f'};}
 function waveSub(w){return w.map(([g,n])=>n+' '+ENEMY[g].name+(n>1?'s':'')).join(' · ').replace('Grasshoppers','Hoppers').replace('Caterpillars','Caterpillars');}
 function spawn(type,d=0,small=false,pi=0){const e=ENEMY[type];const hp=waveHP(type,G.wave)*(small?.5:1);
@@ -872,7 +872,7 @@ function drawTitle(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);titleT+=1/60;
  hit(30,150,352,200,()=>{G.devTaps=(G.devTaps||0)+1;if(G.devTaps>=5){PROG.un=LEVELS.length;saveProg();G.devTaps=0;G.toast={t:uiT,s:'Dev: all levels unlocked'};sfx('upgrade',0);}});
  button(W/2-120,660,240,74,'\u25B6  PLAY','#6fd65a','#2f9a3a',()=>setScreen('levels'),30,false,1+.04*Math.sin(titleT*4));
  if(G.toast&&uiT-G.toast.t<2.2){rr(W/2-150,590,300,44,22);ctx.fillStyle='rgba(30,15,0,.75)';ctx.fill();txt(G.toast.s,W/2,612,16,'#ffe680','center',null);}
- txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v6',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
+ txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v7',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
 function drawPause(){ctx.fillStyle='rgba(15,30,5,.55)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.3));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);
  panel(56,260,W-112,380);X=ctx;txt('Paused',W/2,308,34,'#6b4423','center','#fff');
  button(96,344,W-192,58,'\u25B6 Resume','#6fd65a','#2f9a3a',()=>setScreen('play'),21);button(96,414,W-192,52,'\u21BB Restart','#ffc14a','#e8841a',()=>{newGame();setScreen('play');},19);
