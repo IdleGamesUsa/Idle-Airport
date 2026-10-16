@@ -925,7 +925,7 @@ function drawTitle(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);titleT+=1/60;
  hit(30,150,352,200,()=>{G.devTaps=(G.devTaps||0)+1;if(G.devTaps>=5){PROG.un=LEVELS.length;saveProg();G.devTaps=0;G.toast={t:uiT,s:'Dev: all levels unlocked'};sfx('upgrade',0);}});
  button(W/2-120,660,240,74,'\u25B6  PLAY','#6fd65a','#2f9a3a',()=>setScreen('levels'),30,false,1+.04*Math.sin(titleT*4));
  if(G.toast&&uiT-G.toast.t<2.2){rr(W/2-150,590,300,44,22);ctx.fillStyle='rgba(30,15,0,.75)';ctx.fill();txt(G.toast.s,W/2,612,16,'#ffe680','center',null);}
- txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v8',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
+ txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v8.1',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
 function drawPause(){ctx.fillStyle='rgba(15,30,5,.55)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.3));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);
  panel(56,260,W-112,380);X=ctx;txt('Paused',W/2,308,34,'#6b4423','center','#fff');
  button(96,344,W-192,58,'\u25B6 Resume','#6fd65a','#2f9a3a',()=>setScreen('play'),21);button(96,414,W-192,52,'\u21BB Restart','#ffc14a','#e8841a',()=>{newGame();setScreen('play');},19);
@@ -947,10 +947,20 @@ function drawEnd(){const win=screen==='win';G.endT+=1/60;ctx.fillStyle='rgba(15,
  // ui particles reuse world fx (drawn under panel otherwise) - draw sparkle here
  for(const f of G.fx)if(f.k==='p'&&f.y<400&&f.r===3){ctx.globalAlpha=1-f.t/f.life;ctx.fillStyle=f.c;ctx.beginPath();ctx.arc(f.x,f.y,3,0,6.283);ctx.fill();ctx.globalAlpha=1;}}
 function render(){if(!S.coin)buildSprites();buildBirdSprites();if(!bg)buildBg();ctx.setTransform(K,0,0,K,0,0);X=ctx;ui=[];
- if(screen==='title'){drawTitle();return;}if(screen==='levels'){drawLevels();return;}
+ if(screen==='title'||screen==='levels'){if(screen==='title')drawTitle();else drawLevels();drawReset();return;}
  drawWorld();drawHud();if(G.build)drawBuildMenu();if(G.sel)drawTowerMenu();drawBanner();
  if(G.wave===0&&!G.towers.length&&!G.build&&screen==='play'){const b=Math.sin(uiT*4)*4;txt('Tap the grass to plant a defense!',W/2,OY+4.5*T+b,17,'#fff','center','rgba(40,20,5,.7)');}
  if(screen==='pause')drawPause();if(screen==='win'||screen==='lose')drawEnd();if(screen==='over')drawOver();}
+// ---- v8.1: test 'Reset progress' button (title + level select) ----
+let RESETQ=false;
+function resetProgress(){try{for(const k of Object.keys(localStorage))if(k.startsWith('gg_')&&k!=='gg_audio')localStorage.removeItem(k);}catch(e){}
+ PROG={un:1,st:[],best:0};saveProg();RESETQ=false;if(G){G.newBest=false;G.toast={t:uiT,s:'Progress reset'};}sfx('click',0);setScreen('title');}
+function drawReset(){X=ctx;const bx=W-112,by=H-40;
+ hit(bx,by,102,30,()=>{RESETQ=true;sfx('click',0);});rr(bx,by,102,30,15);ctx.fillStyle='rgba(40,25,10,.45)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.5;ctx.stroke();txt('\u21BA Reset progress',bx+51,by+15.5,11,'rgba(255,240,220,.85)','center',null,800);
+ if(!RESETQ)return;hit(0,0,W,H,()=>{});ctx.fillStyle='rgba(15,10,5,.55)';ctx.fillRect(0,0,W,H);
+ const pw=300,ph=170,px=(W-pw)/2,py=H/2-ph/2;panel(px,py,pw,ph,'#d8442a');X=ctx;
+ txt('Reset all progress?',W/2,py+42,22,'#3b2a14','center',null);txt('Unlocked levels, stars and best wave',W/2,py+72,13,'#7a6a55','center',null,700);
+ button(px+18,py+100,124,50,'Yes','#ff8a6a','#d8442a',resetProgress,19);button(px+pw-142,py+100,124,50,'Cancel','#8ab0d8','#4a74a8',()=>{RESETQ=false;sfx('click',0);},18);}
 // ---- level select ----
 const LVCOL={yard:['#8ad85e','#3f9a32'],flower:['#ff9ac0','#d8407a'],pond:['#8ad0ff','#2a7ad0'],pumpkin:['#ffb860','#d8641a'],herb:['#c8b0ff','#7a50d0'],night:['#7a8ad8','#2a3480'],rock:['#c8c4b8','#7a766c'],sunflower:['#ffe070','#d8a010'],mushroom:['#ff8a7a','#b8302a'],storm:['#8a9ab8','#3a4a68']};
 function drawLevels(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);ctx.fillStyle='rgba(20,40,10,.55)';ctx.fillRect(0,0,W,H);titleT+=1/60;
