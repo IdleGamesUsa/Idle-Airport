@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html><head>
-<meta name="robots" content="noindex,nofollow"><meta charset="utf-8">
+<html><head><meta charset="utf-8">
+<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#3d7a2c">
 <title>Garden Guard</title>
@@ -33,54 +33,57 @@ const TOWERS={
  flytrap:{name:'Flytrap',cost:40,range:1,ground:true,dmg:[50,100,150],spd:[.5,.6,.8],col:'#e0465a',tag:'Ground only',role:'Heavy chomp'},
  frog:{name:'Frog',cost:60,range:2,dmg:[20,35,50],spd:[.8,1,1.25],col:'#4fbf4a',tag:'Hits flyers',role:'Fast tongue, weak vs armor'},
  gnome:{name:'Gnome',cost:80,range:3,dmg:[18,30,48],spd:[.8,1,1.2],splash:.75,col:'#d9473a',tag:'Hits flyers',role:'Pebble splash'},
- zapper:{name:'Zapper',cost:110,range:1,dmg:[15,25,35],chain:4,spd:[1,1.25,1.5],pierce:true,col:'#7a6cf0',tag:'Ignores armor',role:'Chains 4 bugs, hits flyers'},
+ zapper:{name:'Zapper',cost:110,range:1,dmg:[10,17,25],chain:4,fall:.5,spd:[1,1.25,1.5],pierce:true,col:'#7a6cf0',tag:'Ignores armor',role:'Chains 4 bugs, hits flyers'},
  dragon:{name:'Dragon',cost:275,up:[.5,.8],range:2,dir:true,size:2,ground:true,dmg:[120,200,300],spd:[1,1.2,1.5],cleave:4,col:'#e89a3c',tag:'Ground only',role:'Bites 4 bugs, 2 squares ahead'}};
 for(const k in TOWERS)TOWERS[k].rate=TOWERS[k].spd.map(v=>1/v);
 const ORDER=['flytrap','frog','gnome','zapper','dragon'];
 const upCost=(t,l)=>{const u=TOWERS[t].up||[.8,1.3];return Math.round(TOWERS[t].cost*(l===1?u[0]:u[1]));};
 const ENEMY={
  ant:{hp:40,spd:1.35,rew:4,armor:0,r:9,name:'Ant'},
- beetle:{hp:120,spd:.9,rew:9,armor:16,r:12,name:'Beetle'},
+ beetle:{hp:120,spd:.9,rew:9,armor:22,r:12,name:'Beetle'},
  grass:{hp:60,spd:1.9,rew:6,armor:0,r:10,name:'Grasshopper'},
  wasp:{hp:60,spd:1.5,rew:7,armor:0,r:10,fly:true,name:'Wasp'},
  cat:{hp:100,spd:.9,rew:5,armor:0,r:12,name:'Caterpillar'},
- slug:{hp:7500,spd:.5,rew:150,armor:16,r:26,lives:10,name:'Slug King'}};
+ slug:{hp:7500,spd:.5,rew:150,armor:22,r:26,lives:10,name:'Slug King'}};
 // ================= levels =================
 // theme keys drive bg.js palettes + decor; block = decor cells you can't build on
 const LEVELS=[
- {name:'Backyard',theme:'yard',coins:150,waves:10,dens:0.72,hp:0.72,intro:{ant:1,grass:2,beetle:5},boss:0,
+ {name:'Backyard',theme:'yard',coins:150,waves:10,dens:0.22,hp:0.22,intro:{ant:1,grass:2,beetle:5},boss:0,
   paths:[[[-1,2],[6,2],[6,7],[2,7],[2,11],[5,11],[5,14.7]]],block:[[0,9],[8,10],[8,11]]},
- {name:'Flower Bed',theme:'flower',coins:150,waves:10,dens:0.86,hp:0.86,intro:{wasp:4},boss:0,
+ {name:'Flower Bed',theme:'flower',coins:150,waves:10,dens:0.29,hp:0.29,intro:{wasp:4},boss:0,
   paths:[[[-1,1],[7,1],[7,3],[1,3],[1,6],[7,6],[7,8],[1,8],[1,11],[7,11],[7,13],[4,13],[4,14.7]]],block:[[8,4],[0,10]]},
- {name:'Pond Edge',theme:'pond',coins:160,waves:11,dens:0.49,hp:0.49,intro:{cat:3},boss:0,
+ {name:'Pond Edge',theme:'pond',coins:160,waves:11,dens:0.14,hp:0.14,intro:{cat:3},boss:0,
   paths:[[[-1,1],[2,1],[2,6],[4,6],[4,10],[1,10],[1,12],[6,12],[6,14.7]],[[9,2],[6,2],[6,6],[4,6],[4,10],[1,10],[1,12],[6,12],[6,14.7]]],block:[[3,3],[4,3],[5,3],[3,4],[4,4],[5,4]]},
- {name:'Pumpkin Patch',theme:'pumpkin',coins:160,waves:11,dens:0.55,hp:0.55,intro:{},boss:7000,
+ {name:'Pumpkin Patch',theme:'pumpkin',coins:160,waves:11,dens:0.21,hp:0.21,intro:{},boss:7000,
   paths:[[[-1,1],[1,1],[1,12],[3,12],[3,1],[5,1],[5,12],[7,12],[7,14.7]]],block:[[8,3],[8,7],[0,13]]},
- {name:'Split Path',theme:'herb',coins:170,waves:12,dens:0.55,hp:0.55,intro:{},boss:0,
+ {name:'Split Path',theme:'herb',coins:170,waves:12,dens:0.15,hp:0.15,intro:{},boss:0,
   paths:[[[-1,1],[4,1],[4,3],[1,3],[1,8],[4,8],[4,11],[2,11],[2,14.7]],[[-1,1],[4,1],[4,3],[7,3],[7,8],[4,8],[4,11],[2,11],[2,14.7]]],block:[[3,5],[4,5],[5,5],[4,6]]},
- {name:'Night Garden',theme:'night',coins:190,waves:12,dens:0.27,hp:0.27,intro:{},boss:6000,
+ {name:'Night Garden',theme:'night',coins:190,waves:12,dens:0.09,hp:0.09,intro:{},boss:6000,
   paths:[[[-1,3],[3,3],[3,9],[1,9],[1,14.7]],[[9,1],[6,1],[6,6],[7,6],[7,11],[5,11],[5,14.7]]],block:[[4,6],[0,6]]},
- {name:'Rock Garden',theme:'rock',coins:180,waves:13,dens:0.94,hp:0.94,intro:{},boss:0,
+ {name:'Rock Garden',theme:'rock',coins:180,waves:13,dens:0.31,hp:0.31,intro:{},boss:0,
   paths:[[[-1,1],[7,1],[7,9],[1,9],[1,4],[5,4],[5,12],[3,12],[3,14.7]]],block:[[3,6],[3,7],[0,12],[8,12]]},
- {name:'Sunflower Field',theme:'sunflower',coins:200,waves:14,dens:0.39,hp:0.39,intro:{},boss:8000,
+ {name:'Sunflower Field',theme:'sunflower',coins:200,waves:14,dens:0.14,hp:0.14,armor:0,intro:{},boss:8000,
   paths:[[[-1,1],[4,1],[4,12],[6,12],[6,14.7]],[[9,4],[4,4],[4,12],[6,12],[6,14.7]],[[-1,9],[4,9],[4,12],[6,12],[6,14.7]]],block:[[1,5],[7,8],[8,8]]},
- {name:'Mushroom Grove',theme:'mushroom',coins:210,waves:15,dens:0.52,hp:0.52,intro:{},boss:9000,
+ {name:'Mushroom Grove',theme:'mushroom',coins:210,waves:15,dens:0.135,hp:0.135,intro:{},boss:9000,
   paths:[[[-1,1],[3,1],[3,4],[1,4],[1,7],[4,7],[4,14.7]],[[9,1],[5,1],[5,4],[7,4],[7,7],[4,7],[4,14.7]]],block:[[4,2],[4,3],[0,10],[8,11]]},
- {name:'Survival',theme:'storm',coins:250,waves:Infinity,dens:0.42,hp:0.42,intro:{},boss:2000,survival:true,
+ {name:'Survival',theme:'storm',coins:250,waves:Infinity,dens:0.12,hp:0.12,intro:{},boss:2000,survival:true,
   paths:[[[-1,2],[5,2],[5,6],[2,6],[2,10],[6,10],[6,14.7]],[[9,4],[7,4],[7,10],[6,10],[6,14.7]]],block:[[3,3],[8,12]]}];
 let LEVEL=LEVELS[0],LVI=0;
-const WAVEX=1.5,IVX=1.8,RWX=1/1.5; // v5: longer waves (more bugs, wider spacing), kill reward scaled so economy stays similar
+const RWX=.3,GROUPGAP=1.6,CONGA=8; // v6: many more bugs in tight conga lines; kill reward x0.3 (fractional carry)
 const BUGCOST={ant:1,grass:1.3,beetle:2.6,wasp:1.5,cat:2.1},BUGIV={ant:.6,grass:.6,beetle:1.1,wasp:.85,cat:1.15};
 // which bug types are unlocked by (level, wave): campaign spreads introductions out
 function poolAt(li,w){const p=[];const seen=(t)=>{for(let i=0;i<li;i++)if(LEVELS[i].intro[t])return true;const iw=LEVELS[li].intro[t];return iw!=null&&w>=iw;};
  for(const t of['ant','grass','beetle','wasp','cat'])if(li>=9||seen(t))p.push(t);return p;}
 function isBossWave(w){const L=LEVEL;if(L.survival)return w%5===0;return L.boss>0&&w===L.waves;}
 // procedural but deterministic wave builder: budget grows with wave + level density
+// v6: count-driven wave builder. Total bugs = cnt x (12 + 36P) (P = wave progress 0..1); survival keeps growing.
+// Bugs spawn nearly back to back (BUGIV x .32) in conga lines of ~CONGA, small gaps between lines.
 function getWave(w){const L=LEVEL,li=LVI;let s=li*977+w*131+5;const R=()=>(s=(s*16807)%2147483647)/2147483647;const pool=poolAt(li,w);
- const newT=pool.find(t=>LEVELS[li].intro[t]===w);const P=L.survival?(w-1)/9:(w-1)/(L.waves-1);let budget=L.dens*(9.6+23.4*P)*(L.survival?1+.03*w:1);const groups=[];
- if(newT){const n=Math.max(4,Math.round(budget*.45/BUGCOST[newT]));groups.push([newT,Math.round(n*WAVEX),BUGIV[newT]*IVX]);budget-=n*BUGCOST[newT];}
- R();R();let cand=pool.filter(t=>t!==newT&&(w>2||t==='ant'||t==='grass'));if(!cand.length)cand=['ant'];for(let i=cand.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}const k=Math.min(cand.length,w<3?1:w<6?2:3);const pick=cand.slice(0,k);
- pick.forEach((t,i)=>{const share=budget/(k-i)*(.7+R()*.6);const n=Math.max(2,Math.round(Math.min(budget,share)/BUGCOST[t]));budget-=n*BUGCOST[t];groups.push([t,Math.round(n*WAVEX),BUGIV[t]*IVX*Math.max(.55,1-w*.025)]);});
+ const newT=pool.find(t=>LEVELS[li].intro[t]===w);const P=L.survival?(w-1)/9:(w-1)/(L.waves-1);
+ let total=Math.round(L.survival?(14+3.2*w):(L.cnt||1)*(12+36*P)*(1+li*.05));const T0=total,groups=[];
+ if(newT){const n=Math.max(6,Math.round(total*.4/Math.sqrt(BUGCOST[newT])));groups.push([newT,n,BUGIV[newT]*.4]);total-=n;}
+ R();R();let cand=pool.filter(t=>t!==newT&&(w>2||t==='ant'||t==='grass'));if(!cand.length)cand=['ant'];for(let i=cand.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]];}const k=Math.min(cand.length,w<3?1:w<6?2:3);const pick=cand.slice(0,k);if(w>=5&&cand.includes('beetle')&&!pick.includes('beetle'))pick[k-1]='beetle'; // v6: armored line in every wave 5+ (counters frog/gnome spam)
+ pick.forEach((t,i)=>{const share=i===k-1?total:total/(k-i)*(.7+R()*.6);const sh=Math.min(total,share),n=Math.max(4,Math.round(sh/Math.sqrt(BUGCOST[t])));total-=sh;groups.push([t,t==='beetle'?Math.max(n,Math.round(T0*(L.armor??(.15+li*.03)))):n,BUGIV[t]*.32]);});
  if(isBossWave(w))groups.push(['slug',L.survival?Math.ceil(w/20):1,3]);return groups;}
 let HPSCALE=.5,BOSSHP=7500; // bug HP = base x levelHP x (1 + HPSCALE x (wave-1)) [x 1.06^(w-12) in survival], rounded to 5
 const waveHP=(type,w)=>{const L=LEVEL;if(type==='slug')return Math.round((L.boss||BOSSHP)*L.hp*(L.survival?(1+.25*(w-5)):1)*(BOSSHP/7500)/50)*50;
@@ -585,7 +588,7 @@ newGame();
 const CD=12;
 function startWave(){if(G.inWave||G.wave>=LEVEL.waves)return;if(G.countdown>0&&G.wave>0){const b=Math.ceil(G.countdown);G.coins+=b;G.lastEarly+=b;if(b)floatTxt(W/2,BARY-30,'+'+b+' early!','#ffe680');}
  sfx('horn',0);const w=getWave(G.wave+1);G.wave++;G.inWave=true;G.countdown=0;G.spawnQ=[];let t=0;
- let rr2=0;for(const[g,n,iv]of w){for(let i=0;i<n;i++){G.spawnQ.push({type:g,t,pi:g==='slug'?PATHS.reduce((b,P,i)=>P.len>PATHS[b].len?i:b,0):(rr2++)%PATHS.length});t+=iv;}t+=2.5;}{const tot=Math.max(1,t-2.5),k=tot<18?18/tot:tot>32?32/tot:1;if(k!==1)for(const q of G.spawnQ)q.t*=k;}G.spawnT=0;G.build=null;
+ let line=0;for(const[g,n,iv]of w){for(let i=0;i<n;i++){if(i&&i%CONGA===0){t+=GROUPGAP*.6;line++;}G.spawnQ.push({type:g,t,pi:g==='slug'?PATHS.reduce((b,P,i)=>P.len>PATHS[b].len?i:b,0):line%PATHS.length});t+=iv;}t+=GROUPGAP;line++;}{const tot=Math.max(1,t-GROUPGAP),k=tot<10?10/tot:tot>26?26/tot:1;if(k!==1)for(const q of G.spawnQ)q.t*=k;}G.spawnT=0;G.build=null;
  const bw=isBossWave(G.wave),nt=w.find(([g])=>LEVEL.intro[g]===G.wave);G.banner={t:0,text:bw?'BOSS WAVE!':'Wave '+G.wave,sub:bw?'The Slug King approaches':nt?'New bug: '+ENEMY[nt[0]].name+'!':waveSub(w),col:bw?'#ff5a4a':nt?'#8ae0ff':'#ffd23f'};}
 function waveSub(w){return w.map(([g,n])=>n+' '+ENEMY[g].name+(n>1?'s':'')).join(' · ').replace('Grasshoppers','Hoppers').replace('Caterpillars','Caterpillars');}
 function spawn(type,d=0,small=false,pi=0){const e=ENEMY[type];const hp=waveHP(type,G.wave)*(small?.5:1);
@@ -631,7 +634,7 @@ function update(dt){G.t+=dt;puUpdate(dt);
   else if(t.type==='flytrap'){t.anim=.42;ftHeads(t);const hs=t.heads;let h=hs.find(h=>h.a<=0)||hs[0];if(hs.length>1){h=hs[t.alt=(t.alt||0)^1];if(h.a>0)h=hs[t.alt^1];}const tg=(hs.length>1&&ts[1]&&hs.some(o=>o!==h&&o.a>0&&o.e===e))?ts[1]:e;h.a=FTD;h.e=tg;h.hit=false;h.dmg=d.dmg[L];h.lx=tg.x;h.ly=tg.y;}
   else if(t.type==='gnome'){t.anim=.3;sfx('twang');const sx=t.x+t.face*14,sy=t.y-44;G.shots.push({k:'pebble',t:0,sx,sy,e,x:sx,y:sy,dur:.35+Math.hypot(e.x-sx,e.y-sy)/700,dmg:d.dmg[L],tx:e.x,ty:e.y});}
   else if(t.type==='zapper'){t.anim=.22;sfx('zap');const hit=[e];let cur=e;while(hit.length<d.chain){const n=G.enemies.filter(o=>o.hp>0&&o.d>0&&!hit.includes(o)&&Math.hypot(o.x-cur.x,o.y-cur.y)<T*1.7).sort((a,b)=>Math.hypot(a.x-cur.x,a.y-cur.y)-Math.hypot(b.x-cur.x,b.y-cur.y))[0];if(!n)break;hit.push(n);cur=n;}
-   const pts=[{x:t.x+(t.lvl===3?0:0),y:t.y+12-ZGLOW[t.lvl-1]}].concat(hit.map(h=>({x:h.x,y:h.y-(h.fly?16:0)})));hit.forEach((h,i)=>{hurt(h,d.dmg[L]*(i?.5:1),'zapper',true);burst(h.x,h.y,['#d8d0ff','#fff'],4,60);});part({k:'bolt',pts,t:0,life:.24});}
+   const pts=[{x:t.x+(t.lvl===3?0:0),y:t.y+12-ZGLOW[t.lvl-1]}].concat(hit.map(h=>({x:h.x,y:h.y-(h.fly?16:0)})));hit.forEach((h,i)=>{hurt(h,d.dmg[L]*Math.pow(d.fall,i),'zapper',true);burst(h.x,h.y,['#d8d0ff','#fff'],4,60);});part({k:'bolt',pts,t:0,life:.24});}
   else if(t.type==='dragon'){t.anim=.42;sfx('dragon');ts.slice(0,d.cleave).forEach(o=>hurt(o,d.dmg[L],'dragon'));const[dx,dy]=DIRS[t.dir];part({k:'chomp',x:t.x+dx*T*1.7,y:t.y+dy*T*1.7,t:0,life:.35,big:1});G.shake=Math.max(G.shake,2);}
  }
  for(const s of G.shots){s.t+=dt;
@@ -869,7 +872,7 @@ function drawTitle(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);titleT+=1/60;
  hit(30,150,352,200,()=>{G.devTaps=(G.devTaps||0)+1;if(G.devTaps>=5){PROG.un=LEVELS.length;saveProg();G.devTaps=0;G.toast={t:uiT,s:'Dev: all levels unlocked'};sfx('upgrade',0);}});
  button(W/2-120,660,240,74,'\u25B6  PLAY','#6fd65a','#2f9a3a',()=>setScreen('levels'),30,false,1+.04*Math.sin(titleT*4));
  if(G.toast&&uiT-G.toast.t<2.2){rr(W/2-150,590,300,44,22);ctx.fillStyle='rgba(30,15,0,.75)';ctx.fill();txt(G.toast.s,W/2,612,16,'#ffe680','center',null);}
- txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v5',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
+ txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v6',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
 function drawPause(){ctx.fillStyle='rgba(15,30,5,.55)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.3));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);
  panel(56,260,W-112,380);X=ctx;txt('Paused',W/2,308,34,'#6b4423','center','#fff');
  button(96,344,W-192,58,'\u25B6 Resume','#6fd65a','#2f9a3a',()=>setScreen('play'),21);button(96,414,W-192,52,'\u21BB Restart','#ffc14a','#e8841a',()=>{newGame();setScreen('play');},19);
