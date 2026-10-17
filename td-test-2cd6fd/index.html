@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta name="robots" content="noindex,nofollow,noarchive"><meta charset="utf-8">
+<html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#3d7a2c">
 <title>Garden Guard</title>
@@ -77,8 +77,10 @@ const PATH_TEMPLATES=[
  [[[-1,1],[7,1],[7,9],[1,9],[1,4],[5,4],[5,12],[3,12],[3,14.7]]],
  [[[-1,1],[4,1],[4,12],[6,12],[6,14.7]],[[9,4],[4,4],[4,12],[6,12],[6,14.7]],[[-1,9],[4,9],[4,12],[6,12],[6,14.7]]]];
 function _h(n){const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);}
-function genPaths(idx){const base=PATH_TEMPLATES[Math.floor(_h(idx+3)*PATH_TEMPLATES.length)],mir=_h(idx+7)>.5,dy=Math.floor(_h(idx+13)*3)-1;
- return base.map(path=>path.map(([x,y])=>[mir?(x<0?9:x>8?-1:8-x):x,(y>0&&y<14)?Math.max(1,Math.min(13,y+dy)):y]).filter((p,i,a)=>!i||p[0]!==a[i-1][0]||p[1]!==a[i-1][1]));}
+function xformPaths(base,mir,dy){return base.map(path=>path.map(([x,y])=>[mir?(x<0?9:x>8?-1:8-x):x,(y>0&&y<14)?Math.max(1,Math.min(13,y+dy)):y]).filter((p,i,a)=>!i||p[0]!==a[i-1][0]||p[1]!==a[i-1][1]));}
+function genPaths(idx){return xformPaths(PATH_TEMPLATES[Math.floor(_h(idx+3)*PATH_TEMPLATES.length)],_h(idx+7)>.5,Math.floor(_h(idx+13)*3)-1);}
+// variant boards (different template / mirror / shift) used only when a generated board collides with another in its zone
+function genPathsV(idx,v){return v?xformPaths(PATH_TEMPLATES[Math.floor(_h(idx+3+v*101)*PATH_TEMPLATES.length)],_h(idx+7+v*57)>.5,Math.floor(_h(idx+13+v*31)*3)-1):genPaths(idx);}
 function genBlocks(idx,paths){const on=new Set();for(const P of paths)for(let i=0;i<P.length-1;i++){let[c,r]=P[i].map(Math.floor);const[bc,br]=P[i+1].map(Math.floor),dc=Math.sign(bc-c),dr=Math.sign(br-r);for(;;){if(c>=0&&c<9&&r>=0&&r<14)on.add(c+','+r);if(c===bc&&r===br)break;c+=dc;r+=dr;}}
  const cand=[];for(let c=0;c<9;c++)for(let r=0;r<14;r++)if(!on.has(c+','+r))cand.push([c,r]);const out=[];for(let i=0;i<3;i++){const k=Math.floor(_h(idx*17+i*29+5)*cand.length);out.push(cand.splice(k,1)[0]);}return out;}
 const INTRO_AT={0:{ant:1},2:{grass:1},6:{wasp:2},12:{cat:1},18:{beetle:1}}; // first bug appearances: NO flyers before the Frog reward (completing L3); first wasps are a trivial trickle in L7
@@ -92,7 +94,28 @@ for(let idx=0;idx<100;idx++){const z=Math.floor(idx/10),inz=idx%10,boss=inz===9,
   cnt:(1+z*.05+inz*.03+(boss?.08:0))*Math.sqrt(lenAdj)*pathAdj*(plen>36?36/plen:1),intro:INTRO_AT[idx]||{},boss:boss?Math.round((7000+idx*120)/hpv):0,paths,block:genBlocks(idx,paths)});}
 // ---- v9.6 Front Yard tutorials: L1 (plant) and L2 (upgrade) are short, forgiving teaching levels ----
 LEVELS[0].tutorial=1;LEVELS[0].waves=3;LEVELS[0].coins=90;LEVELS[0].name='Front Yard 1 · First Planting';
+// v9.8: Level 1 is a tutorial, so it must have exactly ONE entrance and one simple path (the generator had rolled a two-entrance board).
+LEVELS[0].paths=[[[-1,2],[6,2],[6,7],[2,7],[2,11],[5,11],[5,14.7]]];
+LEVELS[0].block=genBlocks(0,LEVELS[0].paths); // blocks re-rolled off the new path
+LEVELS[0].hp=Math.max(.08,LEVELS[0].hp*.8); // slightly weaker ants (tutorial)
 LEVELS[1].tutorial=2;LEVELS[1].waves=3;LEVELS[1].coins=120;LEVELS[1].name='Front Yard 2 · Power Up!';
+// ---- v9.10 distinct boards: no two levels in the same zone share a path signature (fix: 1:4 and 1:5 were identical) ----
+// Runs after the L1 pin above, so the final L1 board is part of the check. Only colliding levels are re-rolled (variant template/mirror/shift, blocks + path-length balance factors recomputed); every other level keeps its v9.9 board.
+function pathSig(P){return JSON.stringify(P);}
+for(let z=0;z<10;z++){const seen=new Set();for(let idx=z*10;idx<z*10+10;idx++){let v=0;
+ while(seen.has(pathSig(LEVELS[idx].paths))&&v<24){v++;LEVELS[idx].paths=genPathsV(idx,v);LEVELS[idx].block=genBlocks(idx,LEVELS[idx].paths);
+  const pl=LEVELS[idx].paths[0].reduce((a,p2,i)=>i?a+Math.abs(p2[0]-LEVELS[idx].paths[0][i-1][0])+Math.abs(p2[1]-LEVELS[idx].paths[0][i-1][1]):0,0),la=Math.min(1.12,Math.max(.72,pl/30)),pa=LEVELS[idx].paths.length===1?1:LEVELS[idx].paths.length===2?.92:.84;
+  LEVELS[idx].plen=Math.round(pl);LEVELS[idx].hp=LEVELS[idx].dens=Math.max(.11,(.34-idx*.0019)*la);
+  LEVELS[idx].cnt=(1+z*.05+LEVELS[idx].inZone*.03+(LEVELS[idx].bossLevel?.08:0))*Math.sqrt(la)*pa*(pl>36?36/pl:1);
+  if(LEVELS[idx].bossLevel)LEVELS[idx].boss=Math.round((7000+idx*120)/LEVELS[idx].hp);}
+ seen.add(pathSig(LEVELS[idx].paths));}}
+// ---- v9.12: Front Yard boss (1:10, index 9) rebalance ONLY ----
+// Playtest (live v9.7): coasting on a wave-7 board won with 1426 coins / 20 hearts. Late waves get
+// hand-authored tight conga lines (see getWave), the Slug King gets real HP, and the kill-reward
+// multiplier for THIS level drops 0.893 -> 0.57 so a full clear cannot bank four figures.
+LEVELS[9].rw=.57;
+LEVELS[9].lateHp=1.15; // x HP on waves 8-10 only (applied in waveHP)
+LEVELS[9].boss=Math.round(12000/LEVELS[9].hp); // effective Slug King HP ~12,000 (was ~8,100)
 let LEVEL=LEVELS[0],LVI=0;
 const RWX=2.5,GROUPGAP=1.6,CONGA=8; // v6: many more bugs in tight conga lines; kill reward x0.3 (fractional carry)
 const BUGCOST={ant:1,grass:1.3,beetle:2.6,wasp:1.5,cat:2.1},BUGIV={ant:.6,grass:.6,beetle:1.1,wasp:.85,cat:1.15};
@@ -104,7 +127,12 @@ function isBossWave(w){const L=LEVEL;if(L.survival)return w%5===0;return L.boss>
 // v6: count-driven wave builder. Total bugs = cnt x (12 + 36P) (P = wave progress 0..1); survival keeps growing.
 // Bugs spawn nearly back to back (BUGIV x .32) in conga lines of ~CONGA, small gaps between lines.
 function getWave(w){const L=LEVEL,li=LVI;
- if(L.tutorial===1)return w===1?[['ant',3,.9]]:w===2?[['ant',5,.9]]:[['ant',7,.9]];
+ // v9.12: 1:10 waves 8-10 are authored tight lines (same .192/.272 spawn intervals as the generator's
+ // conga lines, just many more bugs per line — longer lines, not spaced out). Waves 1-7 unchanged.
+ if(li===9&&w===8)return[['ant',22,.192],['grass',18,.192],['wasp',10,.272],['ant',14,.192]];
+ if(li===9&&w===9)return[['grass',22,.192],['wasp',12,.272],['ant',24,.192],['grass',16,.192]];
+ if(li===9&&w===10)return[['wasp',12,.272],['ant',24,.192],['grass',22,.192],['slug',1,3],['ant',18,.192],['grass',16,.192]];
+ if(L.tutorial===1)return w===1?[['ant',3,1.1]]:w===2?[['ant',4,1.1]]:[['ant',6,1.1]];
  if(L.tutorial===2)return w===1?[['ant',4,.9]]:w===2?[['ant',6,.9]]:[['ant',8,.85]];let s=li*977+w*131+5;const R=()=>(s=(s*16807)%2147483647)/2147483647;const pool=poolAt(li,w);
  const newT=pool.find(t=>LEVELS[li].intro[t]===w);const P=L.survival?(w-1)/9:(w-1)/(L.waves-1);
  let total=Math.round(L.survival?(14+3.2*w):(L.cnt||1)*(12+36*P)*(1+li*.004));const T0=total,groups=[];
@@ -115,7 +143,7 @@ function getWave(w){const L=LEVEL,li=LVI;
  if(isBossWave(w))groups.push(['slug',L.survival?Math.ceil(w/20):1,3]);return groups;}
 let HPSCALE=1.5,BOSSHP=7500; // bug HP = base x levelHP x (1 + HPSCALE x (wave-1)) [x 1.06^(w-12) in survival], rounded to 5
 const waveHP=(type,w)=>{const L=LEVEL;if(type==='slug')return Math.round((L.boss||BOSSHP)*L.hp*(L.survival?(1+.25*(w-5)):1)*(BOSSHP/7500)/50)*50;
- let m=L.hp*(1+HPSCALE*9*(L.survival?(w-1)/9:(w-1)/(L.waves-1)));if(L.survival&&w>12)m*=Math.pow(1.06,w-12);return Math.round(ENEMY[type].hp*m/5)*5;};
+ let m=L.hp*(1+HPSCALE*9*(L.survival?(w-1)/9:(w-1)/(L.waves-1)));if(L.lateHp&&w>=8)m*=L.lateHp;if(L.survival&&w>12)m*=Math.pow(1.06,w-12);return Math.round(ENEMY[type].hp*m/5)*5;};
 const WAVES={get length(){return LEVEL.waves}};
 // ================= helpers =================
 const ease={outBack:t=>{t=Math.min(1,Math.max(0,t));const c=1.70158;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);},outCubic:t=>1-Math.pow(1-Math.min(1,Math.max(0,t)),3),inOut:t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2};
@@ -886,9 +914,13 @@ let PROG={un:1,st:[],best:0,deck:['flytrap'],power:'seed'};try{Object.assign(PRO
 let PENDING=0,MAPY=0,MAPDRAG=null,MAPAUTOF=true,ZONEVIEW=0;
 function unlockedDefs(){return ORDER.filter(k=>(PROG.un||1)>=DEF_UNLOCK[k]);}
 function requiredDeck(){return Math.min(4,unlockedDefs().length);}
-function cleanDeck(){const un=unlockedDefs();let d=[...(PROG.deck||[])].filter((k,i,a)=>un.includes(k)&&a.indexOf(k)===i);for(const k of un)if(d.length<requiredDeck())d.push(k);PROG.deck=d.slice(0,4);return PROG.deck;}
+function cleanDeck(){ // normalize ONLY (v9.9 dedupe kept; v9.10: NO auto-fill, NO carry-over at deck screen): unique, unlocked-only, size <= 4.
+ const un=unlockedDefs();let d=[];
+ for(const k of (PROG.deck||[]))if(un.includes(k)&&!d.includes(k))d.push(k);
+ PROG.deck=d.slice(0,4);return PROG.deck;}
 function cleanPower(){PROG.power=PROG.power==='spr'?'spr':'seed';return PROG.power;}
-function openDeck(i){PENDING=i;loadLevel(i);cleanDeck();cleanPower();saveProg();setScreen('deck');}
+let PICK=null; // v9.10: deck-select state for THIS level only — always starts empty, never saved/carried until Start
+function openDeck(i){PENDING=i;loadLevel(i);PICK={deck:[],power:null};setScreen('deck');}
 function curZone(){return Math.min(9,Math.floor((Math.min(100,Math.max(1,PROG.un||1))-1)/10));}
 function zoneStats(z){const sts=PROG.st.slice(z*10,z*10+10);return{sts,avg:sts.reduce((a,b)=>a+(b||0),0)/10,cleared:sts.filter(Boolean).length,lock:(z*10+1)>(PROG.un||1),cur:z===curZone()};}
 function openZone(z){ZONEVIEW=Math.max(0,Math.min(9,z));loadLevel(ZONEVIEW*10);setScreen('zone');}
@@ -985,7 +1017,7 @@ function update(dt){G.t+=dt;puUpdate(dt);
  if(G.lives<=0){G.lives=0;setScreen(LEVEL.survival?'over':'lose');}
  else if(G.inWave&&!G.spawnQ.length&&!G.enemies.length){G.inWave=false;const b=20+4*G.wave;G.coins+=b;if(G.wave%PU.every===0)for(const k in G.pu){if(G.pu[k].ch<PU.max){G.pu[k].ch++;floatTxt(W/2,OY+8*T,'+1 power-up charge','#8ae0ff');}}floatTxt(W/2,OY+7*T,'Wave clear!  +'+b,'#ffe680');if(LEVEL.survival&&G.wave>PROG.best){PROG.best=G.wave;G.newBest=true;saveProg();}if(G.wave>=LEVEL.waves)setScreen('win');else G.countdown=CD;}}
 function setScreen(s){screen=s;uiT=0;if(s==='levels')MAPAUTOF=true;if(s==='win')sfx('win',0);if(s==='lose'||s==='over')sfx('lose',0);if(s==='win'||s==='lose'||s==='over'){G.sel=G.build=null;}
- if(s==='win'){const st=G.lives>=17?3:G.lives>=10?2:1;G.stars=st;PROG.st[LVI]=Math.max(PROG.st[LVI]||0,st);const before=PROG.un||1;PROG.un=Math.max(PROG.un,LVI+2);G.newUnlocks=before<PROG.un?ORDER.filter(k=>DEF_UNLOCK[k]>before&&DEF_UNLOCK[k]<=PROG.un):[];saveProg();}}
+ if(s==='win'){const st=G.lives>=17?3:G.lives>=10?2:1;G.stars=st;PROG.st[LVI]=Math.max(PROG.st[LVI]||0,st);const before=PROG.un||1;PROG.un=Math.max(PROG.un,LVI+2);G.newUnlocks=before<PROG.un?ORDER.filter(k=>DEF_UNLOCK[k]>before&&DEF_UNLOCK[k]<=PROG.un):[];cleanDeck();saveProg();}}
 // ================= rendering =================
 let ui=[];
 function hit(x,y,w,h,fn){ui.push({x,y,w,h,fn});}
@@ -1231,6 +1263,10 @@ function sheetY(row,h){const top=row>=9;const e=ease.outBack(Math.min(1,G.panelT
 function tagsOf(d,lv){const t=[d.airAt?(lv>=d.airAt?['Ground + Air head','#2a8ab8']:['Ground (Air head Lv3)','#9a6a3a']):d.ground?['Ground only','#9a6a3a']:d.air?['Air only','#3a8ad8']:['Hits both','#3aa06a']];if(d.pierce)t.push(['Ignores armor','#7a5ad8']);if(d.chain)t.push(['Chains '+d.chain,'#7a5ad8']);if(d.slow)t.push(['Slows bugs','#5a7ad8']);if(d.stall)t.push(['Slows + pokes','#b07a3c']);if(d.reveal)t.push(['Reveals hidden','#c89a10']);if(d.airPref)t.push(['Air first','#3a8ad8']);return t;}
 function tagW(d,lv){X.font=`800 11px ${FONT}`;return tagsOf(d,lv).reduce((a,[s])=>a+X.measureText(s).width+18,0)-6;}
 function tagPill(x,y,d,sz=11,lv=1){X.font=`800 ${sz}px ${FONT}`;for(const[s,c]of tagsOf(d,lv)){const w=X.measureText(s).width+12;rr(x,y,w,sz+6,(sz+6)/2);X.fillStyle=c;X.fill();txt(s,x+w/2,y+(sz+6)/2+.5,sz,'#fff','center',null,800);x+=w+6;}}
+// v9.11: speed is displayed ONLY as time per attack (seconds between attacks = rate = 1/spd in the data).
+// Lower = faster, and the number goes DOWN on upgrade. Never show a per-second rate in the UI.
+function rateVerb(k){return k==='hedgehog'?'pokes':k==='spider'?'webs':k==='firefly'?'glows':k==='dandelion'?'puffs':'hits';}
+function rateEvery(k,sp){return rateVerb(k)+' every '+(1/sp).toFixed(1)+'s';}
 function drawBuildMenu(){const b=G.build,h=262,y=sheetY(b.r,h);panel(10,y,W-20,h);hit(10,y,W-20,h,()=>{});
  const isD=b.preview==='dragon';txt(b.preview?(b.valid===false?'Dragon needs 2x2 free grass':'Tap '+TOWERS[b.preview].name+' again to plant'):'Plant a defense',isD?150:W/2,y+24,isD?15:18,b.valid===false?'#d03a2a':'#6b4423','center',null);
  if(isD&&b.valid!==false)button(274,y+8,86,34,'\u21BB Turn','#ffc14a','#e8841a',()=>{b.dir=(b.dir+1)%4;},15);
@@ -1243,8 +1279,8 @@ function drawBuildMenu(){const b=G.build,h=262,y=sheetY(b.r,h);panel(10,y,W-20,h
   if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},x+cw/2,Y+50,.58,true);else if(k==='mantis'){ctx.save();ctx.translate(x+cw/2,Y+52);ctx.scale(.74,.74);drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},0,0,true);ctx.restore();}else drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},x+cw/2,Y+44+(k==='flytrap'?8:0),true);ctx.restore();ctx.restore();
   txt(d.name,x+cw/2,Y+88,13,'#3b2a14','center',null);
   rr(x+8,Y+98,cw-16,22,11);ctx.fillStyle=can?'#5a3a1a':'#a89a88';ctx.fill();spr(S.coin,x+20,Y+109,.6);txt(''+d.cost,x+cw/2+7,Y+110,14,can?'#ffe680':'#eee','center',null);
-  txt('\u2694 '+d.dmg[0],x+cw/2,Y+134,13,'#5a3a1a','center',null,800);txt(d.spd[0]+'/s',x+cw/2,Y+150,12,'#7a6a55','center',null,800);
-  txt(d.dir?'2 ahead':'Range '+d.range,x+cw/2,Y+165,11,'#7a6a55','center',null,700);
+  txt('\u2694 '+d.dmg[0]+' \u00B7 '+(d.dir?'2 ahead':'Rng '+d.range),x+cw/2,Y+132,11.5,'#5a3a1a','center',null,800);
+  txt(rateEvery(k,d.spd[0]),x+cw/2,Y+152,11,'#5a4a35','center',null,800);
   {const tg=tagsOf(d);const pillTxt=d.stall?'Slows + pokes':d.reveal?'Reveals hidden':tg.length>1?tg[1][0]:tg[0][0]==='Ground only'?'Ground':tg[0][0]==='Air only'?'Air only':tg[0][0].startsWith('Ground (')?'Gnd/Air Lv3':'Air+Gnd';const pillCol=d.stall?'#b07a3c':tg.length>1?tg[1][1]:tg[0][1];rr(x+6,Y+174,cw-12,16,8);ctx.fillStyle=pillCol;ctx.fill();txt(pillTxt.length>13&&cw<120?pillTxt.slice(0,13):pillTxt,x+cw/2,Y+182.5,10,'#fff','center',null,800);}});}
 function pickBuild(k){if(G.tut&&!G.tut.skipped&&!G.tut.done&&k!=='flytrap'){G.toast={t:uiT,s:'Plant a Flytrap for now!'};return;}const b=G.build;if(b.preview===k&&b.valid!==false){placeTower(k,b.ac,b.ar,b.dir);G.build=null;return;}
  b.preview=k;if(k==='dragon'){const a=dragonAnchor(b.c,b.r);if(a){b.ac=a[0];b.ar=a[1];b.valid=true;b.dir=bestDir(a[0],a[1]);}else{b.ac=b.c;b.ar=b.r;b.valid=false;b.dir=0;}}else{b.ac=b.c;b.ar=b.r;b.valid=true;b.dir=0;}}
@@ -1255,8 +1291,9 @@ function drawTowerMenu(){const t=G.sel,d=TOWERS[t.type],h=224,y=sheetY(t.r,h);pa
  txt(d.name,136,y+30,22,'#3b2a14','left',null);for(let i=0;i<3;i++){ctx.globalAlpha=i<t.lvl?1:.25;spr(S.star,146+i*22,y+56,1);}ctx.globalAlpha=1;txt('Lv '+t.lvl+'/3',214,y+57,14,'#8a6a40','left',null);
  const L=t.lvl-1,n=Math.min(2,L+1),mx=t.lvl<3;const arrow=(a,b)=>mx?a+' \u2192 '+b:''+a;
  txt('Damage  '+arrow(d.dmg[L],d.dmg[n])+(d.cleave?'  ×4 bite':d.stall?'  prickle ×'+d.cap[L]:d.reveal?'  glow shot':''),136,y+80,14,'#5a4a35','left',null,700);
- txt('Speed  '+arrow(d.spd[L],d.spd[n])+'/s',136,y+99,14,'#5a4a35','left',null,700);
- tagPill(136,y+110,d,11,t.lvl);txt(d.dir?'2 ahead':'Rng '+d.range,136+tagW(d,t.lvl)+10,y+119,12,'#8a7a65','left',null,700);
+ txt('Speed: '+rateEvery(t.type,d.spd[L])+(mx?' \u2192 '+(1/d.spd[n]).toFixed(1)+'s':''),136,y+97,13,'#5a4a35','left',null,800);
+ txt('(lower = faster)',136,y+112,10.5,'#8a7a65','left',null,700);
+ tagPill(136,y+120,d,11,t.lvl);txt(d.dir?'2 ahead':'Rng '+d.range,136+tagW(d,t.lvl)+10,y+129,12,'#8a7a65','left',null,700);
  {const role=d.role||'';ctx.save();ctx.font='700 10.5px '+FONT;let l1=role,l2='';if(ctx.measureText(role).width>368){let cut=role.lastIndexOf(' ',Math.floor(role.length*.55));l1=role.slice(0,cut);l2=role.slice(cut+1);}txt(l1,136,y+140,10.5,'#6b5a45','left',null,700);if(l2)txt(l2,136,y+152,10.5,'#6b5a45','left',null,700);ctx.restore();}
  if(mx){const c=upCost(t.type,t.lvl);button(22,y+164,226,50,'\u2B06 Upgrade  '+c+(d.airAt===t.lvl+1?'  +Air head!':''),'#6fd65a','#2f9a3a',()=>upgrade(t),18,G.coins<c);}else{rr(22,y+164,226,50,18);ctx.fillStyle=lg(0,y+164,0,y+214,['#fff3a0','#f2b81a']);ctx.fill();txt('\u2605 MAX LEVEL \u2605',135,y+190,18,'#fff','center','#a8700a');}
  button(258,y+164,130,50,'Sell +'+Math.floor(t.spent*.7),'#ff8a6a','#d8442a',()=>sell(t),17);}
@@ -1275,7 +1312,7 @@ function drawTitle(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);titleT+=1/60;
  hit(30,150,352,200,()=>{G.devTaps=(G.devTaps||0)+1;if(G.devTaps>=5){PROG.un=LEVELS.length;saveProg();G.devTaps=0;G.toast={t:uiT,s:'Dev: all levels unlocked'};sfx('upgrade',0);}});
  button(W/2-120,660,240,74,'\u25B6  PLAY','#6fd65a','#2f9a3a',()=>setScreen('levels'),30,false,1+.04*Math.sin(titleT*4));
  if(G.toast&&uiT-G.toast.t<2.2){rr(W/2-150,590,300,44,22);ctx.fillStyle='rgba(30,15,0,.75)';ctx.fill();txt(G.toast.s,W/2,612,16,'#ffe680','center',null);}
- txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v9.7',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
+ txt('Tap the grass to plant defenses',W/2,770,15,'#fff','center','rgba(0,0,0,.5)',700);txt('mockup v9.12',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
 function drawPause(){ctx.fillStyle='rgba(15,30,5,.55)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.3));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);
  panel(56,260,W-112,380);X=ctx;txt('Paused',W/2,308,34,'#6b4423','center','#fff');
  button(96,344,W-192,58,'\u25B6 Resume','#6fd65a','#2f9a3a',()=>setScreen('play'),21);button(96,414,W-192,52,'\u21BB Restart','#ffc14a','#e8841a',()=>{newGame();setScreen('play');},19);
@@ -1470,16 +1507,17 @@ function drawZoneMap(){X=ctx;const z=ZONEVIEW,zone=ZONES[z],st=zoneStats(z);
  button(14,848,128,54,'← Backyard','#8ab0d8','#4a74a8',()=>setScreen('levels'),17);
  button(154,848,244,54,st.cleared===10?'↻ Replay Boss · L'+(z*10+10):'▶ Play Level '+(nextIdx+1),'#6fd65a','#2f9a3a',()=>openDeck(nextIdx),19);}
 function drawDeck(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);ctx.fillStyle='rgba(20,40,10,.62)';ctx.fillRect(0,0,W,H);
- const L=LEVELS[PENDING],un=unlockedDefs(),deck=PROG.deck||[],req=requiredDeck();
+ const L=LEVELS[PENDING],un=unlockedDefs();if(!PICK)PICK={deck:[],power:null};const deck=PICK.deck;
  txt('Pick Your Deck',W/2,40,30,'#fff','center','#2a4a10');
  txt('Level '+L.num+' · '+L.name+(L.bossLevel?' · BOSS':''),W/2,68,16,'#ffe680','center','#4a2e12');
- txt('Bring '+req+' defense'+(req>1?'s':'')+' + 1 power-up',W/2,90,13,'#fff','center',null,700);
+ txt('Pick up to 4 defenses + 1 power-up',W/2,90,13,'#fff','center',null,700);
  // slots
  for(let i=0;i<4;i++){const x=28+i*92,y=106;rr(x,y,84,54,14);ctx.fillStyle=deck[i]?'#fffaf0':'rgba(255,255,255,.22)';ctx.fill();ctx.strokeStyle=deck[i]?TOWERS[deck[i]].col:'#fff';ctx.lineWidth=deck[i]?3:2;if(!deck[i]){ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);}else ctx.stroke();
-  txt(deck[i]?TOWERS[deck[i]].name:'Slot '+(i+1),x+42,y+27,deck[i]?(TOWERS[deck[i]].name.length>14?9.5:TOWERS[deck[i]].name.length>12?10.5:13):12,deck[i]?'#3b2a14':'#fff','center',null,800);}
+  if(deck[i]){ctx.save();ctx.beginPath();ctx.roundRect(x+2,y+2,80,50,12);ctx.clip();ctx.translate(x+17,y+40);ctx.scale(.34,.34);drawTower({type:deck[i],lvl:1,anim:0,ph:uiT+i,blink:1,face:1,dir:3,born:-9,upT:-9},0,0,true);ctx.restore();}
+  txt(deck[i]?TOWERS[deck[i]].name:'Slot '+(i+1),deck[i]?x+53:x+42,y+27,deck[i]?(TOWERS[deck[i]].name.length>11?8.5:10.5):12,deck[i]?'#3b2a14':'#fff','center',null,800);}
  // defense cards (unlock order)
  ORDER.forEach((k,i)=>{const d=TOWERS[k],col=i%4,row=Math.floor(i/4),x=14+col*98,y=168+row*138,cw=90,ch=128,lockD=!un.includes(k),sel=deck.includes(k),isNew=!lockD&&DEF_UNLOCK[k]===(PENDING+1);
-  hit(x,y,cw,ch,lockD?()=>sfx('click',0):()=>{const j=deck.indexOf(k);if(j>=0)deck.splice(j,1);else if(deck.length<4)deck.push(k);else {G.toast={t:uiT,s:'Deck full — tap a picked card to remove it'};}PROG.deck=deck;saveProg();sfx('click',0);});
+  hit(x,y,cw,ch,lockD?()=>sfx('click',0):()=>{const j=deck.indexOf(k);if(j>=0)deck.splice(j,1);else if(deck.length<4)deck.push(k);else {G.toast={t:uiT,s:'Deck full — tap a picked card to remove it'};}sfx('click',0);});
   rr(x,y+3,cw,ch,14);ctx.fillStyle='rgba(0,0,0,.2)';ctx.fill();rr(x,y,cw,ch,14);ctx.fillStyle=lockD?'#b8b2a4':sel?'#fff3b0':'#fffaf0';ctx.fill();ctx.strokeStyle=sel?d.col:'#c8bca8';ctx.lineWidth=sel?4:2;ctx.stroke();
   // icon box: draw in local coords with the sprite base at the box bottom — full art visible, consistent size
   const ISC={flytrap:.55,mantis:.66,frog:.68,gnome:.58,zapper:.52,spider:.66,dragon:.58,dandelion:.62,hedgehog:.64,firefly:.6}[k]||.6;
@@ -1488,18 +1526,18 @@ function drawDeck(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);ctx.fillStyle='rgba(20,40,
   if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},0,-4,1,true);else drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},0,-12,true);
   ctx.restore();
   txt(lockD?'🔒':isNew?'✦ NEW!':sel?'✓ IN DECK':'',x+cw/2,y+80,(sel||isNew)?11:14,isNew?'#c87f10':sel?'#2f7a24':'#6b5a45','center',null,900);
-  txt(d.name,x+cw/2,y+96,11,'#3b2a14','center',null,800);txt('🪙'+d.cost+' · '+(d.dir?'2 ahead':'Rng '+d.range),x+cw/2,y+110,9.5,'#7a6a55','center',null,700);
+  txt(d.name,x+cw/2,y+96,11,'#3b2a14','center',null,800);txt('🪙'+d.cost+' · '+rateEvery(k,d.spd[0]),x+cw/2,y+110,8.5,'#7a6a55','center',null,700);
   txt(lockD?'Unlocks L'+DEF_UNLOCK[k]:d.tag,x+cw/2,y+122,8,lockD?'#8a2018':'#8a7a65','center',null,700);});
  // exactly ONE power-up
- const py=168+Math.ceil(ORDER.length/4)*138+4;txt('Power-up — pick exactly 1',W/2,py+6,15,'#fff','center','#2a4a10');
- [['seed','Bird Seed','Birds peck bugs in an area'],['spr','Sprinkler','Slows every bug on screen']].forEach(([k,nm,ds],i)=>{const x=14+i*196,y=py+18,cw=188,ch=74,sel=PROG.power===k;
-  hit(x,y,cw,ch,()=>{PROG.power=k;saveProg();sfx('click',0);});
+ const py=168+Math.ceil(ORDER.length/4)*138+4;txt('Power-up — pick 1',W/2,py+6,15,'#fff','center','#2a4a10');
+ [['seed','Bird Seed','Birds peck bugs in an area'],['spr','Sprinkler','Slows every bug on screen']].forEach(([k,nm,ds],i)=>{const x=14+i*196,y=py+18,cw=188,ch=74,sel=PICK.power===k;
+  hit(x,y,cw,ch,()=>{PICK.power=k;sfx('click',0);});
   rr(x,y,cw,ch,16);ctx.fillStyle=sel?'#fff3b0':'#fffaf0';ctx.fill();ctx.strokeStyle=sel?'#e8a020':'#c8bca8';ctx.lineWidth=sel?4:2;ctx.stroke();
   txt((sel?'✓ ':'')+nm,x+cw/2,y+24,17,'#3b2a14','center',null);txt(ds,x+cw/2,y+48,10.5,'#7a6a55','center',null,700);});
  if(G.toast&&uiT-G.toast.t<2.4){rr(W/2-165,py-38,330,30,15);ctx.fillStyle='rgba(30,15,0,.8)';ctx.fill();txt(G.toast.s,W/2,py-22,12,'#ffe680','center',null,700);}
- const ok=deck.length===req;
+ const ok=deck.length>=1&&!!PICK.power;
  button(14,806,120,58,'← Area','#8ab0d8','#4a74a8',()=>openZone(Math.floor(PENDING/10)),18);
- button(148,806,250,58,ok?'▶ Start Level '+L.num:'Pick '+req+' defenses','#6fd65a','#2f9a3a',()=>{PROG.deck=[...deck];cleanPower();saveProg();newGame(PENDING);setScreen('play');},20,!ok);}
+ button(148,806,250,58,ok?'▶ Start Level '+L.num:deck.length<1?'Pick at least 1 defense':'Pick 1 power-up','#6fd65a','#2f9a3a',()=>{PROG.deck=[...deck];cleanDeck();PROG.power=PICK.power;saveProg();newGame(PENDING);setScreen('play');},deck.length<1?16:20,!ok);}
 function drawOver(){ctx.fillStyle='rgba(15,10,30,.6)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.4));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);panel(36,250,W-72,380,'#8a2a3a');X=ctx;
  txt('Overrun!',W/2,300,34,'#c8442a','center','#fff');const sv=Math.max(0,G.wave-1);txt('Waves survived',W/2,350,16,'#8a7a65','center',null,800);txt(''+sv,W/2,396,54,'#ffb020','center','#7a3a08');
  txt(G.newBest?'\u2605 New best! \u2605':'Best: '+PROG.best,W/2,446,18,G.newBest?'#3f9a3a':'#6b5a45','center',null);txt('Bugs squashed: '+G.stats.kills,W/2,474,15,'#8a7a65','center',null,700);
@@ -1576,5 +1614,5 @@ addEventListener('resize',resize);
 let last=0;const MANUAL=/manual/.test(location.search);
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;step(dt);render();requestAnimationFrame(loop);}
 resize();if(!MANUAL)requestAnimationFrame(loop);else render();
-window.GAME={get G(){return G},puUse,puThrow,PU,upCost,LEVELS,ZONES,DEF_UNLOCK,unlockedDefs,requiredDeck,cleanDeck,openDeck,openZone,zoneStats,zoneDotPos,zoneSpotPos,loadLevel,getWave,poolAt,isBossWave,get PATHS(){return PATHS},get LVI(){return LVI},get PROG(){return PROG},get screen(){return screen},get PENDING(){return PENDING},get MAPY(){return MAPY},get ZONEVIEW(){return ZONEVIEW},setMAPY:v=>{MAPY=v;clampMAP();},setScreen,step,render,tap,placeTower,upgrade,startWave,newGame,skipTut,tutUpdate,TOWERS,ENEMY,WAVES,isPath,grass,canPlace,rangeCells,bestDir,occupied,waveHP,setHP:v=>HPSCALE=v,setBoss:v=>BOSSHP=v};
+window.GAME={get G(){return G},puUse,puThrow,PU,upCost,LEVELS,ZONES,DEF_UNLOCK,unlockedDefs,requiredDeck,cleanDeck,openDeck,openZone,zoneStats,zoneDotPos,zoneSpotPos,loadLevel,getWave,poolAt,isBossWave,get PATHS(){return PATHS},get LVI(){return LVI},get PROG(){return PROG},get PICK(){return PICK},get screen(){return screen},get PENDING(){return PENDING},get MAPY(){return MAPY},get ZONEVIEW(){return ZONEVIEW},setMAPY:v=>{MAPY=v;clampMAP();},setScreen,step,render,tap,placeTower,upgrade,startWave,newGame,skipTut,tutUpdate,TOWERS,ENEMY,WAVES,isPath,grass,canPlace,rangeCells,bestDir,occupied,waveHP,setHP:v=>HPSCALE=v,setBoss:v=>BOSSHP=v};
 </script></body></html>
