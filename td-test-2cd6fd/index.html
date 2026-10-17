@@ -39,7 +39,15 @@ const TOWERS={
  dragon:{name:'Dragon',cost:275,up:[.5,.8],range:2,dir:true,size:2,ground:true,atk:'bite',atkName:'Bite',atkShort:'Bite · soft ✓, shell ✗',atkLine:'Big Bite — great on soft bugs, weak on shells',dmg:[120,200,300],spd:[1,1.2,1.5],cleave:4,col:'#e89a3c',tag:'Ground only',role:'Big bite on 4 bugs, 2 squares ahead — weak on shells'},
  dandelion:{name:'Dandelion',cost:35,range:2,airPref:true,atk:'puff',atkName:'Puff',atkShort:'Puff · flyers ✓, shell ✗',atkLine:'Puff — best on flyers, weak on shells',dmg:[8,13,20],spd:[2,2.4,2.8],col:'#e8c832',tag:'Hits flyers · fast',role:'Puff — cheap fast seeds, best on flyers, weak on shells'},
  hedgehog:{name:'Hedgehog Hideout',cost:95,range:2,ground:true,stall:true,atk:'prickle',atkName:'Prickle',atkShort:'Prickle · soft ✓, shell ✗',atkLine:'Prickle — pokes soft bugs, weak on shells',cap:[2,3,4],stallF:[.5,.42,.35],dmg:[7,12,20],spd:[.6,.8,1],col:'#b07a3c',tag:'Slows + pokes bugs',role:'Prickle — bugs get stuck on his spines: crawl slower and get poked (weak on shells).'},
- firefly:{name:'Firefly Lantern',cost:90,range:3,reveal:true,atk:'glow',atkName:'Glow',atkShort:'Glow · lights bugs up',atkLine:'Glow — lights bugs up for everyone',lit:[.15,.2,.25],buff:[.08,.12,.16],dmg:[4,7,11],spd:[.6,.8,1],col:'#ffd23f',tag:'Reveals hidden bugs',role:'Glow lights bugs in r3: revealed, +15/20/25% damage taken; towers within 2 squares attack 8/12/16% faster'}};
+ firefly:{name:'Firefly Lantern',cost:90,range:3,reveal:true,atk:'glow',atkName:'Glow',atkShort:'Glow · lights bugs up',atkLine:'Glow — lights bugs up for everyone',lit:[.15,.2,.25],buff:[.08,.12,.16],dmg:[4,7,11],spd:[.6,.8,1],col:'#ffd23f',tag:'Reveals hidden bugs',role:'Glow lights bugs in r3: revealed, +15/20/25% damage taken; towers within 2 squares attack 8/12/16% faster'},
+ // ===== v9.20 MOCK new defenses (local test build only) =====
+ bat:{name:'Bat House',cost:90,range:2,air:true,pulseReveal:true,atk:'screech',atkName:'Screech',atkShort:'Screech · flyers ✓',atkLine:'Screech — echolocation, best on flyers',pulseDur:[1.6,2,2.4],pulseCd:[3,2.7,2.4],pulseLit:[.1,.12,.15],dmg:[10,16,24],spd:[.7,.9,1.1],col:'#6a5ad8',tag:'Reveals hidden · flyers',role:'Echolocation pulses reveal hidden bugs; screeches flyers'},
+ horseradish:{name:'Horseradish Mortar',cost:120,range:3,ground:true,manual:true,boardAim:true,mortarReload:[5,4.5,4],atk:'blunt',atkName:'Blunt',atkShort:'Blunt · tap to fire splash',atkLine:'Blunt — cracks shells (lobbed splash, you tap to fire)',splash:1,splashPct:.7,dmg:[60,96,150],spd:[.2,.2222,.25],col:'#e8e0c8',tag:'Tap to fire · splash',role:'You tap to fire: tap a READY Mortar, then tap where to lob. Reload 5.0/4.5/4.0s'},
+ monarch:{name:'Monarch Beacon',cost:70,range:2,noFire:true,auraBuff:true,atk:'glow',atkName:'Pollen',atkShort:'Pollen · speeds friends',atkLine:'Pollen — no damage, speeds nearby defenses',auraR:[2,2,3],buffSpd:[.12,.18,.25],dmg:[0,0,0],spd:[1,1,1],col:'#ff8a2a',tag:'Speed aura · no damage',role:'No damage. Nearby defenses attack 12/18/25% faster'},
+ compost:{name:'Compost Bin',cost:75,range:2,noFire:true,eco:true,atk:'glow',atkName:'Compost',atkShort:'Compost · bonus coins',atkLine:'Compost — bugs popped nearby drop bonus coins',ecoPct:[.3,.4,.5],dmg:[0,0,0],spd:[1,1,1],col:'#7a9a3a',tag:'Bonus coins · no damage',role:'No damage. Bugs popped in range drop +30/40/50% coins'},
+ sundew:{name:'Sundew',cost:80,range:1,ground:true,hold:true,atk:'web',atkName:'Sticky',atkShort:'Sticky · holds one bug',atkLine:'Sticky — holds one ground bug in place',holdDur:[1.2,1.8,2.5],dmg:[2,3,5],spd:[.35,.42,.5],col:'#e84a6a',tag:'Holds bugs · ground',role:'Sticky trap: holds one ground bug still so friends can hit it'},
+ sunflower:{name:'Sunflower Bank',cost:100,range:1,noFire:true,bank:true,atk:'glow',atkName:'Bank',atkShort:'Bank · interest coins',atkLine:'Bank — earns interest on unspent coins',intRate:[.04,.06,.08],intCap:[30,50,80],dmg:[0,0,0],spd:[1,1,1],col:'#ffc61a',tag:'Interest · no damage',role:'No damage. Earns interest on unspent coins each wave'},
+ owl:{name:'Owl Box',cost:180,range:4,air:true,reveal:true,atk:'bite',atkName:'Talon',atkShort:'Talon · flyers ✓ big reveal',atkLine:'Talon — swoops flyers, huge night reveal',lit:[.05,.08,.1],buff:[0,0,0],dmg:[28,44,68],spd:[.55,.7,.85],col:'#8a5a2a',tag:'Big reveal · flyers only',role:'Huge reveal radius. Swoops flyers hard; no ground damage'}};
 for(const k in TOWERS)TOWERS[k].rate=TOWERS[k].spd.map(v=>1/v);
 // ==== v9.17 ATTACK TYPES vs BUG BODY TYPES (ONE damage model, see DESIGN.md) ====
 // Bug body: ENEMY[].body 'soft'|'shell', plus flags fly:true (Flying) and long:true (Long, secondary).
@@ -60,15 +68,16 @@ const TYPE_MULT={
  web:{soft:1,shell:1,fly:1,long:1},
  prickle:{soft:1,shell:.5,fly:1,long:1},
  glow:{soft:1,shell:1,fly:1,long:1},
+ screech:{soft:1,shell:.75,fly:1.25,long:1},
  neutral:{soft:1,shell:1,fly:1,long:1}};
-const ATK_OF={flytrap:'bite',dragon:'bite',gnome:'blunt',frog:'tongue',mantis:'cut',zapper:'lightning',dandelion:'puff',spider:'web',hedgehog:'prickle',firefly:'glow',birds:'neutral'};
+const ATK_OF={flytrap:'bite',dragon:'bite',gnome:'blunt',frog:'tongue',mantis:'cut',zapper:'lightning',dandelion:'puff',spider:'web',hedgehog:'prickle',firefly:'glow',birds:'neutral',bat:'screech',owl:'bite',horseradish:'blunt',monarch:'glow',compost:'glow',sundew:'web',sunflower:'glow'};
 function typeCat(e){const d=ENEMY[e&&e.type]||{};const fly=e&&e.fly!=null?!!e.fly:!!d.fly;if(fly)return'fly';const body=(e&&e.body)||d.body||'soft';return body==='shell'?'shell':'soft';}
 function typeMult(src,e){const atk=ATK_OF[src]||'neutral',t=TYPE_MULT[atk]||TYPE_MULT.neutral;const d=ENEMY[e&&e.type]||{};const lng=e&&e.long!=null?!!e.long:!!d.long;if(lng&&atk==='cut')return t.long;return t[typeCat(e)]??1;}
-const ORDER=['flytrap','frog','gnome','mantis','dandelion','hedgehog','zapper','spider','firefly','dragon']; // unlock order; deck is chosen from this pool
+const ORDER=['flytrap','frog','gnome','mantis','dandelion','hedgehog','horseradish','zapper','monarch','compost','spider','sundew','sunflower','bat','firefly','owl','dragon']; // unlock order; deck is chosen from this pool (v9.20 MOCK: new defenses interleaved by unlock level)
 // DEF_UNLOCK[k] = first level the defense can be played in. It becomes available when PROG.un reaches it,
 // i.e. Frog (4) is earned by completing Level 3 (1:3), Gnome (6) at Level 6 (1:6), Mantis (9) at Level 9 (1:9).
-const DEF_UNLOCK={flytrap:1,frog:4,gnome:6,mantis:9,dandelion:13,hedgehog:17,zapper:31,spider:46,firefly:82,dragon:86};
-const DEF_EARN={flytrap:'Available from the start',frog:'Earned by completing Level 3 (1:3)',gnome:'Earned at Level 6 (1:6)',mantis:'Earned at Level 9 (1:9)',dandelion:'Earned at Level 13 (2:3)',hedgehog:'Earned at Level 17 (2:7)',zapper:'Earned at Level 31 (4:1)',spider:'Earned at Level 46 (5:6)',firefly:'Earned by completing Level 81 (9:1)',dragon:'Earned at Level 86 (9:6)'};
+const DEF_UNLOCK={flytrap:1,frog:4,gnome:6,mantis:9,dandelion:13,hedgehog:17,horseradish:24,zapper:31,monarch:36,compost:44,spider:46,sundew:54,sunflower:64,bat:74,firefly:82,owl:85,dragon:86}; // v9.20 MOCK unlocks spread zones 3-9; dev unlock-all (PROG.un=100) unlocks all
+const DEF_EARN={flytrap:'Available from the start',frog:'Earned by completing Level 3 (1:3)',gnome:'Earned at Level 6 (1:6)',mantis:'Earned at Level 9 (1:9)',dandelion:'Earned at Level 13 (2:3)',hedgehog:'Earned at Level 17 (2:7)',horseradish:'Earned at Level 24 (3:4) · MOCK',zapper:'Earned at Level 31 (4:1)',monarch:'Earned at Level 36 (4:6) · MOCK',compost:'Earned at Level 44 (5:4) · MOCK',spider:'Earned at Level 46 (5:6)',sundew:'Earned at Level 54 (6:4) · MOCK',sunflower:'Earned at Level 64 (7:4) · MOCK',bat:'Earned at Level 74 (8:4) · MOCK',firefly:'Earned by completing Level 81 (9:1)',owl:'Earned at Level 85 (9:5) · MOCK',dragon:'Earned at Level 86 (9:6)'};
 const upCost=(t,l)=>{const u=TOWERS[t].up||[.8,1.3];return Math.round(TOWERS[t].cost*(l===1?u[0]:u[1]));};
 // v9.17 body classification (data, not scattered ifs): body soft|shell; fly = Flying (also soft for Bite); long = Long (secondary, soft except vs Cut)
 //  ant/grass/cat/earthworm/slug = Soft ground (default squishy) | beetle/roach = Shelled (hard shell/roach wing-cases) | mosquito/flyant/wasp/noseeum/hornet = Soft+Flying
@@ -81,6 +90,9 @@ const ENEMY={
  flyant:{hp:45,spd:1.35,rew:5,armor:0,r:9,fly:true,body:'soft',name:'Flying Ant'},
  wasp:{hp:60,spd:1.5,rew:7,armor:0,r:10,fly:true,body:'soft',name:'Wasp'},
  cat:{hp:100,spd:.9,rew:5,armor:0,r:12,body:'soft',long:true,name:'Caterpillar'},
+ snail:{hp:220,spd:.55,rew:10,armor:22,r:14,body:'shell',name:'Snail'},
+ centipede:{hp:140,spd:1.05,rew:8,armor:0,r:12,body:'soft',long:true,name:'Centipede'},
+ stinkbug:{hp:150,spd:.85,rew:9,armor:18,r:12,body:'shell',name:'Stink Bug'},
  noseeum:{hp:30,spd:1.45,rew:3,armor:0,r:6,fly:true,dark:true,body:'soft',name:'No-see-um'},
  earthworm:{hp:85,spd:.95,rew:6,armor:0,r:11,dark:true,body:'soft',long:true,name:'Earthworm'},
  slug:{hp:7500,spd:.5,rew:150,armor:0,r:26,lives:10,boss:true,body:'soft',name:'Slug King'},
@@ -117,7 +129,7 @@ function genPaths(idx){return xformPaths(PATH_TEMPLATES[Math.floor(_h(idx+3)*PAT
 function genPathsV(idx,v){return v?xformPaths(PATH_TEMPLATES[Math.floor(_h(idx+3+v*101)*PATH_TEMPLATES.length)],_h(idx+7+v*57)>.5,Math.floor(_h(idx+13+v*31)*3)-1):genPaths(idx);}
 function genBlocks(idx,paths){const on=new Set();for(const P of paths)for(let i=0;i<P.length-1;i++){let[c,r]=P[i].map(Math.floor);const[bc,br]=P[i+1].map(Math.floor),dc=Math.sign(bc-c),dr=Math.sign(br-r);for(;;){if(c>=0&&c<9&&r>=0&&r<14)on.add(c+','+r);if(c===bc&&r===br)break;c+=dc;r+=dr;}}
  const cand=[];for(let c=0;c<9;c++)for(let r=0;r<14;r++)if(!on.has(c+','+r))cand.push([c,r]);const out=[];for(let i=0;i<3;i++){const k=Math.floor(_h(idx*17+i*29+5)*cand.length);out.push(cand.splice(k,1)[0]);}return out;}
-const INTRO_AT={0:{ant:1},2:{grass:1},3:{mosquito:3},6:{wasp:2},12:{cat:1},18:{beetle:1},24:{flyant:3},82:{noseeum:2},84:{earthworm:3}}; // v9.14: hidden bugs ONLY in Moonlit Hedge (zone 9) and only after Firefly is playable (L82, earned completing 9:1=L81): noseeum first L83 (9:3) w2, earthworm first L85 (9:5) w3 // first bug appearances: NO flyers before the Frog reward (completing L3, so Frog is playable in L4); mosquito = first/easiest flyer in L4, wasp = hard flyer from L7, flying ant = mid flyer in L25
+const INTRO_AT={0:{ant:1},2:{grass:1},3:{mosquito:3},6:{wasp:2},12:{cat:1},18:{beetle:1},22:{snail:2},24:{flyant:3},32:{centipede:3},43:{stinkbug:3},82:{noseeum:2},84:{earthworm:3}}; // v9.20 MOCK bugs: snail L23, centipede L33, stinkbug L44 // v9.14: hidden bugs ONLY in Moonlit Hedge (zone 9) and only after Firefly is playable (L82, earned completing 9:1=L81): noseeum first L83 (9:3) w2, earthworm first L85 (9:5) w3 // first bug appearances: NO flyers before the Frog reward (completing L3, so Frog is playable in L4); mosquito = first/easiest flyer in L4, wasp = hard flyer from L7, flying ant = mid flyer in L25
 const LEVELS=[];
 for(let idx=0;idx<100;idx++){const z=Math.floor(idx/10),inz=idx%10,boss=inz===9,paths=genPaths(idx),zone=ZONES[z];
  // path-length / path-count compensation: short or split routes give bugs less time in range, so they carry less HP/count
@@ -157,12 +169,25 @@ LEVELS[9].boss=Math.round(12000/LEVELS[9].hp); LEVELS[9].bossHp=12000; // effect
 LEVELS[19].bossType='hornet';LEVELS[19].bossHp=8000;LEVELS[19].bossSpd=.62;LEVELS[19].bossRew=160; // L20: payout ~345
 LEVELS[29].bossType='hornet';LEVELS[29].bossHp=12500;LEVELS[29].bossSpd=.72;LEVELS[29].bossRew=190; // L30: payout ~396, faster + stronger escorts
 LEVELS[89].bossType='roach';LEVELS[89].bossHp=12800;LEVELS[89].bossSpd=.52;LEVELS[89].bossRew=260; // L90: payout ~424, shell rating 20. v9.17 retune 16000->12800: Bite vs shell is now x0.5 (was flat-armor), so the old 16k took ~13.5-15.2k from the sensible Flytrap/Frog/Spider/Firefly deck and leaked; 12.8k restores a tight kill
+// ---- v9.19: Moonlit Hedge entry (9:1, index 80) rebalance ONLY ----
+// Playtest: Michael (dev unlock-all, strong deck) finished 9:1 with 2700 coins / 16 hearts and
+// never built past wave 5. Root cause is local to this roll, not a growing rw: rw actually falls
+// with level (.92-idx*.003, floor .6), but L81 rolled 3 short paths (plen 20), so the generator's
+// path compensation cut it to hp .135 / cnt .998 / 354 bugs -- the weakest, shortest level in zone 9
+// (L82: hp .159 / cnt 1.324 / 461 bugs) -- while its 354 bugs still paid ~3526 kill coins at rw .68
+// (ant 6.8, beetle 15.3 coins each). A wave-5 board therefore banked thousands unspent.
+// Fix (this level only): authored waves 6-10 below (tight conga lines, night roster, NO hidden
+// bugs -- noseeum starts 9:3 and a legit 9:1 arrival has no Firefly yet), late HP x1.25 from
+// wave 6, and rw .68 -> .52 (per-bug payout ant 6.8->5.2, beetle 15.3->11.7 coins). The extra
+// late bugs pay more in total, but only to a board that keeps building to kill them.
+LEVELS[80].rw=.52;
+LEVELS[80].lateHp=1.25;LEVELS[80].lateHpFrom=6; // x HP on waves 6-10 only (applied in waveHP)
 let LEVEL=LEVELS[0],LVI=0;
 const RWX=2.5,GROUPGAP=1.6,CONGA=8; // v6: many more bugs in tight conga lines; kill reward x0.3 (fractional carry)
-const BUGCOST={ant:1,grass:1.3,beetle:2.6,mosquito:.7,flyant:1.2,wasp:1.5,cat:2.1,noseeum:.8,earthworm:1.6},BUGIV={ant:.6,grass:.6,beetle:1.1,mosquito:.45,flyant:.65,wasp:.85,cat:1.15,noseeum:.55,earthworm:.9};
+const BUGCOST={ant:1,grass:1.3,beetle:2.6,mosquito:.7,flyant:1.2,wasp:1.5,cat:2.1,noseeum:.8,earthworm:1.6,snail:3,centipede:2.2,stinkbug:2.4},BUGIV={ant:.6,grass:.6,beetle:1.1,mosquito:.45,flyant:.65,wasp:.85,cat:1.15,noseeum:.55,earthworm:.9,snail:1.3,centipede:.8,stinkbug:1};
 // which bug types are unlocked by (level, wave): campaign spreads introductions out
 function poolAt(li,w){const p=[];const seen=(t)=>{for(let i=0;i<li;i++)if(LEVELS[i].intro[t])return true;const iw=LEVELS[li].intro[t];return iw!=null&&w>=iw;};
- for(const t of['ant','grass','mosquito','beetle','wasp','flyant','cat','noseeum','earthworm'])if(seen(t))p.push(t);return p;}
+ for(const t of['ant','grass','mosquito','beetle','wasp','flyant','cat','noseeum','earthworm','snail','centipede','stinkbug'])if(seen(t))p.push(t);return p;}
 function isBossWave(w){const L=LEVEL;if(L.survival)return w%5===0;return L.boss>0&&w===L.waves;}
 // procedural but deterministic wave builder: budget grows with wave + level density
 // v6: count-driven wave builder. Total bugs = cnt x (12 + 36P) (P = wave progress 0..1); survival keeps growing.
@@ -177,6 +202,15 @@ function getWave(w){const L=LEVEL,li=LVI;
  if(li===19&&w===10)return[['wasp',8,.272],['ant',18,.192],['grass',14,.192],['hornet',1,3],['wasp',6,.272],['mosquito',10,.144],['ant',14,.192],['grass',10,.192]];
  if(li===29&&w===10)return[['wasp',10,.272],['flyant',8,.208],['beetle',8,.352],['hornet',1,3],['wasp',8,.272],['grass',16,.192],['beetle',6,.352],['flyant',6,.208]];
  if(li===89&&w===10)return[['noseeum',5,.176],['earthworm',4,.288],['beetle',10,.352],['roach',1,3],['wasp',8,.272],['grass',16,.192],['earthworm',4,.288],['ant',16,.192]];
+ // v9.19: 9:1 (index 80) waves 6-10 authored tight conga lines (generator intervals: longer
+ // lines, not spaced out). Counts 60/72/84/96/108 = 420 late bugs (was 38/40/54/61/49 = 242).
+ // Night roster incl. flyers wasp/flying ant/mosquito; NO hidden bugs (they start 9:3, and a
+ // legit zone-9 arrival has no Firefly until it completes this level). Waves 1-5 unchanged.
+ if(li===80&&w===6)return[['grass',14,.192],['wasp',12,.272],['beetle',11,.352],['ant',13,.192],['flyant',10,.208]];
+ if(li===80&&w===7)return[['ant',16,.192],['beetle',12,.352],['wasp',14,.272],['cat',12,.368],['grass',18,.192]];
+ if(li===80&&w===8)return[['wasp',14,.272],['mosquito',20,.144],['beetle',14,.352],['flyant',14,.208],['grass',22,.192]];
+ if(li===80&&w===9)return[['beetle',16,.352],['grass',20,.192],['mosquito',22,.144],['cat',14,.368],['wasp',16,.272],['flyant',8,.208]];
+ if(li===80&&w===10)return[['wasp',16,.272],['cat',16,.368],['beetle',18,.352],['flyant',14,.208],['ant',22,.192],['grass',22,.192]];
  if(L.tutorial===1)return w===1?[['ant',3,1.1]]:w===2?[['ant',4,1.1]]:[['ant',6,1.1]];
  if(L.tutorial===2)return w===1?[['ant',4,.9]]:w===2?[['ant',6,.9]]:[['ant',8,.85]];let s=li*977+w*131+5;const R=()=>(s=(s*16807)%2147483647)/2147483647;const pool=poolAt(li,w);
  const newT=pool.find(t=>LEVELS[li].intro[t]===w);const P=L.survival?(w-1)/9:(w-1)/(L.waves-1);
@@ -189,10 +223,13 @@ function getWave(w){const L=LEVEL,li=LVI;
  for(const g of groups)if(g[0]==='flyant')g[1]=Math.min(g[1],li<40?12:li<70?18:24); // v9.13: mid flyer, capped like wasp
  for(const g of groups)if(g[0]==='noseeum')g[1]=Math.min(g[1],li>=90?6:10); // v9.14: tiny hidden flyer, sparing in zone 10
  for(const g of groups)if(g[0]==='earthworm')g[1]=Math.min(g[1],li>=90?5:8); // v9.14: hidden ground worm, sparing in zone 10
+ for(const g of groups)if(g[0]==='snail')g[1]=Math.min(g[1],8); // v9.20 MOCK caps: tanky shelled lines stay bounded
+ for(const g of groups)if(g[0]==='centipede')g[1]=Math.min(g[1],10);
+ for(const g of groups)if(g[0]==='stinkbug')g[1]=Math.min(g[1],6);
  if(isBossWave(w))groups.push([L.survival?'slug':(L.bossType||'slug'),L.survival?Math.ceil(w/20):1,3]);return groups;}
 let HPSCALE=1.5,BOSSHP=7500; // bug HP = base x levelHP x (1 + HPSCALE x (wave-1)) [x 1.06^(w-12) in survival], rounded to 5
 const waveHP=(type,w)=>{const L=LEVEL;if(ENEMY[type]&&ENEMY[type].boss){const tgt=(L.bossType===type&&L.bossHp)?L.bossHp:(type==='slug'?(L.boss||BOSSHP)*L.hp*(BOSSHP/7500):ENEMY[type].hp);return Math.round(tgt*(L.survival?(1+.25*(w-5)):1)/50)*50;}
- let m=L.hp*(1+HPSCALE*9*(L.survival?(w-1)/9:(w-1)/(L.waves-1)));if(L.lateHp&&w>=8)m*=L.lateHp;if(L.survival&&w>12)m*=Math.pow(1.06,w-12);return Math.round(ENEMY[type].hp*m/5)*5;};
+ let m=L.hp*(1+HPSCALE*9*(L.survival?(w-1)/9:(w-1)/(L.waves-1)));if(L.lateHp&&w>=(L.lateHpFrom||8))m*=L.lateHp;if(L.survival&&w>12)m*=Math.pow(1.06,w-12);return Math.round(ENEMY[type].hp*m/5)*5;};
 const WAVES={get length(){return LEVEL.waves}};
 // ================= helpers =================
 const ease={outBack:t=>{t=Math.min(1,Math.max(0,t));const c=1.70158;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);},outCubic:t=>1-Math.pow(1-Math.min(1,Math.max(0,t)),3),inOut:t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2};
@@ -242,6 +279,13 @@ function buildSprites(){
   for(const v of['idle','atk'])S[`dandelion${L}${v}`]=O(mk(84,100,42,76,()=>dandelionArt(L,v)));
   for(const v of['idle','atk'])S[`hedgehog${L}${v}`]=O(mk(92,92,46,72,()=>hedgehogArt(L,v)));
   for(const v of['idle','atk'])S[`firefly${L}${v}`]=O(mk(84,112,42,92,()=>fireflyArt(L,v)));
+  for(const v of['idle','atk'])S[`bat${L}${v}`]=O(mk(88,104,44,84,()=>batArt(L,v)));
+  for(const v of['idle','atk'])S[`owl${L}${v}`]=O(mk(92,110,46,88,()=>owlArt(L,v)));
+  for(const v of['idle','atk'])S[`horseradish${L}${v}`]=O(mk(88,100,44,80,()=>horseradishArt(L,v)));
+  for(const v of['idle','atk'])S[`monarch${L}${v}`]=O(mk(88,104,44,84,()=>monarchArt(L,v)));
+  for(const v of['idle','atk'])S[`sundew${L}${v}`]=O(mk(88,100,44,80,()=>sundewArt(L,v)));
+  for(const v of['idle','atk'])S[`compost${L}${v}`]=O(mk(88,100,44,80,()=>compostArt(L,v)));
+  for(const v of['idle','atk'])S[`sunflower${L}${v}`]=O(mk(88,108,44,88,()=>sunflowerArt(L,v)));
   for(const v of['idle','bite'])S[`dhead${L}${v}`]=O(mk(76,70,24,35,()=>dragonHead(L,v)));
   S['dbeard'+L]=O(mk(60,80,20,40,()=>dragonBeard(L)));}
  for(const t of Object.keys(ENEMY)){const n=(t==='slug'||t==='hornet'||t==='roach')?130:66,F=t==='slug'?4:6;for(let f=0;f<F;f++)for(let d=0;d<8;d++){
@@ -582,6 +626,32 @@ function enemyArt(t,f,F){const p=f/F*6.283;
   for(const sd of[-1,1]){E(20,sd*2.9,2.1,1.7,sd*.3);fo(rg(19.6,sd*2.6,0,2.4,['#5a3420','#180a04']),'#100602',.6);C(19.4,sd*2.2,.62);X.fillStyle='#ffe9c8';X.fill();
    X.strokeStyle='#221004';X.lineWidth=1.1;X.beginPath();X.arc(23.6,sd*1.7,1.7,sd>0?2.5:-.6,sd>0?4.1:1.1,sd<0);X.stroke();} // mouthparts
   hi(12,-6,4,1.4,.5,-.2);X.restore();}
+ else if(t==='snail'){ // v9.20 MOCK: slow shelled tank — big spiral shell, soft foot, eyestalks
+  for(const s of[-1,1]){X.strokeStyle='#7a8a5a';X.lineWidth=1.6;X.beginPath();X.moveTo(13,s*3);X.quadraticCurveTo(18,s*7,17,s*(11+Math.sin(p+s)*1.4));X.stroke();C(17,s*(11+Math.sin(p+s)*1.4),2);fo('#ffe9b0','#7a5a20',.7);}
+  E(2,0,17,8);fo(rg(0,-3,1,15,['#ffe3ae','#e8b877','#c08a4e']),'#6e4514',1.1); // foot/body
+  C(14,0,5.4);fo(rg(12,-2,0,6,['#ffe9c2','#eec088']),'#6e4514',1);cuteEye(15.5,-2,1.7,1);
+  // spiral shell (the read: shelled)
+  C(-6,0,11.5);fo(rg(-9,-4,1,12,['#ffcf8a','#d8702e','#8a3c10']),'#4a2008',1.3);
+  X.strokeStyle='#5e2a0c';X.lineWidth=1.5;X.beginPath();X.arc(-6,0,7.6,.4,5.4);X.stroke();X.beginPath();X.arc(-6,0,4.4,.2,5.8);X.stroke();C(-6,0,1.8);X.fillStyle='#8a3c10';X.fill();
+  hi(-10,-6,4,2,.6,-.4);dots([[-13,5],[-1,-8],[3,6]],.7,'rgba(90,40,10,.45)');}
+ else if(t==='centipede'){ // v9.20 MOCK: long segmented bug (feeds Cut) — many legs, segments shed visually via fx in hurt()
+  const n=7;for(let i=n-1;i>=0;i--){const x=-i*7.4,y=Math.sin(p-i*.9)*2.1,sc=1-(i/n)*.18;
+   for(const s of[-1,1]){seg(x,y+s*5.5*sc,x-2,y+s*10.5*sc,1.5,'#8a4a1e','#3c1c08');seg(x-2,y+s*10.5*sc,x+1,y+s*14*sc,1.1,'#8a4a1e','#3c1c08');}
+   C(x,y,6.9*sc);fo(rg(x-2,y-2.6,0,7.4,i%2?['#ffb066','#d86a22','#8a3a0e']:['#ffc07e','#e07c2e','#96420f']),'#3c1c08',1);
+   X.strokeStyle='rgba(60,25,5,.55)';X.lineWidth=.8;X.beginPath();X.arc(x+3,y,5.2*sc,-1.1,1.1);X.stroke();hi(x-2,y-2.6,2.2,1.1,.55);}
+  C(9.5,0,7.2);fo(rg(7.5,-2.6,0,7.6,['#ffd09a','#e07c2e','#96420f']),'#3c1c08',1.05);
+  for(const s of[-1,1]){antenna(13,s*3,[[19,s*8],[24,s*(10+Math.sin(p)*1.2)]],'#4a240a',1.2);cuteEye(11.5,s*3.1,1.9,1);}
+  for(const s of[-1,1]){X.strokeStyle='#3c1c08';X.lineWidth=1.7;X.beginPath();X.moveTo(15,s*2);X.quadraticCurveTo(18,s*4,17,s*6);X.stroke();}}
+ else if(t==='stinkbug'){ // v9.20 MOCK: shield-shaped shelled bug; green stink puff on death (in hurt())
+  legSet([6,1,-4],f,F,9,9,'#3a2c1c','#1c1208',2.2,.55,.3);
+  for(const s of[-1,1])antenna(16,s*2.6,[[21,s*6],[24,s*9]],'#2a1e12',1.2);
+  X.beginPath();X.moveTo(17,-6.5);X.bezierCurveTo(4,-11,-13,-9,-17,-3);X.quadraticCurveTo(-19,0,-17,3);X.bezierCurveTo(-13,9,4,11,17,6.5);X.quadraticCurveTo(20,0,17,-6.5);fo(rg(-3,-4,2,19,['#c8a878','#8a6c42','#54401f']),'#241708',1.25);
+  X.save();X.clip();seg(15,0,-16,0,1.3,'rgba(36,23,8,.7)');
+  X.strokeStyle='rgba(255,235,190,.4)';X.lineWidth=.8;for(const bx of[-11,-4,3]){X.beginPath();X.moveTo(bx,-9);X.quadraticCurveTo(bx-1.6,0,bx,9);X.stroke();}
+  dots([[-9,-4],[-3,5],[5,-6],[10,3],[-13,2]],.75,'rgba(36,23,8,.5)');E(-4,-4.5,7,2,-.15);X.fillStyle='rgba(255,255,255,.4)';X.fill();X.restore();
+  // little green stink glands at the rear sides
+  for(const s of[-1,1]){C(-14,s*5.5,2.1);fo('#9adc5a','#3f7a14',.7);}
+  C(17.5,0,4.6);fo(rg(16,-1.6,0,5,['#d8bc8e','#8a6c42']),'#241708',1);for(const s of[-1,1])cuteEye(18.5,s*2.5,1.6,1);}
  else if(t==='slug'){const sq=Math.sin(p)*3;
   X.beginPath();X.moveTo(-50-sq,0);X.bezierCurveTo(-46-sq,-22,20,-30,34,-14);X.quadraticCurveTo(42,0,34,14);X.bezierCurveTo(20,30,-46-sq,22,-50-sq,0);fo(rg(-4,-6,4,52,['#ffe6a8','#f6b45a','#d07a28']),'#6a3008',1.5);
   X.save();X.clip();X.strokeStyle='rgba(255,240,200,.6)';X.lineWidth=3;X.beginPath();X.moveTo(-48,0);X.bezierCurveTo(-44,-19,18,-27,33,-12);X.stroke();
@@ -763,6 +833,107 @@ function fireflyArt(L,v){const on=v==='atk',s=[1,1.07,1.14][L-1];X.scale(s,s);
  if(L>=2){X.fillStyle=L===3?'#ffd23f':'#c0c8d8';X.beginPath();X.roundRect(-16,-8,32,5,2.5);X.fill();X.strokeStyle='#5a4a26';X.lineWidth=.9;X.stroke();}
  if(L===3){starPath(0,-70,4.8);fo('#fff3a0','#a8700a',.7);for(const sx of[-1,1]){C(sx*18,-46,2.1);X.fillStyle='#ffe680';X.fill();}}
 }
+
+// ---------- v9.20 MOCK defenses (original art, cached like the rest) ----------
+function batArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ // post + house
+ X.beginPath();X.roundRect(-4,-34,8,34,3);fo(lg(-4,0,4,0,['#8a5a30','#5a3618']),'#3a2010',1);
+ X.beginPath();X.roundRect(-24,-66,48,36,6);fo(lg(0,-66,0,-30,['#a8743f','#7a4a22']),'#3a2010',1.3);
+ X.strokeStyle='rgba(60,30,10,.5)';X.lineWidth=.8;for(const yy of[-56,-46,-38]){X.beginPath();X.moveTo(-23,yy);X.lineTo(23,yy);X.stroke();}
+ // roof
+ X.beginPath();X.moveTo(-29,-64);X.lineTo(0,-82);X.lineTo(29,-64);X.lineTo(22,-60);X.lineTo(0,-74);X.lineTo(-22,-60);X.closePath();fo(lg(0,-82,0,-60,L===3?['#ffe27a','#c89010']:['#5a6ab8','#2a3480']),'#1c1440',1.2);
+ C(0,-70,3);fo(L===3?'#ffd23f':'#c8d2ff','#5a6a9a',.8);
+ // dark doorway with bat hanging under the eave
+ C(0,-48,11);fo('#24142e','#12081a',1);C(0,-48,8);X.fillStyle='#31203e';X.fill();
+ const by=-40,spread=atk?1:0.35;
+ for(const s of[-1,1]){X.save();X.translate(s*2,by);X.rotate(s*(atk?-.9:-.35));X.beginPath();X.moveTo(0,0);X.quadraticCurveTo(s*14,-2,s*(10+spread*8),8+spread*5);X.quadraticCurveTo(s*5,7,0,10);X.closePath();fo(lg(0,0,s*16,10,['#6a5a8a','#3a2c5a']),'#1c1030',1);X.restore();}
+ E(0,by+4,6.5,7.5);fo(rg(-2,by,1,8,['#8a76b8','#4a3670']),'#1c1030',1.1);
+ for(const s of[-1,1]){X.beginPath();X.moveTo(s*3,by-2);X.lineTo(s*5,by-9);X.lineTo(s*7,by-1);X.closePath();fo('#4a3670','#1c1030',.8);}
+ for(const s of[-1,1]){C(s*2.6,by+3,1.5);X.fillStyle=atk?'#ff5a4a':'#ffd23f';X.fill();C(s*2.6,by+2.5,.55);X.fillStyle='#fff';X.fill();}
+ X.beginPath();X.moveTo(-2,by+8);X.lineTo(0,by+10.5);X.lineTo(2,by+8);X.fillStyle='#ffd8e8';X.fill();
+ if(L>=2){C(-18,-34,3);fo('#ffe680','#8a6a10',.7);C(18,-34,3);fo('#ffe680','#8a6a10',.7);}
+ if(L===3){starPath(0,-84,4.5);fo('#fff3a0','#a8700a',.7);}
+ X.restore();}
+function owlArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ X.beginPath();X.roundRect(-5,-30,10,30,3);fo('#6b4423','#3a2010',1);
+ X.beginPath();X.roundRect(-25,-72,50,46,7);fo(lg(0,-72,0,-26,['#b07a42','#7c4f22']),'#3a2010',1.3);
+ X.beginPath();X.moveTo(-30,-70);X.lineTo(0,-88);X.lineTo(30,-70);X.lineTo(23,-66);X.lineTo(0,-79);X.lineTo(-23,-66);X.closePath();fo(lg(0,-88,0,-66,L===3?['#ffe27a','#c89010']:['#8a5a30','#5a3618']),'#2e1a08',1.2);
+ // big round opening, owl face filling it
+ C(0,-50,17);fo('#2a1a0e','#160b04',1.2);
+ for(const s of[-1,1])if(atk){X.save();X.translate(s*14,-52);X.rotate(s*.7);E(s*8,0,11,5,s*.5);fo(lg(0,-5,0,5,['#c89a62','#7c4f22']),'#3a2010',1);X.restore();}
+ E(0,-50,14,13);fo(rg(-4,-56,2,15,['#e8c39a','#a97a42','#6e4520']),'#3a2010',1.1);
+ for(const s of[-1,1]){C(s*6,-54,5.2);fo('#fff8e8','#3a2010',.9);C(s*6,-53.4,3);X.fillStyle='#1a0e04';X.fill();C(s*5,-55,1.1);X.fillStyle='#fff';X.fill();
+  X.strokeStyle='#3a2010';X.lineWidth=1.4;X.beginPath();X.moveTo(s*1,-61);X.quadraticCurveTo(s*6,-63,s*10,-60);X.stroke();}
+ X.beginPath();X.moveTo(-2.5,-46);X.lineTo(0,-42.5);X.lineTo(2.5,-46);X.closePath();fo('#ffb020','#8a5508',.8);
+ for(const s of[-1,1]){X.beginPath();X.moveTo(s*9,-64);X.lineTo(s*12,-70);X.lineTo(s*13,-63);X.closePath();fo('#a97a42','#3a2010',.8);}
+ if(L>=2){X.fillStyle='#e8443a';X.fillRect(-10,-30,20,4);X.strokeStyle='#7a140c';X.strokeRect(-10,-30,20,4);}
+ if(L===3){starPath(18,-76,4.4);fo('#fff3a0','#a8700a',.7);C(-16,-34,2.4);fo('#fff2b8','#8a6a10',.6);}
+ X.restore();}
+function horseradishArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ // stone mortar bowl
+ X.beginPath();X.moveTo(-20,-18);X.quadraticCurveTo(-22,0,-12,2);X.lineTo(12,2);X.quadraticCurveTo(22,0,20,-18);X.closePath();fo(lg(0,-18,0,2,['#d8d4c8','#8a8478']),'#4a463e',1.3);
+ E(0,-18,20,5);fo('#b8b2a4','#4a463e',1);E(0,-18,15,3.4);X.fillStyle='#6e685c';X.fill();
+ // leafy greens behind
+ for(const s of[-1,0,1]){X.save();X.translate(s*9,-20);X.rotate(s*.35);X.beginPath();X.moveTo(0,0);X.quadraticCurveTo(-6,-16,0,-24);X.quadraticCurveTo(7,-15,2,0);fo(lg(0,-24,0,0,['#86d048','#3f8e2a']),'#245018',.9);X.restore();}
+ // the root: fat white horseradish, raised when lobbing
+ const ry=atk?-44:-34,ra=atk?-.5:-.15;X.save();X.translate(2,ry);X.rotate(ra);
+ X.beginPath();X.moveTo(-5,-10);X.quadraticCurveTo(-7,4,-2,14);X.quadraticCurveTo(0,17,2,14);X.quadraticCurveTo(7,4,5,-10);X.quadraticCurveTo(0,-14,-5,-10);fo(rg(-2,-6,1,14,['#fffdf2','#efe6cc','#cbbfa0']),'#7a6c4e',1.1);
+ X.strokeStyle='rgba(140,120,80,.6)';X.lineWidth=.7;for(const yy of[-4,2,8]){X.beginPath();X.moveTo(-4,yy);X.quadraticCurveTo(0,yy+2,4,yy);X.stroke();}
+ for(const s of[-1,1]){X.save();X.translate(s*2,-11);X.rotate(s*.6);E(0,-4,2.4,5);fo('#5cbf3a','#245018',.7);X.restore();}
+ cuteEye(-1,-2,1.7,1);X.restore();
+ if(L>=2){for(const s of[-1,1]){C(s*16,-6,3);fo('#efe6cc','#7a6c4e',.7);}}
+ if(L===3){starPath(-16,-30,4.2);fo('#fff3a0','#a8700a',.7);}
+ X.restore();}
+function monarchArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ X.beginPath();X.roundRect(-3.5,-40,7,40,3);fo(lg(-3,0,3,0,['#8a5a30','#5a3618']),'#3a2010',1);
+ for(const s of[-1,1]){X.save();X.translate(s*4,-8);X.rotate(s*.8);E(0,0,8,3.4,s*.4);fo('#4caa3a','#245018',.9);X.restore();}
+ E(0,-40,13,5);fo('#6aa83a','#2e5c16',1);
+ for(let i=0;i<(L===3?7:5);i++){const a=i/(L===3?6:4)*6.283;C(Math.cos(a)*9,-42+Math.sin(a)*3.4,2.6);X.fillStyle=i%2?'#ff8fb0':'#fff07a';X.fill();}
+ // monarch butterfly on top (wings flutter when buffing/atk)
+ const fy=-56+(atk?-3:Math.sin(0)*0),fl=atk?3:0;
+ for(const s of[-1,1]){X.save();X.translate(s*2,fy);X.rotate(s*(.25+fl*.06));
+  X.beginPath();X.moveTo(0,0);X.bezierCurveTo(s*10,-10-fl,s*20,-8,s*18,1);X.bezierCurveTo(s*16,7,s*6,6,0,2);fo(lg(0,-8,0,6,['#ffb03a','#f2701a','#c33d08']),'#3a1404',1.1);
+  X.beginPath();X.moveTo(0,2);X.bezierCurveTo(s*8,3,s*13,8,s*9,13);X.bezierCurveTo(s*4,15,0,9,0,4);fo('#f2701a','#3a1404',.9);
+  dots([[s*9,-3],[s*14,0],[s*7,8]],1.1,'#fff');dots([[s*11,-5]],.8,'#1a0a04');X.restore();}
+ E(0,fy+3,2.2,6);fo('#241008','#0e0402',.8);C(0,fy-4,2.6);fo('#2a1408','#0e0402',.7);
+ for(const s of[-1,1]){X.strokeStyle='#1a0a04';X.lineWidth=.9;X.beginPath();X.moveTo(s*1,fy-6);X.quadraticCurveTo(s*5,fy-11,s*8,fy-10-fl);X.stroke();}
+ if(L===3){starPath(15,-38,4.2);fo('#fff3a0','#a8700a',.7);}
+ X.restore();}
+function sundewArt(L,v){const atk=v==='atk';pot(Math.min(3,L));
+ X.save();X.translate(0,-22);
+ for(let i=0;i<7;i++){const a=-2.4+i*.8,sx=Math.sin(a)*13,sy=-Math.cos(a)*4;X.save();X.translate(sx,sy);X.rotate(a*.5);
+  X.beginPath();X.moveTo(0,0);X.quadraticCurveTo(-5,-12-(atk?4:0),0,-18-(atk?5:0));X.quadraticCurveTo(6,-12,1,0);fo(lg(0,-18,0,0,['#ff8aa0','#e0354f']),'#7c1028',.9);
+  for(let k=0;k<4;k++){const tx=(k%2?3:-3),ty=-6-k*4;C(tx,ty,1.7);X.fillStyle='rgba(255,210,225,.95)';X.fill();C(tx-.5,ty-.5,.6);X.fillStyle='#fff';X.fill();}
+  X.restore();}
+ C(0,-7,4.5);fo('#c81e3e','#6e0c20',.9);cuteEye(0,-8,1.8,1);
+ if(L===3){for(const s of[-1,1]){C(s*17,-14,2.2);X.fillStyle='#ffd8e4';X.fill();}}
+ X.restore();}
+function compostArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ X.beginPath();X.roundRect(-21,-36,42,38,5);fo(lg(-21,0,21,0,['#8a6a48','#5e4426','#3f2c14']),'#241708',1.3);
+ X.strokeStyle='rgba(30,18,6,.55)';X.lineWidth=.9;for(const yy of[-24,-12]){X.beginPath();X.moveTo(-20,yy);X.lineTo(20,yy);X.stroke();}
+ // lid ajar
+ X.save();X.translate(-19,-37);X.rotate(atk?-.5:-.28);X.beginPath();X.roundRect(0,-5,40,7,3);fo(lg(0,-5,0,2,['#a97f52','#6e4f28']),'#241708',1.1);X.restore();
+ // compost goodies peeking out
+ for(const[x,y,c]of[[-10,-38,'#7cc34a'],[2,-41,'#e84a3a'],[12,-38,'#f2c94c'],[-2,-36,'#8a5a30']]){C(x,y,3.6);X.fillStyle=c;X.fill();}
+ E(3,-40,4,2.6);fo('#ffdfae','#8a4a2a',.7);
+ // happy steam wisps
+ X.strokeStyle='rgba(255,255,255,.75)';X.lineWidth=1.6;for(const s of[-1,1]){X.beginPath();X.moveTo(s*8,-46);X.quadraticCurveTo(s*12,-53,s*8,-60);X.stroke();}
+ C(0,-22,5);fo(rg(-1,-24,0,5,['#a8dc7a','#5c9a34']),'#2e5c16',.9);cuteEye(0,-23,1.9,1);
+ if(L>=2){spr(S.coin,-14,4,.55);spr(S.coin,15,3,.55);}
+ if(L===3){starPath(17,-20,4.2);fo('#fff3a0','#a8700a',.7);}
+ X.restore();}
+function sunflowerArt(L,v){const atk=v==='atk';X.save();X.scale([1,1.07,1.14][L-1],[1,1.07,1.14][L-1]);
+ X.strokeStyle='#2f7a24';X.lineWidth=4.2;X.beginPath();X.moveTo(0,0);X.quadraticCurveTo(2,-24,0,-42);X.stroke();
+ for(const s of[-1,1]){X.save();X.translate(s*3,-16);X.rotate(s*.7);E(s*6,0,8,3.6,s*.3);fo(lg(0,-3,0,3,['#7ed957','#3f9a2e']),'#245e18',.9);X.restore();}
+ const hy=-54+(atk?-2:0),np=L===3?14:11;
+ for(let i=0;i<np;i++){const a=i/np*6.283;X.save();X.translate(Math.cos(a)*11,hy+Math.sin(a)*11);X.rotate(a);E(5,0,6.5,3);fo(lg(0,-3,5,3,['#fff07a','#ffb020']),'#a86a08',.8);X.restore();}
+ C(0,hy,11.5);fo(rg(-3,hy-4,1,12,['#a8742c','#6e4514','#4a2c0c']),'#2e1c06',1.1);
+ // coin-bank centre
+ C(0,hy,7.2);fo(lg(0,hy-7,0,hy+7,['#fff2a0','#ffcf33','#d89410']),'#8a5c06',.9);txt('$',0,hy+.5,10,'#8a5c06','center',null,900);
+ for(const s of[-1,1]){C(s*3.6,hy-13.5,1.5);X.fillStyle='#2a1a08';X.fill();}
+ if(L>=2){X.strokeStyle='#2a1a08';X.lineWidth=1.1;X.beginPath();X.arc(0,hy+1,4.4,.3,2.8);X.stroke();}
+ if(L===3){starPath(16,hy-12,4.2);fo('#fff3a0','#a8700a',.7);}
+ X.restore();}
 // ================= background =================
 let bg=null;
 function buildBg(){bg=mk(W,H,0,0,()=>drawBg());}
@@ -1058,14 +1229,18 @@ let G,screen='title',uiT=0,titleT=0;
 let PROG={un:1,st:[],best:0,deck:['flytrap'],power:'seed'};try{Object.assign(PROG,JSON.parse(localStorage.getItem('gg_prog')||'{}'));}catch(e){}
 let PENDING=0,MAPY=0,MAPDRAG=null,MAPAUTOF=true,ZONEVIEW=0;
 function unlockedDefs(){return ORDER.filter(k=>(PROG.un||1)>=DEF_UNLOCK[k]);}
-function requiredDeck(){return Math.min(4,unlockedDefs().length);}
+function requiredDeck(){return Math.min(6,unlockedDefs().length);} // v9.21: deck size 6
 function cleanDeck(){ // normalize ONLY (v9.9 dedupe kept; v9.10: NO auto-fill, NO carry-over at deck screen): unique, unlocked-only, size <= 4.
  const un=unlockedDefs();let d=[];
  for(const k of (PROG.deck||[]))if(un.includes(k)&&!d.includes(k))d.push(k);
- PROG.deck=d.slice(0,4);return PROG.deck;}
-function cleanPower(){PROG.power=PROG.power==='spr'?'spr':'seed';return PROG.power;}
-let PICK=null; // v9.10: deck-select state for THIS level only — always starts empty, never saved/carried until Start
-function openDeck(i){PENDING=i;loadLevel(i);PICK={deck:[],power:null};setScreen('deck');}
+ PROG.deck=d.slice(0,6);return PROG.deck;} // v9.21: up to 6 (old 4-decks load fine)
+const POWER_LIST=[['seed','Bird Seed','Birds peck bugs in an area'],['spr','Sprinkler','Slows every bug on screen'],['hose','Garden Hose','Spray a spot: pushes bugs back'],['swatter','Fly Swatter','Smack one bug — flyer killer'],['mud','Mud Pie','Heavy slow patch on the path'],['shovel','Transplant Shovel','Move one defense for free']]; // v9.20 MOCK: +4 power-ups, same pick-1 slot
+function cleanPower(){return POWER_LIST.some(p=>p[0]===PROG.power)?PROG.power:'seed';}
+let PICK=null,DECKPAGE=0; // v9.10 empty deck; v9.20: deck cards paged (12/page) so 17 defenses fit without shrinking the v9.18 cards
+let INFO=null; // v9.18: key of defense whose BIG info card is open (null=closed); separate from selection, never mutates PICK/G.deck/G.build
+function openInfo(k){INFO=k;sfx('click',0);}
+function closeInfo(){INFO=null;sfx('click',0);}
+function openDeck(i){PENDING=i;loadLevel(i);PICK={deck:[],power:null};DECKPAGE=0;INFO=null;setScreen('deck');}
 function curZone(){return Math.min(9,Math.floor((Math.min(100,Math.max(1,PROG.un||1))-1)/10));}
 function zoneStats(z){const sts=PROG.st.slice(z*10,z*10+10);return{sts,avg:sts.reduce((a,b)=>a+(b||0),0)/10,cleared:sts.filter(Boolean).length,lock:(z*10+1)>(PROG.un||1),cur:z===curZone()};}
 function openZone(z){ZONEVIEW=Math.max(0,Math.min(9,z));loadLevel(ZONEVIEW*10);setScreen('zone');}
@@ -1074,21 +1249,25 @@ function saveProg(){try{localStorage.setItem('gg_prog',JSON.stringify(PROG));}ca
 function loadLevel(i){LVI=i;LEVEL=LEVELS[i];loadPaths(LEVEL.paths,LEVEL.block);bg=null;}
 loadLevel(0);
 function newGame(li=LVI){if(li!==LVI)loadLevel(li);G={panelT:9,coins:LEVEL.coins,lives:LEVEL.tutorial?30:20,maxLives:LEVEL.tutorial?30:20,wave:0,tut:LEVEL.tutorial?{kind:LEVEL.tutorial,phase:0,skipped:false,done:false}:null,inWave:false,spawnQ:[],spawnT:0,countdown:0,enemies:[],towers:[],fx:[],shots:[],slime:[],speed:G?G.speed:1,t:0,sel:null,build:null,
- shake:0,hurt:0,banner:null,coinBump:0,lifeBump:0,endT:0,stats:{kills:0,dmg:{},fired:{},leaked:0},lastEarly:0,pu:makePU(),deck:cleanDeck(),chosenPower:cleanPower(),aim:null,seedFx:null,sprT:0,zapFx:null,birds:[]};}
+ shake:0,hurt:0,banner:null,coinBump:0,lifeBump:0,endT:0,stats:{kills:0,dmg:{},fired:{},leaked:0},lastEarly:0,pu:makePU(),deck:cleanDeck(),chosenPower:cleanPower(),aim:null,mortarAim:null,aimPos:null,seedFx:null,sprT:0,zapFx:null,birds:[],muds:[],shovelFrom:null};}
 newGame();
 const CD=12;
 function startWave(){if(G.inWave||G.wave>=LEVEL.waves)return;if(G.countdown>0&&G.wave>0){const b=Math.ceil(G.countdown);G.coins+=b;G.lastEarly+=b;if(b)floatTxt(W/2,BARY-30,'+'+b+' early!','#ffe680');}
  sfx('horn',0);const w=getWave(G.wave+1);G.wave++;G.inWave=true;G.countdown=0;G.spawnQ=[];let t=0;
  let line=0;for(const[g,n,iv]of w){for(let i=0;i<n;i++){if(i&&i%CONGA===0){t+=GROUPGAP*.6;line++;}G.spawnQ.push({type:g,t,pi:ENEMY[g].boss?PATHS.reduce((b,P,i)=>P.len>PATHS[b].len?i:b,0):line%PATHS.length});t+=iv;}t+=GROUPGAP;line++;}{const tot=Math.max(1,t-GROUPGAP),k=tot<8?8/tot:tot>20?20/tot:1;if(k!==1)for(const q of G.spawnQ)q.t*=k;}G.spawnT=0;G.build=null;
- const bw=isBossWave(G.wave),nt=w.find(([g])=>LEVEL.intro[g]===G.wave);G.banner={t:0,text:bw?'BOSS WAVE!':nt&&ENEMY[nt[0]].dark?'New bug: '+ENEMY[nt[0]].name+'!':'Wave '+G.wave,sub:bw?'The '+(ENEMY[LEVEL.bossType||'slug']||ENEMY.slug).name+' approaches':nt?(ENEMY[nt[0]].dark?'Some bugs hide in the dark — only Firefly light reveals them!':nt[0]==='beetle'?'Shelled bug — Blunt (Gnome) cracks shells!':nt[0]==='cat'?'Long bug — Cut (Mantis) slices long bugs!':'New bug: '+ENEMY[nt[0]].name+'!'):waveSub(w),col:bw?'#ff5a4a':nt?'#8ae0ff':'#ffd23f'}; /* v9.14 encounter tip */}
+ const bw=isBossWave(G.wave),nt=w.find(([g])=>LEVEL.intro[g]===G.wave);G.banner={t:0,text:bw?'BOSS WAVE!':nt&&ENEMY[nt[0]].dark?'New bug: '+ENEMY[nt[0]].name+'!':'Wave '+G.wave,sub:bw?'The '+(ENEMY[LEVEL.bossType||'slug']||ENEMY.slug).name+' approaches':nt?(ENEMY[nt[0]].dark?'Some bugs hide in the dark — only Firefly light reveals them!':nt[0]==='beetle'?'Shelled bug — Blunt (Gnome) cracks shells!':nt[0]==='cat'?'Long bug — Cut (Mantis) slices long bugs!':nt[0]==='snail'?'Shelled bug — Blunt cracks shells!':nt[0]==='centipede'?'Long bug — Cut (Mantis) slices long bugs!':nt[0]==='stinkbug'?'Shelled! Its stink helps bugs shake off slows!':'New bug: '+ENEMY[nt[0]].name+'!'):waveSub(w),col:bw?'#ff5a4a':nt?'#8ae0ff':'#ffd23f'}; /* v9.14 encounter tip */}
 function waveSub(w){return w.map(([g,n])=>n+' '+ENEMY[g].name+(n>1?'s':'')).join(' · ').replace('Grasshoppers','Hoppers').replace('Caterpillars','Caterpillars');}
 function spawn(type,d=0,small=false,pi=0){const e=ENEMY[type];const hp=waveHP(type,G.wave)*(small?.5:1);
- const o={type,d,hp,max:hp,shown:hp,spd:((e.boss&&LEVEL.bossType===type&&LEVEL.bossSpd)?LEVEL.bossSpd:e.spd)*T,armor:e.armor,body:e.body||'soft',long:!!e.long,r:e.r*(small?.7:1),fly:!!e.fly,dark:!!e.dark,boss:!!e.boss,slow:0,slowT:0,ph:Math.random()*6,small,split:small,rew:small?3:((e.boss&&LEVEL.bossType===type&&LEVEL.bossRew)?LEVEL.bossRew:e.rew),flash:0,thump:0,pi,hidden:!!e.dark,litT:0,litPct:0,hogT:0,hogF:1}; // v9.14: dark bugs spawn hidden (ghosted ~50% until Lit, untargetable)
+ const o={type,d,hp,max:hp,shown:hp,spd:((e.boss&&LEVEL.bossType===type&&LEVEL.bossSpd)?LEVEL.bossSpd:e.spd)*T,armor:e.armor,body:e.body||'soft',long:!!e.long,r:e.r*(small?.7:1),fly:!!e.fly,dark:!!e.dark,boss:!!e.boss,slow:0,slowT:0,ph:Math.random()*6,small,split:small,rew:small?3:((e.boss&&LEVEL.bossType===type&&LEVEL.bossRew)?LEVEL.bossRew:e.rew),flash:0,thump:0,pi,hidden:!!e.dark,litT:0,litPct:0,hogT:0,hogF:1,holdT:0,slowResT:0,spdMul:1,segLost:0,mudT:0}; // v9.14: dark bugs spawn hidden (ghosted ~50% until Lit, untargetable)
  const p=posAt(d,pi);o.x=p.x;o.y=p.y;o.ang=p.ang;G.enemies.push(o);if(type==='wasp'||type==='flyant'||type==='mosquito'||type==='hornet')sfx('buzz',type==='mosquito'?.06:.16);if(e.boss)sfx('roar',0);if(e.boss){G.shake=Math.max(G.shake,10);}return o;}
 function hurt(e,dmg,src,pierce){if(e.hp<=0)return;if(e.litT>0)dmg*=1+(e.litPct||.2);dmg*=typeMult(src,e); // v9.17: ONE central type path (splash/chain/cleave/power-ups all call hurt) — flat armor folded into TYPE_MULT, no second subtraction; pierce (Lightning) is x1 vs all
 if(typeCat(e)==='shell'&&!pierce&&(src==='frog'||src==='gnome'))sfx('clink',.15);const real=dmg;e.hp-=real;e.flash=.09;G.stats.dmg[src]=(G.stats.dmg[src]||0)+Math.min(real,e.hp+real);
+ if(e.type==='centipede'&&e.hp>0){const lost=Math.min(3,Math.floor((1-e.hp/e.max)*3));if(lost>(e.segLost||0)){e.segLost=lost;e.spdMul=1+.08*lost;burst(e.x,e.y,['#e07c2e','#8a3a0e'],6,60);floatTxt(e.x,e.y-18,'segment off!','#ffb066');}} // v9.20: segments drop off as HP crosses 2/3,1/3,0 thresholds; +8% speed per lost segment, no split bugs
  if(e.type==='cat'&&!e.split&&e.hp>0){e.split=true;e.small=true;e.r*=.7;e.hp*=.55;e.max*=.5;e.shown=e.hp;e.rew=3;const c=spawn('cat',e.d-18,true,e.pi);c.hp=e.hp;c.max=e.max;c.shown=c.hp;burst(e.x,e.y,['#9be36a','#5cbf3a'],7,70);}
- if(e.hp<=0){sfx(e.boss?'bigPop':'pop',.2);sfx('coin',.03);G.cf=(G.cf||0)+e.rew*RWX*(LEVEL.rw||1);const gain=Math.floor(G.cf);G.cf-=gain;G.coins+=gain;G.coinBump=1;G.stats.kills++;deathPuff(e);if(gain)floatCoin(e.x,e.y-12,gain);if(e.boss)G.shake=14;}}
+ if(e.hp<=0){sfx(e.boss?'bigPop':'pop',.2);sfx('coin',.03);
+  if(e.type==='stinkbug'){part({k:'stink',x:e.x,y:e.y,t:0,life:.7});for(const o of G.enemies)if(o!==e&&o.hp>0&&Math.hypot(o.x-e.x,o.y-e.y)<1.5*T){o.slowResT=Math.max(o.slowResT||0,3);o.slowT=0;}} // v9.20: stink puff r1.5, 3s: nearby bugs shake off slows + resist them
+  let ecoPct=0;for(const tw of G.towers)if(TOWERS[tw.type].eco&&inRange(tw,e))ecoPct+=TOWERS[tw.type].ecoPct[tw.lvl-1]; // v9.21 STACK: Compost bonuses ADD (e.g. +30% + +40% = +70% on that kill); no cap in this mock
+  G.cf=(G.cf||0)+e.rew*RWX*(LEVEL.rw||1)*(1+ecoPct);const gain=Math.floor(G.cf);G.cf-=gain;G.coins+=gain;G.coinBump=1;G.stats.kills++;if(ecoPct)G.stats.eco=(G.stats.eco||0)+gain;deathPuff(e);if(gain)floatCoin(e.x,e.y-12,gain);if(e.boss)G.shake=14;}}
 function part(o){if(G.fx.length<240)G.fx.push(o);}
 function burst(x,y,cols,n,v,g=0){for(let i=0;i<n;i++){const a=Math.random()*6.283,s=v*(.4+Math.random()*.8);part({k:'p',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-g*.3,g,c:cols[i%cols.length],r:1.5+Math.random()*2.5,t:0,life:.35+Math.random()*.35});}}
 // v9.16 Dandelion hit puff: ONE pooled fx object per hit (drawn as a cluster of soft lobes + seed specks),
@@ -1107,7 +1286,7 @@ function floatTxt(x,y,s,c){part({k:'txt',x,y,s,c,t:0,life:1.3});}
 const DIRS=[[1,0],[0,1],[-1,0],[0,-1]]; // right, down, left, up
 function footprint(type,c,r){return TOWERS[type].size===2?[[c,r],[c+1,r],[c,r+1],[c+1,r+1]]:[[c,r]];}
 function occupied(c,r){return G.towers.find(t=>t.cells.some(q=>q[0]===c&&q[1]===r));}
-function canPlace(type,c,r){return footprint(type,c,r).every(([a,b])=>grass(a,b)&&!occupied(a,b));}
+function canPlace(type,c,r){return footprint(type,c,r).every(([a,b])=>(grass(a,b)||(type==='horseradish'&&a>=0&&a<COLS&&b>=0&&b<=13&&!isPath.has(a+','+b)))&&!occupied(a,b));} // v9.21: Mortar ONLY may also sit on decor/BLOCK tiles; still never on path, never overlapping, rows 0-13 only
 function rangeCells(type,c,r,dir){const d=TOWERS[type],out=[];
  if(d.dir){const[dx,dy]=DIRS[dir];for(let k=1;k<=2;k++)for(let s=0;s<2;s++){const bc=dx>0?c+1+k:dx<0?c-k:c+s,br=dy>0?r+1+k:dy<0?r-k:r+s;out.push([bc,br]);}return out;}
  for(let i=-d.range;i<=d.range;i++)for(let j=-d.range;j<=d.range;j++)if(i||j)out.push([c+i,r+j]);return out;}
@@ -1116,10 +1295,12 @@ function dragonAnchor(c,r){for(const[a,b]of[[c,r],[c-1,r],[c,r-1],[c-1,r-1]])if(
 function placeTower(type,c,r,dir){const d=TOWERS[type];if(G.coins<d.cost||!canPlace(type,c,r))return false;G.coins-=d.cost;G.coinBump=1;
  const cells=footprint(type,c,r);const x=d.size===2?OX+(c+1)*T:cx(c),y=d.size===2?OY+(r+1)*T:cy(r);
  if(d.dir&&dir==null)dir=bestDir(c,r);
- const t={type,c,r,cells,x,y,dir:dir||0,lvl:1,cd:.3,anim:0,ph:Math.random()*6,blink:2+Math.random()*3,face:1,born:G.t,upT:-9,spent:d.cost,rc:new Set(rangeCells(type,c,r,dir||0).map(q=>q.join(',')))};
+ const t={type,c,r,cells,x,y,dir:dir||0,lvl:1,cd:.3,anim:0,ph:Math.random()*6,blink:2+Math.random()*3,face:1,born:G.t,upT:-9,spent:d.cost,pulseT:0,mReady:true,reload:0,rc:new Set(rangeCells(type,c,r,dir||0).map(q=>q.join(',')))}; // v9.21 Mortar starts READY
  G.towers.push(t);sfx('build',.05);for(let i=0;i<10;i++)part({k:'puff',x:x+(Math.random()-.5)*30*(d.size||1),y:y+12,vx:(Math.random()-.5)*60,vy:-Math.random()*30,r:5+Math.random()*4,t:0,life:.5,c:'rgba(200,160,110,.8)'});return t;}
-function upgrade(t){if(t.lvl>=3)return false;const c=upCost(t.type,t.lvl);if(G.coins<c)return false;G.coins-=c;G.coinBump=1;t.spent+=c;t.lvl++;t.upT=G.t;sfx('upgrade',0);burst(t.x,t.y-14,['#ffe45c','#fff','#ffb020'],18,120);return true;}
+function upgrade(t){if(t.lvl>=3)return false;const c=upCost(t.type,t.lvl);if(G.coins<c)return false;G.coins-=c;G.coinBump=1;t.spent+=c;t.lvl++;if(t.type==='horseradish'&&!t.mReady)t.reload=Math.min(t.reload||0,mortarReloadTime(t));t.upT=G.t;sfx('upgrade',0);burst(t.x,t.y-14,['#ffe45c','#fff','#ffb020'],18,120);return true;}
 function sell(t){sfx('coin',0);const v=Math.floor(t.spent*.7);G.coins+=v;G.coinBump=1;floatCoin(t.x,t.y-20,v);G.towers.splice(G.towers.indexOf(t),1);G.sel=null;burst(t.x,t.y,['#c9a36b','#8a5a2e'],12,80);}
+function mortarReloadTime(t){return (TOWERS.horseradish.mortarReload||[5,4.5,4])[(t?t.lvl:1)-1];}
+function mortarFire(t,x,y){if(!t||t.type!=='horseradish'||!t.mReady||!G.towers.includes(t))return false;t.mReady=false;t.reload=mortarReloadTime(t);t.anim=.35;t.face=x>=t.x?1:-1;G.mortarAim=null;const dur=Math.min(1.05,.5+Math.hypot(x-t.x,y-t.y)/1100);G.shots.push({k:'lob',manual:true,t:0,sx:t.x,sy:t.y-40,x:t.x,y:t.y-40,dur,dmg:TOWERS.horseradish.dmg[t.lvl-1],tx:x,ty:y});G.stats.fired.horseradish=(G.stats.fired.horseradish||0)+1;sfx('twang');return true;} // v9.21 manual lob: FIXED target point (no homing) so leading moving bugs is the skill; flight .5s + dist/1100, capped 1.05s
 function inRange(t,e){const[c,r]=cellOf(e.x,e.y);return t.rc.has(c+','+r);}
 function isHidden(e){return !!(e.hidden&&e.litT<=0);} // v9.14: hidden = cannot be seen/targeted/damaged by anything (Firefly aura sets litT/hidden=false first, in range)
 function targets(t){const d=TOWERS[t.type];const list=G.enemies.filter(e=>e.hp>0&&e.d>0&&!isHidden(e)&&!(d.ground&&e.fly&&!(d.airAt&&t.lvl>=d.airAt))&&!(d.air&&!e.fly)&&inRange(t,e)); // v9.14: even Firefly only shoots Lit bugs (its aura lights in-range bugs before firing, same step)
@@ -1128,10 +1309,12 @@ function targets(t){const d=TOWERS[t.type];const list=G.enemies.filter(e=>e.hp>0
 function update(dt){G.t+=dt;puUpdate(dt);
  if(!G.inWave&&G.countdown>0){G.countdown-=dt;if(G.countdown<=0){G.countdown=0;startWave();}}
  if(G.inWave){G.spawnT+=dt;while(G.spawnQ.length&&G.spawnQ[0].t<=G.spawnT)(q=>spawn(q.type,0,false,q.pi||0))(G.spawnQ.shift());}
- for(const t of G.towers)t.fireBuff=0;
- for(const t of G.towers){const d=TOWERS[t.type];
-  if(d.reveal)for(const e of G.enemies){if(e.hp>0&&e.d>0&&inRange(t,e)){e.hidden=false;e.litT=Math.max(e.litT,.4);e.litPct=Math.max(e.litPct||0,d.lit[t.lvl-1]);}}
-  if(d.reveal)for(const o of G.towers){if(o!==t&&Math.max(Math.abs(o.c-t.c),Math.abs(o.r-t.r))<=2)o.fireBuff=Math.max(o.fireBuff||0,d.buff[t.lvl-1]);}
+ for(const t of G.towers){t.fireBuff=0;t.auraBuff=0;}
+ for(const t of G.towers){const d=TOWERS[t.type],Lv=t.lvl-1;
+  if(d.reveal)for(const e of G.enemies){if(e.hp>0&&e.d>0&&inRange(t,e)){e.hidden=false;e.litT=Math.max(e.litT,.4);e.litPct=Math.max(e.litPct||0,d.lit[Lv]);}}
+  if(d.reveal)for(const o of G.towers){if(o!==t&&Math.max(Math.abs(o.c-t.c),Math.abs(o.r-t.r))<=2)o.fireBuff=Math.max(o.fireBuff||0,d.buff[Lv]);}
+  if(d.pulseReveal){t.pulseT=(t.pulseT||0)-dt;if(t.pulseT<=0){t.pulseT=d.pulseCd[Lv];t.anim=.3;part({k:'pulse',x:t.x,y:t.y-20,t:0,life:.5});for(const e of G.enemies){if(e.hp>0&&e.d>0&&inRange(t,e)){e.hidden=false;e.litT=Math.max(e.litT,d.pulseDur[Lv]);e.litPct=Math.max(e.litPct||0,d.pulseLit[Lv]);}}}} // Bat: periodic pulse (not always-on), reveals ground+air hidden in r2 for pulseDur, then they can re-hide
+  if(d.auraBuff)for(const o of G.towers){if(o!==t&&Math.max(Math.abs(o.c-t.c),Math.abs(o.r-t.r))<=d.auraR[Lv])o.auraBuff=Math.max(o.auraBuff||0,d.buffSpd[Lv]);} // Monarch adjacency aura; combined buff capped below
   if(d.stall){const cap=d.cap[t.lvl-1];for(const e of targets(t).slice(0,cap)){e.hogT=.4;const f=d.stallF[t.lvl-1];e.hogF=Math.min(e.hogF||1,ENEMY[e.type].boss?Math.min(.78,f+.28):f);}}}
  for(const t of G.towers){const d=TOWERS[t.type],L=t.lvl-1;t.cd-=dt;t.anim=Math.max(0,t.anim-dt);t.ph+=dt;t.blink-=dt;if(t.blink<-.13)t.blink=2+Math.random()*3.5;
   if(t.type==='flytrap')ftUpdate(t,dt);
@@ -1141,30 +1324,40 @@ function update(dt){G.t+=dt;puUpdate(dt);
    if(t.lvl>=3){const air=ts.find(e=>e.fly);if(air){h=t.heads[1];tg=air;}}
    t.cd=d.rate[L];G.stats.fired[t.type]=(G.stats.fired[t.type]||0)+1;t.face=tg.x>=t.x?1:-1;t.tx=tg.x;t.ty=tg.y;t.anim=.42;t.ftActive=t.heads.indexOf(h);
    h.a=FTD;h.e=tg;h.hit=false;h.dmg=d.dmg[L];h.lx=tg.x;h.ly=tg.y;continue;}
-  if(t.cd>0)continue;const ts=targets(t);if(!ts.length)continue;const e=ts[0];t.cd=d.rate[L]/(1+(t.fireBuff||0));G.stats.fired[t.type]=(G.stats.fired[t.type]||0)+1;
+  if(t.type==='horseradish'){if(!t.mReady){t.reload-=dt;if(t.reload<=0){t.reload=0;t.mReady=true;floatTxt(t.x,t.y-38,'READY!','#ffe680');}}continue;} // v9.21: Mortar NEVER auto-fires; it holds READY indefinitely
+  if(d.noFire)continue;
+  if(t.cd>0)continue;const ts=targets(t);if(!ts.length)continue;const e=ts[0];t.cd=d.rate[L]/(1+Math.min(.5,(t.fireBuff||0)+(t.auraBuff||0)));G.stats.fired[t.type]=(G.stats.fired[t.type]||0)+1; // v9.20: Firefly+Monarch speed buffs stack but total capped at +50%
   t.face=e.x>=t.x?1:-1;t.tx=e.x;t.ty=e.y;
   if(t.type==='frog'){t.anim=.26;sfx('thwip');G.shots.push({k:'tongue',t:0,tw:t,e,x0:t.x,y0:t.y-22*(1+.08*L),tx:e.x,ty:e.y-(e.fly?16:0),hit:false,dmg:d.dmg[L]});}
   else if(t.type==='gnome'){t.anim=.3;sfx('twang');const sx=t.x+t.face*14,sy=t.y-44;G.shots.push({k:'pebble',t:0,sx,sy,e,x:sx,y:sy,dur:.35+Math.hypot(e.x-sx,e.y-sy)/700,dmg:d.dmg[L],tx:e.x,ty:e.y});}
   else if(t.type==='mantis'){t.anim=MSL;t.sl=e;sfx('slash');hurt(e,d.dmg[L],'mantis');part({k:'slash',x:e.x,y:e.y,f:t.face,t:0,life:.22});}
-  else if(t.type==='zapper'){t.anim=.22;sfx('zap');const hit=[e];let cur=e;while(hit.length<d.chain){const n=G.enemies.filter(o=>o.hp>0&&o.d>0&&!isHidden(o)&&!hit.includes(o)&&Math.hypot(o.x-cur.x,o.y-cur.y)<T*1.7).sort((a,b)=>Math.hypot(a.x-cur.x,a.y-cur.y)-Math.hypot(b.x-cur.x,b.y-cur.y))[0];if(!n)break;hit.push(n);cur=n;}
-   const pts=[{x:t.x,y:t.y+12-ZGLOW[t.lvl-1]}].concat(hit.map(h=>({x:h.x,y:h.y-(h.fly?16:0)})));hit.forEach((h,i)=>{hurt(h,d.dmg[L]*Math.pow(d.fall,i),'zapper',true);burst(h.x,h.y,['#d8d0ff','#fff'],4,60);});part({k:'bolt',pts,t:0,life:.24});}
+  else if(t.type==='zapper'){t.anim=.22;sfx('zap');const wet=G.sprT>0,wm=wet?2:1;const hit=[e];let cur=e;while(hit.length<d.chain){const n=G.enemies.filter(o=>o.hp>0&&o.d>0&&!isHidden(o)&&!hit.includes(o)&&Math.hypot(o.x-cur.x,o.y-cur.y)<T*1.7).sort((a,b)=>Math.hypot(a.x-cur.x,a.y-cur.y)-Math.hypot(b.x-cur.x,b.y-cur.y))[0];if(!n)break;hit.push(n);cur=n;}
+   const pts=[{x:t.x,y:t.y+12-ZGLOW[t.lvl-1]}].concat(hit.map(h=>({x:h.x,y:h.y-(h.fly?16:0)})));hit.forEach((h,i)=>{hurt(h,d.dmg[L]*wm*Math.pow(d.fall,i),'zapper',true);burst(h.x,h.y,wet?['#aee6ff','#ffffff']:['#d8d0ff','#fff'],4,60);});part({k:'bolt',pts,wet,t:0,life:.24});} // v9.20 WET+LIGHTNING: x2 Zapper damage while Sprinkler runs (whole board is wet)
   else if(t.type==='spider'){t.anim=.26;sfx('thwip');e.slowT=Math.max(e.slowT||0,d.slow);hurt(e,d.dmg[L],'spider');part({k:'ring',x:e.x,y:e.y,t:0,life:.3});burst(e.x,e.y,['#e2d6ff','#fff'],4,50);}
   else if(t.type==='dandelion'){t.anim=.2;sfx('puff');hurt(e,d.dmg[L],'dandelion');dandelionPuff(e,L);} // v9.16: soft pale seed cloud on every real hit (targets() already excludes hidden bugs, so no puff on hidden)
   else if(t.type==='hedgehog'){t.anim=.3;sfx('prickle');targets(t).slice(0,d.cap[L]).forEach(o=>{hurt(o,d.dmg[L],'hedgehog');part({k:'prick',x:o.x,y:o.y-(o.fly?14:0),t:0,life:.3});burst(o.x,o.y,['#e0aa62','#fff0d2'],2,40);});part({k:'ring',x:t.x,y:t.y,t:0,life:.25});}
   else if(t.type==='firefly'){t.anim=.3;sfx('firefly');e.litT=Math.max(e.litT,1.2);e.litPct=Math.max(e.litPct||0,d.lit[L]);e.hidden=false;hurt(e,d.dmg[L],'firefly');burst(e.x,e.y-(e.fly?14:0),['#fff6b0','#ffd23f'],5,50);}
   else if(t.type==='dragon'){t.anim=.42;sfx('dragon');ts.slice(0,d.cleave).forEach(o=>hurt(o,d.dmg[L],'dragon'));const[dx,dy]=DIRS[t.dir];part({k:'chomp',x:t.x+dx*T*1.7,y:t.y+dy*T*1.7,t:0,life:.35,big:1});G.shake=Math.max(G.shake,2);}
+  else if(t.type==='bat'){t.anim=.3;sfx('zap');hurt(e,d.dmg[L],'bat');part({k:'ring',x:e.x,y:e.y-16,t:0,life:.3});burst(e.x,e.y-14,['#b8a8ff','#fff'],4,50);}
+  else if(t.type==='owl'){t.anim=.35;sfx('slash');hurt(e,d.dmg[L],'owl');part({k:'slash',x:e.x,y:e.y-14,f:t.face,t:0,life:.22});}
+  else if(t.type==='sundew'){t.anim=.35;sfx('prickle');const dur=d.holdDur[L]*(e.boss?.35:1);e.holdT=Math.max(e.holdT||0,dur);hurt(e,d.dmg[L],'sundew');part({k:'ring',x:e.x,y:e.y,t:0,life:.35});floatTxt(e.x,e.y-22,e.boss?'HELD (brief)':'HELD!','#ff8aa0');}
  }
  for(const s of G.shots){s.t+=dt;
   if(s.k==='tongue'){if(s.e.hp>0&&!isHidden(s.e)){s.tx=s.e.x;s.ty=s.e.y-(s.e.fly?16:0);}if(!s.hit&&s.t>=.08){s.hit=true;if(s.e.hp>0&&!isHidden(s.e)){hurt(s.e,s.dmg,'frog');burst(s.tx,s.ty,['#ff7aa0','#fff'],4,50);}}if(s.t>.24)s.dead=true;}
+  else if(s.k==='lob'){const p=Math.min(1,s.t/s.dur);if(!s.manual&&s.e&&s.e.hp>0&&!isHidden(s.e)){s.tx=s.e.x;s.ty=s.e.y;}s.x=s.sx+(s.tx-s.sx)*p;s.y=s.sy+(s.ty-s.sy)*p-Math.sin(p*Math.PI)*70;s.gy=s.sy+(s.ty-s.sy)*p+40*(1-p);
+   if(p>=1){s.dead=true;sfx('thunk');const hd=TOWERS.horseradish,sp=hd.splash*T;if(s.manual){const cand=G.enemies.filter(o=>o.hp>0&&o.d>0&&!isHidden(o)&&!o.fly&&Math.hypot(o.x-s.tx,o.y-s.ty)<=sp).sort((a,b)=>Math.hypot(a.x-s.tx,a.y-s.ty)-Math.hypot(b.x-s.tx,b.y-s.ty));cand.forEach((o,i)=>hurt(o,i===0?s.dmg:s.dmg*hd.splashPct,'horseradish'));}else{for(const o of G.enemies)if(o.hp>0&&o.d>0&&!isHidden(o)&&!o.fly&&Math.hypot(o.x-s.tx,o.y-s.ty)<=sp)hurt(o,o===s.e?s.dmg:s.dmg*hd.splashPct,'horseradish');}part({k:'splash',x:s.tx,y:s.ty,t:0,life:.35});burst(s.tx,s.ty,['#efe6cc','#c8b890','#fff'],8,70);}} // v9.21 manual splash: closest bug to impact = full damage, others within 1 square = 70% (same v9.20 splash rule, centre = closest to the tapped spot)
   else{const p=Math.min(1,s.t/s.dur);if(s.e.hp>0&&!isHidden(s.e)){s.tx=s.e.x;s.ty=s.e.y-(s.e.fly?16:0);}s.x=s.sx+(s.tx-s.sx)*p;s.y=s.sy+(s.ty-s.sy)*p-Math.sin(p*Math.PI)*40;s.gy=s.sy+(s.ty-s.sy)*p+44*(1-p);
    if(p>=1){s.dead=true;sfx('thunk');const sp=TOWERS.gnome.splash*T;for(const o of G.enemies)if(o.hp>0&&o.d>0&&!isHidden(o)&&(o===s.e||(!o.fly&&Math.hypot(o.x-s.tx,o.y-s.ty)<sp)))hurt(o,o===s.e?s.dmg:s.dmg*.6,'gnome'); // v9.14: pebble does not home-hit / splash hidden bugs
     for(let i=0;i<6;i++)part({k:'puff',x:s.tx,y:s.ty,vx:(Math.random()-.5)*80,vy:-Math.random()*50,r:3+Math.random()*3,t:0,life:.35,c:'rgba(210,190,160,.9)'});part({k:'ring',x:s.tx,y:s.ty,t:0,life:.3});}}}
  G.shots=G.shots.filter(s=>!s.dead);
- for(const e of G.enemies){if(e.hp<=0)continue;e.ph+=dt*9;e.flash-=dt;let sp=e.spd;
+ for(const e of G.enemies){if(e.hp<=0)continue;e.ph+=dt*9;e.flash-=dt;let sp=e.spd*(e.spdMul||1);
   if(e.type==='grass')sp*=.25+1.5*Math.max(0,Math.sin(e.ph*.55));
+  if(e.slowResT>0)e.slowResT-=dt;
+  if(e.holdT>0){e.holdT-=dt;sp=0;} // Sundew hold (bosses get reduced duration at application)
   if(e.boss&&!e.fly){e.thump-=dt;if(e.thump<=0){e.thump=1.1;sfx('slugThump',.05);G.shake=Math.max(G.shake,3.5);}if(e.type==='slug'&&Math.random()<dt*10){G.slime.push({x:e.x+(Math.random()-.5)*26,y:e.y+(Math.random()-.5)*18,r:4+Math.random()*4});if(G.slime.length>180)G.slime.shift();}}
-  if(e.slowT>0){e.slowT-=dt;sp*=.55;} if(e.hogT>0){e.hogT-=dt;sp*=e.hogF||.45;if(e.hogT<=0)e.hogF=1;} if(e.litT>0){e.litT-=dt;if(e.litT<=0)e.litPct=0;} if(e.dark&&e.litT<=0)e.hidden=true; // v9.14: re-hide the moment Lit grace (.4s after leaving aura / 1.2s after glow hit) expires; health unchanged
-  if(G.sprT>0&&!isHidden(e))sp*=PU.spr.slow; /* Sprinkler cannot slow hidden bugs */ e.d+=sp*dt;const p=posAt(e.d,e.pi);e.x=p.x;e.y=p.y;let da=p.ang-e.ang;while(da>Math.PI)da-=6.283;while(da<-Math.PI)da+=6.283;e.ang+=da*Math.min(1,dt*10);
+  const slowRf=(e.slowResT>0)?.25:1; if(e.slowT>0){e.slowT-=dt;sp*=1-.45*slowRf;} if(e.hogT>0){e.hogT-=dt;sp*=e.hogF||.45;if(e.hogT<=0)e.hogF=1;} if(!e.fly&&G.muds&&G.muds.length)for(const m of G.muds)if(Math.hypot(e.x-m.x,e.y-m.y)<m.r)sp*=1-.65*slowRf; // Mud Pie heavy slow (ground only), stink resists it
+  if(e.litT>0){e.litT-=dt;if(e.litT<=0)e.litPct=0;} if(e.dark&&e.litT<=0)e.hidden=true; // v9.14: re-hide when Lit grace expires; health unchanged
+  if(G.sprT>0&&!isHidden(e))sp*=1-(1-PU.spr.slow)*slowRf; /* Sprinkler cannot slow hidden bugs; stink resists */ e.d+=sp*dt;const p=posAt(e.d,e.pi);e.x=p.x;e.y=p.y;let da=p.ang-e.ang;while(da>Math.PI)da-=6.283;while(da<-Math.PI)da+=6.283;e.ang+=da*Math.min(1,dt*10);
   e.shown+=(e.hp-e.shown)*Math.min(1,dt*6);
   if(e.d>=PATHS[e.pi].len){if(e.dark&&isHidden(e))part({k:'leak',x:e.x,y:e.y,tp:e.type,fly:e.fly,t:0,life:.9});e.hp=0;const l=ENEMY[e.type].lives||1; /* v9.14 leak flash above */ G.lives-=l;G.stats.leaked+=l;sfx('lifeLost',.03);G.hurt=.6;G.lifeBump=1;G.shake=Math.max(G.shake,l>1?12:4);burst(e.x,e.y,['#ff8a8a','#fff'],10,90);floatTxt(e.x,e.y-20,'-'+l+' \u2665','#ff8aa0');}}
  G.enemies=G.enemies.filter(e=>e.hp>0);
@@ -1172,7 +1365,9 @@ function update(dt){G.t+=dt;puUpdate(dt);
  if(f.vx!==undefined){f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=.92;f.vy=f.vy*.92+(f.g||0)*dt;}}
  G.fx=G.fx.filter(f=>f.t<f.life);
  if(G.lives<=0){G.lives=0;setScreen(LEVEL.survival?'over':'lose');}
- else if(G.inWave&&!G.spawnQ.length&&!G.enemies.length){G.inWave=false;const b=20+4*G.wave;G.coins+=b;if(G.wave%PU.every===0)for(const k in G.pu){if(G.pu[k].ch<PU.max){G.pu[k].ch++;floatTxt(W/2,OY+8*T,'+1 power-up charge','#8ae0ff');}}floatTxt(W/2,OY+7*T,'Wave clear!  +'+b,'#ffe680');if(LEVEL.survival&&G.wave>PROG.best){PROG.best=G.wave;G.newBest=true;saveProg();}if(G.wave>=LEVEL.waves)setScreen('win');else G.countdown=CD;}}
+ else if(G.inWave&&!G.spawnQ.length&&!G.enemies.length){G.inWave=false;
+  {const banks=G.towers.filter(tw=>TOWERS[tw.type].bank);if(banks.length){const pool=G.coins;const interest=banks.reduce((sum,tw)=>sum+Math.min(TOWERS[tw.type].intCap[tw.lvl-1],Math.floor(pool*TOWERS[tw.type].intRate[tw.lvl-1])),0);if(interest>0){G.coins+=interest;G.stats.interest=(G.stats.interest||0)+interest;floatTxt(W/2,OY+6*T,'Sunflower interest +'+interest+' coins!','#ffe680');}}} // v9.21 STACK: EVERY bank pays its % on the SAME unspent pool (snapshot before interest), each bank's cap applies per bank; no compounding within the wave
+  const b=20+4*G.wave;G.coins+=b;if(G.wave%PU.every===0)for(const k in G.pu){if(G.pu[k].ch<PU.max){G.pu[k].ch++;floatTxt(W/2,OY+8*T,'+1 power-up charge','#8ae0ff');}}floatTxt(W/2,OY+7*T,'Wave clear!  +'+b,'#ffe680');if(LEVEL.survival&&G.wave>PROG.best){PROG.best=G.wave;G.newBest=true;saveProg();}if(G.wave>=LEVEL.waves)setScreen('win');else G.countdown=CD;}}
 function setScreen(s){screen=s;uiT=0;if(s==='levels')MAPAUTOF=true;if(s==='win')sfx('win',0);if(s==='lose'||s==='over')sfx('lose',0);if(s==='win'||s==='lose'||s==='over'){G.sel=G.build=null;}
  if(s==='win'){const st=G.lives>=17?3:G.lives>=10?2:1;G.stars=st;PROG.st[LVI]=Math.max(PROG.st[LVI]||0,st);const before=PROG.un||1;PROG.un=Math.max(PROG.un,LVI+2);G.newUnlocks=before<PROG.un?ORDER.filter(k=>DEF_UNLOCK[k]>before&&DEF_UNLOCK[k]<=PROG.un):[];cleanDeck();saveProg();}}
 // ================= rendering =================
@@ -1224,9 +1419,22 @@ function drawFlytrap(t,x,by,sc,preview){ftHeads(t);const L=t.lvl,sw=Math.sin(t.p
 const PU={max:2,every:3,cd:20,seed:{r:3.75,dur:4},spr:{dur:5,slow:.5},zap:{dur:2.5}};
 const seedDps=()=>20+8*G.wave;
 const zapDps=()=>30+10*G.wave; // Zapper boost: DPS to every bug in the 3x3, ignores armor
+const PU_AIM_TEXT={seed:'Tap the lawn to throw Bird Seed',hose:'Tap a spot to spray the Garden Hose',swatter:'Tap ONE bug to swat it!',mud:'Tap a path tile to drop a Mud Pie',shovel:'Tap a defense, then tap its new home (tap power again to cancel)'};
+function puConsume(k){const p=G.pu[k];p.ch--;p.cd=PU.cd;G.stats.pu=(G.stats.pu||0)+1;G.aim=null;}
 function puUse(k){const p=G.pu[k];if(!p||p.ch<=0||p.cd>0||screen!=='play')return false;
- if(k==='seed'||k==='zap'){G.aim=G.aim===k?null:k;G.build=G.sel=null;sfx('click',0);return true;}
+ if(k==='seed'||k==='zap'||k==='hose'||k==='swatter'||k==='mud'||k==='shovel'){G.aim=G.aim===k?null:k;if(G.aim!==k)G.shovelFrom=null;G.build=G.sel=null;G.mortarAim=null;sfx('click',0);return true;}
  p.ch--;p.cd=PU.cd;G.sprT=PU.spr.dur;sfx('sprinkler',0);G.stats.pu=(G.stats.pu||0)+1;return true;}
+function puHose(x,y){const p=G.pu.hose;if(G.aim!=='hose'||!p||p.ch<=0||p.cd>0)return false;puConsume('hose');sfx('sprinkler',0);part({k:'hose',x,y,t:0,life:.45});
+ for(const e of G.enemies){if(e.hp<=0||e.d<=0||isHidden(e)||Math.hypot(e.x-x,e.y-y)>2.2*T)continue;const push=e.boss?.15*T:e.fly?.7*T:2.2*T;e.d=Math.max(0,e.d-push);const pp=posAt(e.d,e.pi);e.x=pp.x;e.y=pp.y;hurt(e,12+2*G.wave,'birds',true);}return true;} // flyers barely pushed, bosses almost not
+function puSwatter(x,y){const p=G.pu.swatter;if(G.aim!=='swatter'||!p||p.ch<=0||p.cd>0)return false;let best=null,bd=1.3*T;for(const e of G.enemies){if(e.hp<=0||e.d<=0||isHidden(e))continue;const d=Math.hypot(e.x-x,(e.y-(e.fly?16:0))-y);if(d<bd){bd=d;best=e;}}if(!best)return false;puConsume('swatter');sfx('thunk');part({k:'swat',x:best.x,y:best.y-(best.fly?16:0),t:0,life:.3});
+ if(best.fly&&!best.boss)hurt(best,999999,'birds',true);else hurt(best,best.boss?500+25*G.wave:180+10*G.wave,'birds',true);return true;} // flyer non-boss = insta-pop; boss = big chunk; ground = heavy hit
+function puMud(x,y){const p=G.pu.mud;if(G.aim!=='mud'||!p||p.ch<=0||p.cd>0)return false;const[c,r]=cellOf(x,y);if(!isPath.has(c+','+r))return false;puConsume('mud');sfx('thunk');G.muds.push({x:cx(c),y:cy(r),r:1.35*T,t:0,dur:6});part({k:'splash',x:cx(c),y:cy(r),t:0,life:.35});return true;}
+function puShovelTap(x,y){const[c,r]=cellOf(x,y);const occ=occupied(c,r);
+ if(!G.shovelFrom){if(occ){G.shovelFrom=occ;floatTxt(occ.x,occ.y-34,'Tap its new home!','#8ae0ff');sfx('click',0);}return true;}
+ const tw=G.shovelFrom;if(occ===tw){G.shovelFrom=null;G.aim=null;floatTxt(tw.x,tw.y-34,'Transplant cancelled','#fff');return true;}
+ let dest=null;if(tw.type==='dragon'){for(const[a,b]of[[c,r],[c-1,r],[c,r-1],[c-1,r-1]]){const cells=footprint('dragon',a,b);if(cells.every(([aa,bb])=>grass(aa,bb)&&(!occupied(aa,bb)||occupied(aa,bb)===tw)))dest=[a,b];if(dest)break;}}else if(grass(c,r)&&(!occ))dest=[c,r];
+ if(!dest){floatTxt(x,y-16,'No room there!','#ff8a8a');return true;}
+ const p=G.pu.shovel;if(!p||p.ch<=0||p.cd>0)return false;puConsume('shovel');G.shovelFrom=null;tw.c=dest[0];tw.r=dest[1];tw.cells=footprint(tw.type,tw.c,tw.r);tw.x=TOWERS[tw.type].size===2?OX+(tw.c+1)*T:cx(tw.c);tw.y=TOWERS[tw.type].size===2?OY+(tw.r+1)*T:cy(tw.r);tw.rc=new Set(rangeCells(tw.type,tw.c,tw.r,tw.dir||0).map(q=>q.join(',')));tw.born=G.t;sfx('build',0);burst(tw.x,tw.y,['#c9a36b','#8ce06a'],14,80);floatTxt(tw.x,tw.y-34,'Moved!','#8ce06a');return true;}
 function zapStart(x,y){const p=G.pu.zap;if(G.aim!=='zap'||!p||p.ch<=0||p.cd>0||G.zapFx||screen!=='play')return false;
  G.aim=null;p.ch--;p.cd=PU.cd;G.stats.pu=(G.stats.pu||0)+1;G.zapFx={x,y,t:0,down:true,boltT:0};sfx('zap',0);return true;}
 function zapMove(x,y){if(G.zapFx){G.zapFx.x=x;G.zapFx.y=y;}}
@@ -1235,7 +1443,7 @@ function puThrow(x,y){const p=G.pu.seed;G.aim=null;p.ch--;p.cd=PU.cd;G.stats.pu=
  const seeds=[];for(let i=0;i<70;i++){const a=Math.random()*6.283,d=Math.sqrt(Math.random())*r*.95;seeds.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d*.9,a:Math.random()*3,c:i%3});}
  G.seedFx={x,y,r,t:0,dur:PU.seed.dur,seeds};sfx('seed',0);sfx('birds',0);
  G.birds=[];for(let i=0;i<9;i++){const sx=x+(Math.random()-.5)*W,sy=-40-Math.random()*80;G.birds.push({x:sx,y:sy,tx:x,ty:y,st:'dive',t:-i*.08,e:null,ph:Math.random()*6,face:1,col:i%3,peckT:0});}}
-function puUpdate(dt){for(const k in G.pu)G.pu[k].cd=Math.max(0,G.pu[k].cd-dt);if(G.sprT>0){G.sprT-=dt;if(Math.random()<dt*30)part({k:'drop',x:Math.random()*W,y:OY+Math.random()*14*T,t:0,life:.5});}
+function puUpdate(dt){for(const k in G.pu)G.pu[k].cd=Math.max(0,G.pu[k].cd-dt);if(G.muds){for(const m of G.muds)m.t+=dt;G.muds=G.muds.filter(m=>m.t<m.dur);}if(G.sprT>0){G.sprT-=dt;if(Math.random()<dt*30)part({k:'drop',x:Math.random()*W,y:OY+Math.random()*14*T,t:0,life:.5});}
  const z=G.zapFx;if(z){z.t+=dt;if(!z.down||z.t>=PU.zap.dur)G.zapFx=null;else{const half=1.5*T,hit=G.enemies.filter(e=>e.hp>0&&e.d>0&&!isHidden(e)&&Math.abs(e.x-z.x)<=half&&Math.abs(e.y-z.y)<=half);
    for(const e of hit)hurt(e,zapDps()*dt,'zapper',true);
    z.boltT-=dt;if(z.boltT<=0){z.boltT=.09;sfx('zap',.35);if(hit.length)part({k:'bolt',pts:[{x:z.x,y:z.y-50},{x:z.x,y:z.y}].concat(hit.slice(0,4).map(e=>({x:e.x,y:e.y-(e.fly?16:0)}))),t:0,life:.14});}}}
@@ -1289,10 +1497,14 @@ function drawPUBar(){const by=BARY+18;const items=[[G.chosenPower||'seed',262]];
   ctx.beginPath();ctx.arc(0,0,r,0,6.283);ctx.fillStyle=lg(0,-r,0,r,on||act?(k==='seed'?['#ffe08a','#e8a020']:k==='zap'?['#e2d6ff','#7a5ae8']:['#9ad8ff','#2a8ad8']):['#b8b0a0','#7a7266']);ctx.fill();ctx.strokeStyle=act?'#fff':'rgba(255,255,255,.6)';ctx.lineWidth=act?4:2.5;ctx.stroke();X=ctx;
   if(k==='seed'){ctx.save();ctx.scale(.75,.75);spr(S.bird0_0,-2,-2);ctx.restore();for(let i=0;i<5;i++){ctx.save();ctx.translate(-12+i*6,14+(i%2)*2);ctx.rotate(i);spr(S.seedR,0,0,.8);ctx.restore();}}
   else if(k==='spr'){ctx.fillStyle='#4a5a6a';ctx.beginPath();ctx.roundRect(-5,4,10,12,3);ctx.fill();for(let j=0;j<5;j++){const a=-Math.PI/2+(j-2)*.45;ctx.strokeStyle='#e8f6ff';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(0,2);ctx.quadraticCurveTo(Math.cos(a)*10,Math.sin(a)*14-4,Math.cos(a)*18,Math.sin(a)*10+2);ctx.stroke();}}
+  else if(k==='hose'){ctx.strokeStyle=on||act?'#e8f6ff':'#cfc8ba';ctx.lineWidth=3;ctx.lineCap='round';for(const a of[-.7,0,.7]){ctx.beginPath();ctx.moveTo(0,4);ctx.quadraticCurveTo(Math.sin(a)*10,-6,Math.sin(a)*17,-13);ctx.stroke();}ctx.fillStyle='#2a6ab8';ctx.beginPath();ctx.roundRect(-6,4,12,11,3);ctx.fill();}
+  else if(k==='swatter'){ctx.save();ctx.rotate(-.5);ctx.strokeStyle='#8a2a1a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-2);ctx.stroke();ctx.fillStyle=on||act?'#ff8a6a':'#cfc8ba';ctx.beginPath();ctx.roundRect(-9,-15,18,14,4);ctx.fill();ctx.strokeStyle='rgba(90,20,10,.6)';ctx.lineWidth=1;for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(i*5,-14);ctx.lineTo(i*5,-2);ctx.moveTo(-8,-8+i*4);ctx.lineTo(8,-8+i*4);ctx.stroke();}ctx.restore();}
+  else if(k==='mud'){ctx.fillStyle=on||act?'#a8743f':'#b0a898';ctx.beginPath();ctx.ellipse(0,2,15,9,.2,0,6.283);ctx.fill();ctx.fillStyle=on||act?'#7c4f22':'#989080';ctx.beginPath();ctx.ellipse(-5,-1,7,4,.4,0,6.283);ctx.fill();ctx.beginPath();ctx.arc(8,-5,3,0,6.283);ctx.fill();}
+  else if(k==='shovel'){ctx.save();ctx.rotate(.6);ctx.strokeStyle='#8a6a3a';ctx.lineWidth=3.4;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-4);ctx.stroke();ctx.fillStyle=on||act?'#c8d2da':'#b8b4ac';ctx.beginPath();ctx.moveTo(-7,-4);ctx.lineTo(7,-4);ctx.lineTo(5,-15);ctx.quadraticCurveTo(0,-18,-5,-15);ctx.closePath();ctx.fill();ctx.strokeStyle='#5a6a72';ctx.lineWidth=1.2;ctx.stroke();ctx.restore();}
   else{ctx.save();ctx.rotate(.08);ctx.beginPath();for(const[px,py]of[[3,-14],[-6,1],[-.5,1],[-3,14],[8,-3],[2.5,-3]])ctx.lineTo(px,py);ctx.closePath();ctx.fillStyle=on||act?'#fff0a0':'#cfc8ba';ctx.fill();ctx.strokeStyle='#a86a08';ctx.lineWidth=1.4;ctx.stroke();ctx.restore();}
   if(p.cd>0){ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,r,-Math.PI/2,-Math.PI/2+6.283*(p.cd/PU.cd));ctx.closePath();ctx.fillStyle='rgba(20,20,30,.55)';ctx.fill();txt(''+Math.ceil(p.cd),0,1,15,'#fff','center','rgba(0,0,0,.6)');}
   ctx.beginPath();ctx.arc(r*.72,-r*.72,10,0,6.283);ctx.fillStyle=p.ch>0?'#ff5a4a':'#7a7266';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();txt(''+p.ch,r*.72,-r*.72+1,12,'#fff','center',null);ctx.restore();}
- if(G.aim==='seed'){const b=Math.sin(uiT*4)*3;rr(W/2-130,BARY-46+b,260,34,17);ctx.fillStyle='rgba(40,25,5,.75)';ctx.fill();txt('Tap the lawn to throw Bird Seed',W/2,BARY-29+b,15,'#ffe680','center',null);}
+ if(G.aim&&PU_AIM_TEXT[G.aim]){const b=Math.sin(uiT*4)*3;rr(W/2-165,BARY-46+b,330,34,17);ctx.fillStyle='rgba(40,25,5,.75)';ctx.fill();txt(PU_AIM_TEXT[G.aim],W/2,BARY-29+b,13,'#ffe680','center',null);}
 }
 function drawTower(t,x=t.x,y=t.y,preview){const d=TOWERS[t.type],L=t.lvl,a=t.anim>0;const age=preview?9:G.t-t.born,pop=age<.4?ease.outBack(age/.4):1,up=G.t-t.upT,ub=up<.4?1+.18*Math.sin(up/.4*Math.PI):1;
  if(t.type==='dragon'){drawDragon(t,x,y,pop*ub,preview);return;}
@@ -1308,13 +1520,17 @@ function drawTower(t,x=t.x,y=t.y,preview){const d=TOWERS[t.type],L=t.lvl,a=t.ani
  else if(t.type==='dandelion'){rot=Math.sin(t.ph*2.1)*.08;v=a?'atk':'idle';}
  else if(t.type==='hedgehog'){v=a?'atk':'idle';}
  else if(t.type==='firefly'){v=a?'atk':'idle';}
+ else if(['bat','owl','horseradish','monarch','sundew','compost','sunflower'].includes(t.type)){v=a?'atk':'idle';}
  const s=towerSprite(t.type,L,v);ctx.save();ctx.translate(x,by+oy);
  if(t.type==='flytrap'&&a){const k=Math.sin(Math.min(1,(.38-t.anim)/.38)*Math.PI);ctx.translate((t.tx-x)*.18*k,(t.ty-y)*.12*k);}
  ctx.rotate(rot);if(t.face<0)ctx.scale(-1,1);spr(s,0,0,sx,sy);ctx.restore();
  if(t.type==='firefly'){const p=.5+.3*Math.sin(t.ph*3.2)+(a?.6:0);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=p;spr(S.glow,x,by-34,2.2,2.2);ctx.restore();}
- if(t.type==='zapper'){const p=.55+.25*Math.sin(t.ph*5)+(a?.5:0);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=p;spr(S.glow,x,by-ZGLOW[L-1]*sy,1.6,1.6);ctx.restore();}
- if(!preview)for(let i=0;i<L;i++)spr(S.star,x-(L-1)*5+i*10,y+22,.6);}
-// ---------- MANTIS draw: sway, swivelling head, raptor arms (fold -> raise -> slash -> recover) ----------
+ if(t.type==='zapper'){const p=.55+.25*Math.sin(t.ph*5)+(a?.5:0);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=p;spr(S.glow,x,by-ZGLOW[L-1]*sy,1.6,1.6);ctx.restore();if(G.sprT>0){ctx.save();ctx.globalAlpha=.5+.3*Math.sin(t.ph*9);ctx.strokeStyle='#aee6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,by-ZGLOW[L-1]*sy,13+3*Math.sin(t.ph*9),0,6.283);ctx.stroke();ctx.restore();txt('WET x2!',x,by-ZGLOW[L-1]*sy-24,10,'#aee6ff','center','#124a7a',900);}} // v9.20 wet synergy visual cue
+ if(!preview)for(let i=0;i<L;i++)spr(S.star,x-(L-1)*5+i*10,y+22,.6);
+ if(t.type==='horseradish'&&!preview){ // v9.21 READY vs reloading, unmissable at game size
+  if(t.mReady){const pu=1+.18*Math.sin(uiT*6);ctx.save();ctx.strokeStyle='#ffd23f';ctx.lineWidth=3;ctx.globalAlpha=.75+.25*Math.sin(uiT*6);ctx.beginPath();ctx.arc(x,by-18,24*pu,0,6.283);ctx.stroke();ctx.fillStyle='#f4ecd4';ctx.beginPath();ctx.ellipse(x,by-42,7,10,-.3,0,6.283);ctx.fill();ctx.strokeStyle='#7a6c4e';ctx.lineWidth=1.4;ctx.stroke();ctx.restore();txt('READY – tap!',x,by-62,10.5,'#ffe680','center','#5a3a08',900);}
+  else{const tot=mortarReloadTime(t),fr=Math.max(0,Math.min(1,1-(t.reload||0)/tot));ctx.save();ctx.strokeStyle='rgba(40,30,15,.55)';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,by-18,22,0,6.283);ctx.stroke();ctx.strokeStyle='#ffb020';ctx.beginPath();ctx.arc(x,by-18,22,-Math.PI/2,-Math.PI/2+fr*6.283);ctx.stroke();ctx.restore();txt(Math.ceil(t.reload||0)+'s',x,by-62,9.5,'#fff','center','rgba(60,35,10,.7)',900);}}}
+ // ---------- MANTIS draw: sway, swivelling head, raptor arms (fold -> raise -> slash -> recover) ----------
 const MSL=.34;
 function mantisPose(k){// k: 0..1 through attack. returns [femurAngle, tibiaRel] for the striking (right) arm
  const fold=[-.3,2.35],raise=[-.6,-.95],strike=[.35,.4];const mix=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];
@@ -1355,6 +1571,8 @@ function drawEnemy(e){if(isHidden(e)){if(e.dark){ // v9.14 UPDATED (Michael): hi
  spr(s,e.x,e.y-z,sc);if(e.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=e.boss?.35:.6;spr(s,e.x,e.y-z,sc);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
  if((ENEMY[tp]||{}).body==='shell'){ // v9.17: subtle shell badge on shelled bugs only (beetle/roach) — small grey dome, top-right of sprite
   ctx.save();ctx.translate(e.x+e.r*.85,e.y-z-e.r*.8);ctx.beginPath();ctx.arc(0,1.5,5.5,Math.PI,0);ctx.closePath();ctx.fillStyle='rgba(210,220,225,.92)';ctx.fill();ctx.strokeStyle='rgba(45,55,60,.85)';ctx.lineWidth=1.2;ctx.stroke();ctx.beginPath();ctx.moveTo(-3.5,1.5);ctx.quadraticCurveTo(0,-3.5,3.5,1.5);ctx.stroke();ctx.restore();}
+ if(e.holdT>0){ctx.save();ctx.translate(e.x,e.y-z);ctx.strokeStyle='#e84a6a';ctx.lineWidth=2.4;for(let j=0;j<5;j++){const a=j*1.256;ctx.beginPath();ctx.moveTo(Math.cos(a)*5,Math.sin(a)*4);ctx.quadraticCurveTo(Math.cos(a)*13,Math.sin(a)*10-4,Math.cos(a)*16,Math.sin(a)*12);ctx.stroke();ctx.fillStyle='#ffd8e4';ctx.beginPath();ctx.arc(Math.cos(a)*16,Math.sin(a)*12,2,0,6.283);ctx.fill();}ctx.restore();txt('HELD',e.x,e.y-z-e.r-24,9,'#ff8aa0','center','#5e1024',900);}
+ if(e.slowResT>0){txt('slow-resistant',e.x,e.y-z-e.r-34,7.5,'#b8f07a','center','rgba(30,60,10,.55)',800);}
  if(e.hogT>0&&!e.fly){ // stuck on hedgehog spines: little spines jabbed in + slow chevrons trailing
   ctx.save();ctx.translate(e.x,e.y-z);ctx.rotate(Math.sin(e.ph*.7)*.08);
   for(let i=0;i<4;i++){const a=-2.4+i*1.05+Math.sin(e.ph+i)*.12,sx=Math.cos(a)*e.r*.82,sy=Math.sin(a)*e.r*.7;
@@ -1374,13 +1592,16 @@ function drawWorld(){const sk=G.shake>.3?G.shake:0;ctx.save();if(sk)ctx.translat
  ctx.drawImage(bg.c,0,0,W,H);
  drawSeedGround();
  for(const s of G.slime){ctx.fillStyle='rgba(170,235,100,.32)';ctx.beginPath();ctx.ellipse(s.x,s.y,s.r,s.r*.6,0,0,6.283);ctx.fill();}
+ for(const m of (G.muds||[])){const a=m.t<.3?m.t/.3:m.t>m.dur-.6?Math.max(0,(m.dur-m.t)/.6):1;ctx.save();ctx.globalAlpha=.88*a;ctx.fillStyle='#6e451c';ctx.beginPath();ctx.ellipse(m.x,m.y,m.r,m.r*.72,0,0,6.283);ctx.fill();ctx.fillStyle='#8a5c2a';ctx.beginPath();ctx.ellipse(m.x-12,m.y-6,m.r*.45,m.r*.3,.3,0,6.283);ctx.fill();ctx.fillStyle='rgba(220,180,120,.5)';ctx.beginPath();ctx.arc(m.x+14,m.y+8,5,0,6.283);ctx.fill();ctx.restore();txt('MUD: SLOW',m.x,m.y+3,9,'#ffe9c0','center','rgba(60,35,10,.6)',900);}
  X=ctx;
- if(G.build){const b=G.build;if(b.preview)drawRange(b.preview,b.ac??b.c,b.ar??b.r,b.dir||0,TOWERS[b.preview].col,b.valid!==false);else{ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.lineDashOffset=-uiT*20;ctx.beginPath();ctx.roundRect(OX+b.c*T+3,OY+b.r*T+3,T-6,T-6,9);ctx.stroke();ctx.setLineDash([]);txt('+',cx(b.c),cy(b.r),28,'#fff','center','rgba(0,0,0,.3)');}}
- if(G.sel)drawRange(G.sel.type,G.sel.c,G.sel.r,G.sel.dir,'#ffe066');
+ if(G.build){const b=G.build;if(b.preview==='horseradish'){ctx.strokeStyle=b.valid===false?'#ff4040':'#ffe066';ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.lineDashOffset=-uiT*20;ctx.beginPath();ctx.roundRect(OX+(b.ac??b.c)*T+3,OY+(b.ar??b.r)*T+3,T-6,T-6,9);ctx.stroke();ctx.setLineDash([]);}else if(b.preview)drawRange(b.preview,b.ac??b.c,b.ar??b.r,b.dir||0,TOWERS[b.preview].col,b.valid!==false);else{ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.lineDashOffset=-uiT*20;ctx.beginPath();ctx.roundRect(OX+b.c*T+3,OY+b.r*T+3,T-6,T-6,9);ctx.stroke();ctx.setLineDash([]);txt('+',cx(b.c),cy(b.r),28,'#fff','center','rgba(0,0,0,.3)');}}
+ if(G.sel&&G.sel.type!=='horseradish')drawRange(G.sel.type,G.sel.c,G.sel.r,G.sel.dir,'#ffe066'); // Mortar aims board-wide, no range box
+ if(G.mortarAim&&G.towers.includes(G.mortarAim)){const tw=G.mortarAim,ap=(G.aimPos&&G.aimPos.y>OY&&G.aimPos.y<BARY)?G.aimPos:{x:tw.x,y:tw.y-80};ctx.save();ctx.strokeStyle='#ffd23f';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.lineDashOffset=-uiT*24;ctx.beginPath();ctx.roundRect(OX+3,OY+3,9*T-6,14*T-6,12);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle='rgba(255,210,63,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tw.x,tw.y-30);ctx.lineTo(ap.x,ap.y);ctx.stroke();ctx.beginPath();ctx.arc(ap.x,ap.y,TOWERS.horseradish.splash*T,0,6.283);ctx.fillStyle='rgba(255,210,63,.18)';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.stroke();ctx.beginPath();ctx.moveTo(ap.x-14,ap.y);ctx.lineTo(ap.x+14,ap.y);ctx.moveTo(ap.x,ap.y-14);ctx.lineTo(ap.x,ap.y+14);ctx.stroke();ctx.restore();txt('Tap where to lob!',ap.x,ap.y-TOWERS.horseradish.splash*T-14,12,'#ffe680','center','rgba(60,35,10,.75)',900);}
  const list=[];for(const e of G.enemies)if(!e.fly&&!e.boss)list.push({y:e.y,e});for(const t of G.towers)list.push({y:t.y+(t.type==='dragon'?20:6)+(t.heads&&t.heads.some(h=>h.a>0)?999:0),t});list.sort((a,b)=>a.y-b.y);
  for(const o of list)o.e?drawEnemy(o.e):drawTower(o.t);for(const e of G.enemies)if(e.boss&&!e.fly)drawEnemy(e);
  if(G.build&&G.build.preview&&G.build.valid!==false){ctx.globalAlpha=.55;const b=G.build,d=TOWERS[b.preview];drawTower({type:b.preview,lvl:1,anim:0,ph:uiT,blink:1,face:1,dir:b.dir||0,born:-9,upT:-9},d.size===2?OX+(b.ac+1)*T:cx(b.c),d.size===2?OY+(b.ar+1)*T:cy(b.r),true);ctx.globalAlpha=1;}
  for(const s of G.shots)if(s.k==='pebble'){spr(S.shadow,s.x,s.gy,.25,.25);ctx.fillStyle='#8a8a8a';ctx.beginPath();ctx.arc(s.x,s.y,4.5,0,6.283);ctx.fill();ctx.fillStyle='#c8c8c8';ctx.beginPath();ctx.arc(s.x-1.3,s.y-1.3,2,0,6.283);ctx.fill();}
+ for(const s of G.shots)if(s.k==='lob'){spr(S.shadow,s.x,s.gy,.3,.3);ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.t*7);ctx.beginPath();ctx.moveTo(-4,-8);ctx.quadraticCurveTo(-5,4,-1,10);ctx.quadraticCurveTo(1,12,3,9);ctx.quadraticCurveTo(5,2,4,-8);ctx.quadraticCurveTo(0,-11,-4,-8);ctx.fillStyle='#f4ecd4';ctx.fill();ctx.strokeStyle='#7a6c4e';ctx.lineWidth=1.2;ctx.stroke();ctx.restore();}
  for(const e of G.enemies)if(e.fly)drawEnemy(e);
  drawBirds();
  for(const s of G.shots)if(s.k==='tongue'){const p=s.t<.08?ease.outCubic(s.t/.08):1-ease.inOut((s.t-.08)/.16);const ex=s.x0+(s.tx-s.x0)*p,ey=s.y0+(s.ty-s.y0)*p;const mx=(s.x0+ex)/2,my=(s.y0+ey)/2-8*p;
@@ -1401,13 +1622,18 @@ function drawWorld(){const sk=G.shake>.3?G.shake:0;ctx.save();if(sk)ctx.translat
   else if(f.k==='ring'){ctx.globalAlpha=i;ctx.strokeStyle='#f2e6c8';ctx.lineWidth=3*i+1;ctx.beginPath();ctx.ellipse(f.x,f.y,6+k*18,(6+k*18)*.5,0,0,6.283);ctx.stroke();}
   else if(f.k==='slash'){const e2=ease.outCubic(k);ctx.save();ctx.translate(f.x,f.y-4);ctx.scale(f.f||1,1);ctx.globalAlpha=Math.max(0,1-k*k);ctx.lineCap='round';for(const[o,rot]of[[0,0],[1,.55]]){ctx.save();ctx.rotate(-.6+rot);const a0=-2.3,a1=a0+2.6*e2;for(const[w,c]of[[7,'rgba(190,255,150,.45)'],[3.2,'#ffffff']]){ctx.strokeStyle=c;ctx.lineWidth=w*(1-k*.5);ctx.beginPath();ctx.arc(0,0,15+o*3,Math.max(a0,a1-1.5),a1);ctx.stroke();}ctx.restore();}ctx.restore();}
   else if(f.k==='chomp'){ctx.globalAlpha=i;const r=(f.big?22:13)*(.6+ease.outCubic(k)*.8);ctx.strokeStyle='#fff';ctx.lineWidth=3;for(let j=0;j<6;j++){const a=j*1.047+.3;ctx.beginPath();ctx.moveTo(f.x+Math.cos(a)*r*.6,f.y+Math.sin(a)*r*.6);ctx.lineTo(f.x+Math.cos(a)*r,f.y+Math.sin(a)*r);ctx.stroke();}}
-  else if(f.k==='bolt'){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=i;for(const[w,c]of[[10,'rgba(120,100,255,.35)'],[5,'rgba(170,150,255,.7)'],[2,'#ffffff']]){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+  else if(f.k==='bolt'){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=i;for(const[w,c]of f.wet?[[13,'rgba(80,180,255,.4)'],[6,'rgba(174,230,255,.85)'],[2.4,'#ffffff']]:[[10,'rgba(120,100,255,.35)'],[5,'rgba(170,150,255,.7)'],[2,'#ffffff']]){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
     f.pts.forEach((p,n)=>{if(!n){ctx.moveTo(p.x,p.y);return;}const q=f.pts[n-1];for(let s=1;s<=5;s++){const tt=s/5,j=s<5?(Math.random()-.5)*12:0;ctx.lineTo(q.x+(p.x-q.x)*tt+j,q.y+(p.y-q.y)*tt+j);}});ctx.stroke();}
    for(const p of f.pts.slice(1))spr(S.glow,p.x,p.y,.45*i);ctx.globalCompositeOperation='source-over';}
   else if(f.k==='feather'){ctx.globalAlpha=i;ctx.save();ctx.translate(f.x+Math.sin(f.t*6)*6,f.y);ctx.rotate(f.rot+Math.sin(f.t*5)*.8);ctx.fillStyle=f.c;ctx.beginPath();ctx.ellipse(0,0,5,2,0,0,6.283);ctx.fill();ctx.strokeStyle='rgba(80,80,100,.6)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(-6,0);ctx.lineTo(5,0);ctx.stroke();ctx.restore();}
   else if(f.k==='drop'){ctx.globalAlpha=i*.8;ctx.strokeStyle='#e8f6ff';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(f.x,f.y,3+k*10,(3+k*10)*.45,0,0,6.283);ctx.stroke();}
   else if(f.k==='prick'){ctx.globalAlpha=i;ctx.lineCap='round';for(let j=0;j<5;j++){const a=j*1.256+.5,r=4+ease.outCubic(k)*9;ctx.strokeStyle='#3a2410';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(f.x+Math.cos(a)*r*.45,f.y+Math.sin(a)*r*.45);ctx.lineTo(f.x+Math.cos(a)*r,f.y+Math.sin(a)*r);ctx.stroke();ctx.strokeStyle='#f2ddba';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(f.x+Math.cos(a)*r*.7,f.y+Math.sin(a)*r*.7);ctx.lineTo(f.x+Math.cos(a)*r,f.y+Math.sin(a)*r);ctx.stroke();}}
   else if(f.k==='leak'){ctx.globalAlpha=Math.sin(Math.min(1,k)*Math.PI);const ss=S[f.tp+'0_0'];if(ss)spr(ss,f.x,f.y-(f.fly?16:0),1.15);ctx.globalAlpha=i;ctx.strokeStyle='#ffd23f';ctx.lineWidth=2;ctx.beginPath();ctx.arc(f.x,f.y-(f.fly?16:0),14+k*10,0,6.283);ctx.stroke();}
+  else if(f.k==='stink'){ctx.globalAlpha=i*.75;ctx.fillStyle='#7ad04a';for(let j=0;j<6;j++){const a=j*1.05+k*2;ctx.beginPath();ctx.arc(f.x+Math.cos(a)*(6+k*22),f.y+Math.sin(a)*(4+k*14)-k*8,5+k*7,0,6.283);ctx.fill();}txt('STINK!',f.x,f.y-24,11,'#b8f07a','center','#2a4a10',900);}
+  else if(f.k==='pulse'){ctx.globalAlpha=i*.8;ctx.strokeStyle='#cfc4ff';ctx.lineWidth=2.5;for(const rr2 of[.5,1]){ctx.beginPath();ctx.arc(f.x,f.y,10+k*70*rr2,0,6.283);ctx.stroke();}}
+  else if(f.k==='splash'){ctx.globalAlpha=i;ctx.fillStyle='#efe6cc';ctx.beginPath();ctx.ellipse(f.x,f.y,10+k*26,(10+k*26)*.55,0,0,6.283);ctx.fill();ctx.strokeStyle='#c8b890';ctx.stroke();}
+  else if(f.k==='hose'){ctx.globalAlpha=i*.9;ctx.strokeStyle='#8ad4ff';ctx.lineWidth=5;ctx.lineCap='round';for(let j=-2;j<=2;j++){ctx.beginPath();ctx.moveTo(f.x,f.y);ctx.lineTo(f.x+j*16,f.y-24-Math.abs(j)*4);ctx.stroke();}}
+  else if(f.k==='swat'){ctx.globalAlpha=i;ctx.save();ctx.translate(f.x,f.y);ctx.rotate(-.5+k*.6);ctx.fillStyle='#ff8a6a';ctx.beginPath();ctx.roundRect(-13,-18,26,18,5);ctx.fill();ctx.strokeStyle='#8a2a1a';ctx.lineWidth=2;ctx.stroke();ctx.restore();}
   else if(f.k==='coin'){const e=ease.outCubic(k);ctx.globalAlpha=k>.7?(1-k)/.3:1;spr(S.coin,f.x-10,f.y-e*28,.7);X=ctx;txt(f.s,f.x+6,f.y-e*28+1,15,'#ffe680','center','#5a3a10');}
   else if(f.k==='txt'){const e=ease.outBack(Math.min(1,k*4));ctx.globalAlpha=k>.75?(1-k)/.25:1;X=ctx;ctx.save();ctx.translate(f.x,f.y-k*20);ctx.scale(e,e);txt(f.s,0,0,20,f.c,'center','#5a2a10');ctx.restore();}
   ctx.globalAlpha=1;}
@@ -1429,19 +1655,82 @@ function drawHud(){X=ctx;const cb=1+.2*G.coinBump,lb=1+.25*G.lifeBump;
  else if(G.wave<LEVEL.waves){label='Wave '+(G.wave+1)+' \u00B7 Go +'+Math.ceil(G.countdown);c1='#ffc14a';c2='#e8841a';}
  else{label='Garden saved!';dis=true;}
  button(14,by,184,62,label,c1,c2,fn,label.length>18?13:label.length>14?15:18,dis,ps);drawPUBar();
+ if(G.mortarAim){rr(60,BARY-54,240,38,17);ctx.fillStyle='rgba(40,25,5,.85)';ctx.fill();txt('Mortar aiming — tap a target spot!',176,BARY-35,12,'#ffe680','center',null,800);button(308,BARY-54,92,38,'\u2715 Cancel','#ff8a6a','#d8442a',()=>{G.mortarAim=null;sfx('click',0);},13);}
  if(G.inWave){const tot=G.waveTotal||1;}
  if(!G.inWave&&G.wave>0&&G.wave<LEVEL.waves){ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.roundRect(30,by+52,152,5,3);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(30,by+52,152*G.countdown/CD,5,3);ctx.fill();}
  const f=G.speed===2;button(326,by,74,62,f?'2x\u25B6\u25B6':'1x\u25B6',f?'#ffb04a':'#6ab0f0',f?'#e8741a':'#2f74c8',()=>{G.speed=f?1:2;},20);}
 function sheetY(row,h){const top=row>=9;const e=ease.outBack(Math.min(1,G.panelT/.28));return top?OY+6-(1-e)*(h+80):BARY-h-8+(1-e)*(h+80);}
-function tagsOf(d,lv){const t=[d.airAt?(lv>=d.airAt?['Ground + Air head','#2a8ab8']:['Ground (Air head Lv3)','#9a6a3a']):d.ground?['Ground only','#9a6a3a']:d.air?['Air only','#3a8ad8']:['Hits both','#3aa06a']];if(d.pierce)t.push(['Ignores armor','#7a5ad8']);if(d.chain)t.push(['Chains '+d.chain,'#7a5ad8']);if(d.slow)t.push(['Slows bugs','#5a7ad8']);if(d.stall)t.push(['Slows + pokes','#b07a3c']);if(d.reveal)t.push(['Reveals hidden','#c89a10']);if(d.airPref)t.push(['Air first','#3a8ad8']);return t;}
+function tagsOf(d,lv){const t=[d.airAt?(lv>=d.airAt?['Ground + Air head','#2a8ab8']:['Ground (Air head Lv3)','#9a6a3a']):d.ground?['Ground only','#9a6a3a']:d.air?['Air only','#3a8ad8']:d.noFire?['No damage','#7a8a5a']:['Hits both','#3aa06a']];if(d.pierce)t.push(['Ignores armor','#7a5ad8']);if(d.chain)t.push(['Chains '+d.chain,'#7a5ad8']);if(d.slow)t.push(['Slows bugs','#5a7ad8']);if(d.stall)t.push(['Slows + pokes','#b07a3c']);if(d.reveal)t.push(['Reveals hidden','#c89a10']);if(d.pulseReveal)t.push(['Pulse reveal','#6a5ad8']);if(d.auraBuff)t.push(['Speed aura','#e87a1a']);if(d.hold)t.push(['Holds bugs','#e84a6a']);if(d.eco)t.push(['Bonus coins','#7a9a3a']);if(d.bank)t.push(['Interest','#c89a10']);if(d.splash)t.push(['Splash','#a87a3a']);if(d.airPref)t.push(['Air first','#3a8ad8']);return t;}
 function tagW(d,lv){X.font=`800 11px ${FONT}`;return tagsOf(d,lv).reduce((a,[s])=>a+X.measureText(s).width+18,0)-6;}
 function tagPill(x,y,d,sz=11,lv=1){X.font=`800 ${sz}px ${FONT}`;for(const[s,c]of tagsOf(d,lv)){const w=X.measureText(s).width+12;rr(x,y,w,sz+6,(sz+6)/2);X.fillStyle=c;X.fill();txt(s,x+w/2,y+(sz+6)/2+.5,sz,'#fff','center',null,800);x+=w+6;}}
 // v9.11: speed is displayed ONLY as time per attack (seconds between attacks = rate = 1/spd in the data).
 // Lower = faster, and the number goes DOWN on upgrade. Never show a per-second rate in the UI.
-function rateVerb(k){return k==='hedgehog'?'pokes':k==='spider'?'webs':k==='firefly'?'glows':k==='dandelion'?'puffs':'hits';}
+function rateVerb(k){return{hedgehog:'pokes',spider:'webs',firefly:'glows',dandelion:'puffs',bat:'screeches',owl:'swoops',horseradish:'lobs',monarch:'flutters',sundew:'snaps shut',compost:'collects',sunflower:'banks'}[k]||'hits';}
 function rateEvery(k,sp){return rateVerb(k)+' every '+(1/sp).toFixed(1)+'s';}
+
+// ================= v9.18 defense info (small cards = art+name+price only) =================
+function fitTxtSize(str,maxW,start,minSz=7.5){let sz=start;X.font=`900 ${sz}px ${FONT}`;while(sz>minSz&&X.measureText(str).width>maxW){sz-=.5;X.font=`900 ${sz}px ${FONT}`;}return sz;}
+function infoBtn(x,y,k){ // 32px tappable circled-i in a card corner; registered AFTER the card hit so tap() (reverse order) hits this first and never toggles/selects
+ hit(x-16,y-16,32,32,()=>openInfo(k));circ(x,y,13,'#2a7ad0','#fff',2.5);txt('i',x,y+1,17,'#fff','center',null,900);}
+function wrapLines(str,maxW,sz,wgt=700){X.font=`${wgt} ${sz}px ${FONT}`;const words=(''+str).split(/\s+/),lines=[];let cur='';for(const wd of words){const t=cur?cur+' '+wd:wd;if(X.measureText(t).width>maxW&&cur){lines.push(cur);cur=wd;}else cur=t;}if(cur)lines.push(cur);return lines;}
+function drawWrap(str,x,y,maxW,lh,sz,col,wgt=700,al='left'){for(const ln of wrapLines(str,maxW,sz,wgt)){txt(ln,al==='center'?x+maxW/2:x,y,sz,col,al,null,wgt);y+=lh;}return y;}
+function atkStrengths(k){const d=TOWERS[k],m=TYPE_MULT[d.atk]||TYPE_MULT.neutral;const lab={soft:'Soft bugs',shell:'Shelled bugs (Beetle, Roach)',fly:'Flyers',long:'Long bugs (Caterpillar, Earthworm)'};const cats=['soft','shell','fly'];if(d.atk==='cut')cats.push('long');
+ const strong=[],weak=[];for(const c of cats){const v=m[c];if(v>1)strong.push(lab[c]+' (x'+v+')');else if(v<1)weak.push(lab[c]+' (x'+v+')');}
+ return{strong:strong.length?strong.join(', '):'Nothing special',weak:weak.length?weak.join(', '):'Nothing special'};}
+function hitsText(k){const d=TOWERS[k];if(k==='dragon')return 'Ground only — bugs in the 2 squares ahead of it';if(k==='flytrap')return 'Ground only at Lv1-2. At Lv3 a second winged head also hits flyers (air head first)';if(d.noFire)return 'No damage — support only (see SPECIAL)';if(d.ground)return 'Ground only — cannot hit flyers';if(d.air)return 'Flyers only — cannot hit ground bugs';if(d.airPref)return 'Ground + flyers (flyers are targeted first)';return 'Ground + flyers';}
+function rangeText(k){const d=TOWERS[k];if(k==='horseradish')return 'Aim anywhere on the board — tap a READY Mortar, then tap the target spot (board-wide)';return k==='dragon'?'2 squares ahead, in a 2x2 strip it faces':d.range+' square'+(d.range>1?'s':'')+' around it';}
+function specialText(k){const d=TOWERS[k];switch(k){
+ case 'flytrap':return 'At Lv3 it grows a second, winged head that bites flyers — the air head goes first. Only one head strikes at a time.';
+ case 'frog':return 'Its long sticky tongue snatches flyers right out of the air.';
+ case 'gnome':return 'Splash: when a pebble lands, other ground bugs within '+(d.splash||.75)+' squares of the hit take 60% damage too.';
+ case 'mantis':return 'Instant slice — the hit lands straight away, with no travel time.';
+ case 'dandelion':return 'Cheap and very fast. It shoots flyers before ground bugs, so it is great filler against flyers.';
+ case 'hedgehog':return 'It claims up to '+d.cap.join('/')+' ground bugs in range (Lv1/2/3). Claimed bugs crawl at '+d.stallF.map(v=>Math.round(v*100)+'%').join('/')+' speed while in range and get poked. The Slug King boss resists: never slower than about 78%/70%/63% speed. Flyers are untouched.';
+ case 'zapper':return 'Lightning chains to up to '+(d.chain||4)+' bugs. Each jump deals 50% of the previous hit. It does the same damage to every bug type, so it is a good answer to shelled bugs. Does double damage while the Sprinkler is running — wet bugs conduct!';
+ case 'spider':return 'Every web hit slows that bug by 45% for '+(d.slow||1.6)+' seconds. The slow works even on shelled bugs — shells do not stop it.';
+ case 'firefly':return 'Always-on aura, range '+d.range+': hidden bugs inside are revealed and Lit, so they take +'+d.lit.map(v=>Math.round(v*100)+'%').join('/')+' damage from all sources (Lv1/2/3). Defenses within 2 squares attack '+d.buff.map(v=>Math.round(v*100)+'%').join('/')+' faster. Its glow hit keeps a bug Lit for 1.2 seconds.';
+ case 'dragon':return 'Huge 2x2 body — it needs 2x2 free grass to plant. It bites up to '+(d.cleave||4)+' ground bugs at once in the 2-square strip ahead of where it faces.';
+ case 'bat':return 'Echolocation pulse every '+d.pulseCd.join('/')+'s (Lv1/2/3): hidden bugs within '+d.range+' squares are revealed and Lit for '+d.pulseDur.join('/')+'s, so they can be targeted (ground and air). Between pulses hidden bugs can hide again. Its screech hits flyers only. Firefly still gives steadier ground+air light.';
+ case 'owl':return 'Always-on reveal, range '+d.range+' (bigger than Firefly): hidden ground and air bugs inside are revealed and Lit (+'+d.lit.map(v=>Math.round(v*100)+'%').join('/')+' damage taken). It swoops flyers only — no ground damage.';
+ case 'horseradish':return 'MANUAL FIRE ONLY — it never fires by itself. Tap a READY Mortar (gold ring, “READY – tap!”), then tap anywhere on the board to lob a root there. Reload: '+d.mortarReload.join('/')+'s (Lv1/2/3) — you tap to fire each shot, and it holds READY forever until you tap. The root flies for about 0.5–1.0s, so lead moving bugs! Splash: the bug closest to the landing spot takes full damage, other ground bugs within '+d.splash+' square take '+Math.round(d.splashPct*100)+'%. Blunt cracks shelled bugs like Snail, Stink Bug and Beetle. Placeable on any empty build tile, even decor tiles (never on the path). To upgrade it, tap it while it is reloading to open its panel.';
+ case 'monarch':return 'NO damage. Aura: defenses within '+d.auraR.join('/')+' squares (Lv1/2/3) attack '+d.buffSpd.map(v=>Math.round(v*100)+'%').join('/')+' faster. Stacks with Firefly, but all speed buffs together are capped at +50%.';
+ case 'sundew':return 'When it snaps, one ground bug is HELD still for '+d.holdDur.join('/')+'s (Lv1/2/3) and takes tiny damage. Bosses resist: holds last only 35% as long on them. Other defenses can freely hit the held bug.';
+ case 'compost':return 'NO damage. Bugs popped within '+d.range+' squares drop bonus coins: +'+d.ecoPct.map(v=>Math.round(v*100)+'%').join('/')+' of their coin value (Lv1/2/3). Bins STACK (v9.21): every bin covering a kill adds its bonus — two Lv1 bins give +60% on that kill. No cap in this mock.';
+ case 'sunflower':return 'NO damage. At each wave end EVERY bank earns interest on the same unspent coins: '+d.intRate.map(v=>Math.round(v*100)+'%').join('/')+', each bank capped at '+d.intCap.join('/')+' coins per wave (Lv1/2/3, cap is per bank). Banks STACK (v9.21). You will see a “Sunflower interest” message when they pay.';
+ case 'zapper':return 'Lightning chains to up to '+(d.chain||4)+' bugs. Each jump deals 50% of the previous hit. It does the same damage to every bug type, so it is a good answer to shelled bugs. Does double damage while the Sprinkler is running — wet bugs conduct!';
+ default:return '';}}
+function whatText(k){const d=TOWERS[k];const map={flytrap:'Chomps ground bugs that walk into range.',frog:'Flicks its tongue at ground bugs and flyers.',gnome:'Throws pebbles at ground bugs and flyers, with a little splash.',mantis:'Slices ground bugs up close with its sharp arms.',dandelion:'Blows fast puffs of seeds at ground bugs and flyers.',hedgehog:'Ground bugs that walk past get stuck on his spines — they crawl slower and get poked.',zapper:'Zaps ground bugs and flyers with chain lightning.',spider:'Throws webs that damage and slow ground bugs and flyers.',firefly:'Lights bugs up so every defense hits them harder, and reveals hidden bugs.',dragon:'A huge dragon that bites ground bugs in front of it.',bat:'A bat house: echolocation reveals hidden bugs and its screech zaps flyers.',owl:'A premium owl box: a huge night reveal that swoops flyers.',horseradish:'You tap to fire this mortar: tap it when READY, then tap where to lob. Splash cracks shells.',monarch:'A monarch butterfly beacon that speeds up nearby defenses. It does no damage.',sundew:'A sticky sundew that holds one ground bug still.',compost:'A compost bin: bugs popped nearby drop bonus coins (bins stack). It does no damage.',sunflower:'A sunflower piggy-bank that earns interest on unspent coins (banks stack). It does no damage.'};return map[k]||d.role||'';}
+const INFO_PANEL={x:14,y:44,w:384,h:826};
+function drawInfoCard(){if(!INFO||!TOWERS[INFO])return;const k=INFO,d=TOWERS[k],P=INFO_PANEL,x=P.x,y=P.y,w=P.w,h=P.h,lockD=!unlockedDefs().includes(k);
+ // swallow every tap under the card (registered before the close buttons, so those win in reverse tap order)
+ hit(0,0,W,H,()=>{});
+ ctx.fillStyle='rgba(12,22,6,.68)';ctx.fillRect(0,0,W,H);
+ panel(x,y,w,h,d.col);X=ctx;
+ // big art box
+ const ax=x+18,ay=y+16,aw=w-36,ah=118;rr(ax,ay,aw,ah,16);ctx.fillStyle=lg(0,ay,0,ay+ah,['#c8eaa8','#8fd06a']);ctx.fill();ctx.strokeStyle='rgba(90,60,20,.35)';ctx.lineWidth=2;ctx.stroke();
+ ctx.save();ctx.beginPath();ctx.roundRect(ax,ay,aw,ah,16);ctx.clip();ctx.translate(x+w/2,ay+ah-8);const BSC={flytrap:1.55,mantis:1.65,frog:1.8,gnome:1.55,zapper:1.45,spider:1.65,dragon:1.35,dandelion:1.6,hedgehog:1.65,firefly:1.35}[k]||1.5;
+ ctx.scale(BSC,BSC);if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},0,-18,1,true);else drawTower({type:k,lvl:1,anim:0,ph:uiT,blink:1,face:1,born:-9,upT:-9},0,-16,true);ctx.restore();
+ // close (top-right, big tappable)
+ hit(x+w-52,y+6,46,46,closeInfo);circ(x+w-29,y+29,17,'#e8442a','#fff',2.5);txt('\u2715',x+w-29,y+30,19,'#fff','center',null,900);
+ let cy=ay+ah+24;
+ txt(d.name,x+w/2,cy,fitTxtSize(d.name,w-90,27,16),'#3b2a14','center',null,900);cy+=28;
+ // price + upgrades
+ txt('Price  \uD83E\uDE99 '+d.cost+'    Upgrades: Lv2 \uD83E\uDE99 '+upCost(k,1)+'  \u00B7  Lv3 \uD83E\uDE99 '+upCost(k,2),x+w/2,cy,13.5,'#7a4a08','center',null,800);cy+=22;
+ if(lockD){cy=drawWrap('\uD83D\uDD12 Unlocks Level '+DEF_UNLOCK[k]+' — '+(DEF_EARN[k]||''),x+22,cy,w-44,16,12,'#a02818',800)+6;}
+ const head=t=>{cy+=4;txt(t,x+22,cy,11.5,'#2f7a24','left',null,900);cy+=17;};
+ const body=(t,sz=12.5)=>{cy=drawWrap(t,x+22,cy,w-44,sz+3.5,sz,'#46351f',700)+4;};
+ head('WHAT IT DOES');body(whatText(k));
+ head('DAMAGE');body('Lv1 '+d.dmg[0]+'  \u00B7  Lv2 '+d.dmg[1]+'  \u00B7  Lv3 '+d.dmg[2]+'  (per hit)');
+ head('SPEED');body(k==='horseradish'?('Reload: '+d.mortarReload.map(v=>v.toFixed(1)+'s').join(' \u2192 ')+' \u2014 you tap to fire (no auto-fire; lower = faster)'):rateVerb(k)+' every '+(1/d.spd[0]).toFixed(1)+'s \u2192 '+(1/d.spd[1]).toFixed(1)+'s \u2192 '+(1/d.spd[2]).toFixed(1)+'s  (lower = faster)');
+ head('RANGE');body(rangeText(k));
+ head('HITS');body(hitsText(k));
+ head('ATTACK TYPE');body((d.atkLine||d.atkName||''));
+ {const sw=atkStrengths(k);head('STRONG VS');body(sw.strong);head('WEAK VS');body(sw.weak);}
+ const sp=specialText(k);if(sp){head('SPECIAL');body(sp,12);}
+ button(x+92,y+h-58,200,46,'Close','#8ab0d8','#4a74a8',closeInfo,19);
+}
 function drawBuildMenu(){const b=G.build,h=262,y=sheetY(b.r,h);panel(10,y,W-20,h);hit(10,y,W-20,h,()=>{});
- const isD=b.preview==='dragon';txt(b.preview?(b.valid===false?'Dragon needs 2x2 free grass':'Tap '+TOWERS[b.preview].name+' again to plant'):'Plant a defense',isD?150:W/2,y+24,isD?15:18,b.valid===false?'#d03a2a':'#6b4423','center',null);
+ const isD=b.preview==='dragon';txt(b.preview?(b.valid===false?(isD?'Dragon needs 2x2 free grass':TOWERS[b.preview].name+' can\'t go there'):'Tap '+TOWERS[b.preview].name+' again to plant'):'Plant a defense',isD?150:W/2,y+24,isD?15:18,b.valid===false?'#d03a2a':'#6b4423','center',null);
  if(isD&&b.valid!==false)button(274,y+8,86,34,'\u21BB Turn','#ffc14a','#e8841a',()=>{b.dir=(b.dir+1)%4;},15);
  hit(W-56,y+6,40,40,()=>{G.build=null;});circ(W-36,y+25,14,'#e8d8b8');txt('\u2715',W-36,y+26,16,'#8a5a2e','center',null);
  const deck=G.deck&&G.deck.length?G.deck:cleanDeck(),cw=(W-40-(deck.length-1)*6)/Math.max(1,deck.length),ch=200;
@@ -1449,15 +1738,12 @@ function drawBuildMenu(){const b=G.build,h=262,y=sheetY(b.r,h);panel(10,y,W-20,h
   hit(x,cyy,cw,ch,can?()=>pickBuild(k):null);
   const lift=pv?-6:0,Y=cyy+lift;rr(x,Y+3,cw,ch,14);ctx.fillStyle='rgba(0,0,0,.12)';ctx.fill();rr(x,Y,cw,ch,14);ctx.fillStyle=pv?lg(0,cyy,0,cyy+ch,['#fffbe0','#ffe9a0']):can?'#fff':'#ece4d4';ctx.fill();ctx.strokeStyle=can?d.col:'#c8bca8';ctx.lineWidth=pv?4:2.5;ctx.stroke();
   ctx.save();ctx.globalAlpha=can?1:.45;ctx.save();ctx.beginPath();ctx.roundRect(x,Y,cw,ch,14);ctx.clip();
-  if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},x+cw/2,Y+50,.58,true);else if(k==='mantis'){ctx.save();ctx.translate(x+cw/2,Y+52);ctx.scale(.74,.74);drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},0,0,true);ctx.restore();}else drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},x+cw/2,Y+44+(k==='flytrap'?8:0),true);ctx.restore();ctx.restore();
-  txt(d.name,x+cw/2,Y+88,13,'#3b2a14','center',null);
-  rr(x+8,Y+98,cw-16,22,11);ctx.fillStyle=can?'#5a3a1a':'#a89a88';ctx.fill();spr(S.coin,x+20,Y+109,.6);txt(''+d.cost,x+cw/2+7,Y+110,14,can?'#ffe680':'#eee','center',null);
-  txt('\u2694 '+d.dmg[0]+' \u00B7 '+(d.dir?'2 ahead':'Rng '+d.range),x+cw/2,Y+132,11.5,'#5a3a1a','center',null,800);
-  txt(rateEvery(k,d.spd[0]),x+cw/2,Y+152,11,'#5a4a35','center',null,800);
-  txt(d.atkShort||'',x+cw/2,Y+164,9,'#7a3a10','center',null,800);
-  {const tg=tagsOf(d);const pillTxt=d.stall?'Slows + pokes':d.reveal?'Reveals hidden':tg.length>1?tg[1][0]:tg[0][0]==='Ground only'?'Ground':tg[0][0]==='Air only'?'Air only':tg[0][0].startsWith('Ground (')?'Gnd/Air Lv3':'Air+Gnd';const pillCol=d.stall?'#b07a3c':tg.length>1?tg[1][1]:tg[0][1];rr(x+6,Y+174,cw-12,16,8);ctx.fillStyle=pillCol;ctx.fill();txt(pillTxt.length>13&&cw<120?pillTxt.slice(0,13):pillTxt,x+cw/2,Y+182.5,10,'#fff','center',null,800);}});}
-function pickBuild(k){if(G.tut&&!G.tut.skipped&&!G.tut.done&&k!=='flytrap'){G.toast={t:uiT,s:'Plant a Flytrap for now!'};return;}const b=G.build;if(b.preview===k&&b.valid!==false){placeTower(k,b.ac,b.ar,b.dir);G.build=null;return;}
- b.preview=k;if(k==='dragon'){const a=dragonAnchor(b.c,b.r);if(a){b.ac=a[0];b.ar=a[1];b.valid=true;b.dir=bestDir(a[0],a[1]);}else{b.ac=b.c;b.ar=b.r;b.valid=false;b.dir=0;}}else{b.ac=b.c;b.ar=b.r;b.valid=true;b.dir=0;}}
+  if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},x+cw/2,Y+72,.72,true);else if(k==='mantis'){ctx.save();ctx.translate(x+cw/2,Y+76);ctx.scale(.9,.9);drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},0,0,true);ctx.restore();}else drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},x+cw/2,Y+66+(k==='flytrap'?8:0),true);ctx.restore();ctx.restore();
+  txt(d.name,x+cw/2,Y+118,fitTxtSize(d.name,cw-8,13,5.5),'#3b2a14','center',null,900);
+  rr(x+10,Y+132,cw-20,26,13);ctx.fillStyle=can?'#5a3a1a':'#a89a88';ctx.fill();spr(S.coin,x+cw/2-16,Y+145,.6);txt(''+d.cost,x+cw/2+8,Y+146,15,can?'#ffe680':'#eee','center',null,900);
+  infoBtn(x+cw-17,Y+17,k);});}
+function pickBuild(k){if(G.tut&&!G.tut.skipped&&!G.tut.done&&k!=='flytrap'){G.toast={t:uiT,s:'Plant a Flytrap for now!'};return;}const b=G.build;if(b.preview===k){if(b.valid===false){G.toast={t:uiT,s:TOWERS[k].name+' can\'t go there'};return;}placeTower(k,b.ac,b.ar,b.dir);G.build=null;return;}
+ b.preview=k;if(k==='dragon'){const a=dragonAnchor(b.c,b.r);if(a){b.ac=a[0];b.ar=a[1];b.valid=true;b.dir=bestDir(a[0],a[1]);}else{b.ac=b.c;b.ar=b.r;b.valid=false;b.dir=0;}}else{b.ac=b.c;b.ar=b.r;b.valid=canPlace(k,b.c,b.r);b.dir=0;}} // v9.21: canPlace gates decor/path (Mortar may use decor tiles, others may not)
 function drawTowerMenu(){const t=G.sel,d=TOWERS[t.type],h=238,y=sheetY(t.r,h);panel(10,y,W-20,h,d.col);hit(10,y,W-20,h,()=>{});
  hit(W-56,y+6,40,40,()=>{G.sel=null;});circ(W-36,y+25,14,'#e8d8b8');txt('\u2715',W-36,y+26,16,'#8a5a2e','center',null);
  rr(22,y+18,100,108,16);ctx.fillStyle=lg(0,y+18,0,y+126,['#c8eaa8','#8fd06a']);ctx.fill();ctx.save();ctx.beginPath();ctx.roundRect(22,y+18,100,108,16);ctx.clip();
@@ -1465,8 +1751,7 @@ function drawTowerMenu(){const t=G.sel,d=TOWERS[t.type],h=238,y=sheetY(t.r,h);pa
  txt(d.name,136,y+30,22,'#3b2a14','left',null);for(let i=0;i<3;i++){ctx.globalAlpha=i<t.lvl?1:.25;spr(S.star,146+i*22,y+56,1);}ctx.globalAlpha=1;txt('Lv '+t.lvl+'/3',214,y+57,14,'#8a6a40','left',null);
  const L=t.lvl-1,n=Math.min(2,L+1),mx=t.lvl<3;const arrow=(a,b)=>mx?a+' \u2192 '+b:''+a;
  txt('Damage  '+arrow(d.dmg[L],d.dmg[n])+(d.cleave?'  ×4 bite':d.stall?'  prickle ×'+d.cap[L]:d.reveal?'  glow shot':''),136,y+80,14,'#5a4a35','left',null,700);
- txt('Speed: '+rateEvery(t.type,d.spd[L])+(mx?' \u2192 '+(1/d.spd[n]).toFixed(1)+'s':''),136,y+97,13,'#5a4a35','left',null,800);
- txt('(lower = faster)',136,y+112,10.5,'#8a7a65','left',null,700);
+ if(t.type==='horseradish'){txt('Reload: '+mortarReloadTime(t).toFixed(1)+'s \u2014 you tap to fire',136,y+97,13,'#5a4a35','left',null,800);txt(t.mReady?'(READY now \u2014 close panel? tap Mortar in play to aim)':'(reloading \u00B7 '+(t.reload||0).toFixed(1)+'s left)',136,y+112,10.5,'#8a7a65','left',null,700);}else{txt('Speed: '+rateEvery(t.type,d.spd[L])+(mx?' \u2192 '+(1/d.spd[n]).toFixed(1)+'s':''),136,y+97,13,'#5a4a35','left',null,800);txt('(lower = faster)',136,y+112,10.5,'#8a7a65','left',null,700);}
  tagPill(136,y+120,d,11,t.lvl);txt(d.dir?'2 ahead':'Rng '+d.range,136+tagW(d,t.lvl)+10,y+129,12,'#8a7a65','left',null,700);
  txt(d.atkLine||'',136,y+143,11,'#7a3a10','left',null,800);
  {const role=d.role||'';ctx.save();ctx.font='700 10.5px '+FONT;let l1=role,l2='';if(ctx.measureText(role).width>368){let cut=role.lastIndexOf(' ',Math.floor(role.length*.55));l1=role.slice(0,cut);l2=role.slice(cut+1);}txt(l1,136,y+156,10.5,'#6b5a45','left',null,700);if(l2)txt(l2,136,y+167,10.5,'#6b5a45','left',null,700);ctx.restore();}
@@ -1487,7 +1772,7 @@ function drawTitle(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);titleT+=1/60;
  hit(30,150,352,200,()=>{G.devTaps=(G.devTaps||0)+1;if(G.devTaps>=5){PROG.un=LEVELS.length;saveProg();G.devTaps=0;G.toast={t:uiT,s:'Dev: all levels unlocked'};sfx('upgrade',0);}});
  button(W/2-120,660,240,74,'\u25B6  PLAY','#6fd65a','#2f9a3a',()=>setScreen('levels'),30,false,1+.04*Math.sin(titleT*4));
  if(G.toast&&uiT-G.toast.t<2.2){rr(W/2-150,590,300,44,22);ctx.fillStyle='rgba(30,15,0,.75)';ctx.fill();txt(G.toast.s,W/2,612,16,'#ffe680','center',null);}
- txt('Tap the grass to plant defenses',W/2,762,15,'#fff','center','rgba(0,0,0,.5)',700);txt('Match attacks to bugs: blunt cracks shells, bites tear soft bugs, tongues snatch flyers.',W/2,786,10.5,'#ffe9a0','center','rgba(0,0,0,.5)',700);txt('mockup v9.17',W/2,880,11,'rgba(255,255,255,.6)','center',null,700);}
+ txt('Tap the grass to plant defenses',W/2,762,15,'#fff','center','rgba(0,0,0,.5)',700);txt('Match attacks to bugs: blunt cracks shells, bites tear soft bugs, tongues snatch flyers.',W/2,786,10.5,'#ffe9a0','center','rgba(0,0,0,.5)',700);txt('mockup v9.21 MOCK (local test only)',W/2,880,11,'rgba(255,255,255,.65)','center',null,700);}
 function drawPause(){ctx.fillStyle='rgba(15,30,5,.55)';ctx.fillRect(0,0,W,H);const e=ease.outBack(Math.min(1,uiT/.3));ctx.save();ctx.translate(W/2,H/2);ctx.scale(e,e);ctx.translate(-W/2,-H/2);
  panel(56,260,W-112,380);X=ctx;txt('Paused',W/2,308,34,'#6b4423','center','#fff');
  button(96,344,W-192,58,'\u25B6 Resume','#6fd65a','#2f9a3a',()=>setScreen('play'),21);button(96,414,W-192,52,'\u21BB Restart','#ffc14a','#e8841a',()=>{newGame();setScreen('play');},19);
@@ -1510,8 +1795,8 @@ function drawEnd(){const win=screen==='win';G.endT+=1/60;ctx.fillStyle='rgba(15,
  // ui particles reuse world fx (drawn under panel otherwise) - draw sparkle here
  for(const f of G.fx)if(f.k==='p'&&f.y<400&&f.r===3){ctx.globalAlpha=1-f.t/f.life;ctx.fillStyle=f.c;ctx.beginPath();ctx.arc(f.x,f.y,3,0,6.283);ctx.fill();ctx.globalAlpha=1;}}
 function render(){if(!S.coin)buildSprites();buildBirdSprites();if(!bg)buildBg();ctx.setTransform(K,0,0,K,0,0);X=ctx;ui=[];
- if(screen==='title'||screen==='levels'||screen==='zone'||screen==='deck'){if(screen==='title')drawTitle();else if(screen==='levels')drawLevels();else if(screen==='zone')drawZoneMap();else drawDeck();if(screen!=='deck')drawReset();return;}
- drawWorld();drawHud();if(G.build)drawBuildMenu();if(G.sel)drawTowerMenu();drawBanner();if(screen==='play')drawTut();
+ if(screen==='title'||screen==='levels'||screen==='zone'||screen==='deck'){if(screen==='title')drawTitle();else if(screen==='levels')drawLevels();else if(screen==='zone')drawZoneMap();else drawDeck();if(screen==='deck'&&INFO)drawInfoCard();if(screen!=='deck')drawReset();return;}
+ drawWorld();drawHud();if(G.build)drawBuildMenu();if(G.sel)drawTowerMenu();drawBanner();if(screen==='play')drawTut();if(INFO)drawInfoCard();
  if(G.wave===0&&!G.towers.length&&!G.build&&screen==='play'&&!G.tut){const b=Math.sin(uiT*4)*4;txt('Tap the grass to plant a defense!',W/2,OY+4.5*T+b,17,'#fff','center','rgba(40,20,5,.7)');}
  if(screen==='pause')drawPause();if(screen==='win'||screen==='lose')drawEnd();if(screen==='over')drawOver();}
 // ---- v8.1: test 'Reset progress' button (title + level select) ----
@@ -1685,30 +1970,35 @@ function drawDeck(){X=ctx;ctx.drawImage(bg.c,0,0,W,H);ctx.fillStyle='rgba(20,40,
  const L=LEVELS[PENDING],un=unlockedDefs();if(!PICK)PICK={deck:[],power:null};const deck=PICK.deck;
  txt('Pick Your Deck',W/2,40,30,'#fff','center','#2a4a10');
  txt('Level '+L.num+' · '+L.name+(L.bossLevel?' · BOSS: '+(ENEMY[L.bossType||'slug']||{}).name:''),W/2,68,16,'#ffe680','center','#4a2e12');
- txt('Pick up to 4 defenses + 1 power-up',W/2,90,13,'#fff','center',null,700);
+ txt('Pick up to 6 defenses + 1 power-up',W/2,90,13,'#fff','center',null,700);
  // slots
- for(let i=0;i<4;i++){const x=28+i*92,y=106;rr(x,y,84,54,14);ctx.fillStyle=deck[i]?'#fffaf0':'rgba(255,255,255,.22)';ctx.fill();ctx.strokeStyle=deck[i]?TOWERS[deck[i]].col:'#fff';ctx.lineWidth=deck[i]?3:2;if(!deck[i]){ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);}else ctx.stroke();
-  if(deck[i]){ctx.save();ctx.beginPath();ctx.roundRect(x+2,y+2,80,50,12);ctx.clip();ctx.translate(x+17,y+40);ctx.scale(.34,.34);drawTower({type:deck[i],lvl:1,anim:0,ph:uiT+i,blink:1,face:1,dir:3,born:-9,upT:-9},0,0,true);ctx.restore();}
-  txt(deck[i]?TOWERS[deck[i]].name:'Slot '+(i+1),deck[i]?x+53:x+42,y+27,deck[i]?(TOWERS[deck[i]].name.length>11?8.5:10.5):12,deck[i]?'#3b2a14':'#fff','center',null,800);}
+ for(let i=0;i<6;i++){const x=14+i*65,y=106;rr(x,y,59,54,12);ctx.fillStyle=deck[i]?'#fffaf0':'rgba(255,255,255,.22)';ctx.fill();ctx.strokeStyle=deck[i]?TOWERS[deck[i]].col:'#fff';ctx.lineWidth=deck[i]?3:2;if(!deck[i]){ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);}else ctx.stroke();
+  if(deck[i]){ctx.save();ctx.beginPath();ctx.roundRect(x+2,y+2,55,34,10);ctx.clip();ctx.translate(x+29,y+32);ctx.scale(.30,.30);drawTower({type:deck[i],lvl:1,anim:0,ph:uiT+i,blink:1,face:1,dir:3,born:-9,upT:-9},0,0,true);ctx.restore();}
+  txt(deck[i]?TOWERS[deck[i]].name:'Slot '+(i+1),x+29,y+(deck[i]?45:27),deck[i]?fitTxtSize(TOWERS[deck[i]].name,56,9,4):10,deck[i]?'#3b2a14':'#fff','center',null,800);} // v9.21: six picked slots fit the 412px screen
  // defense cards (unlock order)
- ORDER.forEach((k,i)=>{const d=TOWERS[k],col=i%4,row=Math.floor(i/4),x=14+col*98,y=168+row*138,cw=90,ch=128,lockD=!un.includes(k),sel=deck.includes(k),isNew=!lockD&&DEF_UNLOCK[k]===(PENDING+1);
-  hit(x,y,cw,ch,lockD?()=>sfx('click',0):()=>{const j=deck.indexOf(k);if(j>=0)deck.splice(j,1);else if(deck.length<4)deck.push(k);else {G.toast={t:uiT,s:'Deck full — tap a picked card to remove it'};}sfx('click',0);});
+ const PAGES=Math.ceil(ORDER.length/12);DECKPAGE=Math.max(0,Math.min(PAGES-1,DECKPAGE||0));
+ ORDER.slice(DECKPAGE*12,DECKPAGE*12+12).forEach((k,si)=>{const i=si,d=TOWERS[k],col=i%4,row=Math.floor(i/4),x=14+col*98,y=168+row*138,cw=90,ch=128,lockD=!un.includes(k),sel=deck.includes(k),isNew=!lockD&&DEF_UNLOCK[k]===(PENDING+1);
+  hit(x,y,cw,ch,lockD?()=>sfx('click',0):()=>{const j=deck.indexOf(k);if(j>=0)deck.splice(j,1);else if(deck.length<6)deck.push(k);else {G.toast={t:uiT,s:'Deck full — tap a picked card to remove it'};}sfx('click',0);});
   rr(x,y+3,cw,ch,14);ctx.fillStyle='rgba(0,0,0,.2)';ctx.fill();rr(x,y,cw,ch,14);ctx.fillStyle=lockD?'#b8b2a4':sel?'#fff3b0':'#fffaf0';ctx.fill();ctx.strokeStyle=sel?d.col:'#c8bca8';ctx.lineWidth=sel?4:2;ctx.stroke();
   // icon box: draw in local coords with the sprite base at the box bottom — full art visible, consistent size
   const ISC={flytrap:.55,mantis:.66,frog:.68,gnome:.58,zapper:.52,spider:.66,dragon:.58,dandelion:.62,hedgehog:.64,firefly:.6}[k]||.6;
-  ctx.save();ctx.globalAlpha=lockD?.45:1;ctx.beginPath();ctx.roundRect(x+4,y+4,cw-8,64,10);ctx.fillStyle='rgba(140,190,100,.35)';ctx.fill();ctx.clip();
-  ctx.translate(x+cw/2,y+62);ctx.scale(ISC,ISC);
+  ctx.save();ctx.globalAlpha=lockD?.45:1;ctx.beginPath();ctx.roundRect(x+4,y+4,cw-8,58,10);ctx.fillStyle='rgba(140,190,100,.35)';ctx.fill();ctx.clip();
+  ctx.translate(x+cw/2,y+56);ctx.scale(ISC,ISC);
   if(k==='dragon')drawDragon({type:k,lvl:1,anim:0,ph:uiT,dir:3},0,-4,1,true);else drawTower({type:k,lvl:1,anim:0,ph:uiT+i,blink:1,face:1,born:-9,upT:-9},0,-12,true);
   ctx.restore();
-  txt(lockD?'🔒':isNew?'✦ NEW!':sel?'✓ IN DECK':'',x+cw/2,y+80,(sel||isNew)?11:14,isNew?'#c87f10':sel?'#2f7a24':'#6b5a45','center',null,900);
-  txt(d.name,x+cw/2,y+96,11,'#3b2a14','center',null,800);txt('🪙'+d.cost+' · '+rateEvery(k,d.spd[0]),x+cw/2,y+110,8.5,'#7a6a55','center',null,700);
-  txt(lockD?'Unlocks L'+DEF_UNLOCK[k]:(d.atkShort||d.tag),x+cw/2,y+122,7.5,lockD?'#8a2018':'#7a3a10','center',null,800);});
- // exactly ONE power-up
- const py=168+Math.ceil(ORDER.length/4)*138+4;txt('Power-up — pick 1',W/2,py+6,15,'#fff','center','#2a4a10');
- [['seed','Bird Seed','Birds peck bugs in an area'],['spr','Sprinkler','Slows every bug on screen']].forEach(([k,nm,ds],i)=>{const x=14+i*196,y=py+18,cw=188,ch=74,sel=PICK.power===k;
+  txt(lockD?'🔒':isNew?'✦ NEW!':sel?'✓ IN DECK':'',x+cw/2,y+78,(sel||isNew)?10.5:13,isNew?'#c87f10':sel?'#2f7a24':'#6b5a45','center',null,900);
+  txt(d.name,x+cw/2,y+94,fitTxtSize(d.name,cw-8,11,7.5),'#3b2a14','center',null,900);
+  txt('🪙 '+d.cost,x+cw/2,y+109,12,'#7a4a08','center',null,900);
+  if(lockD)txt('Unlocks L'+DEF_UNLOCK[k],x+cw/2,y+121,8,'#8a2018','center',null,800);
+  infoBtn(x+cw-17,y+17,k);});
+ // exactly ONE power-up (v9.20: 6 choices, 3x2 compact grid at the same py so layout/buttons stay put)
+ const py=168+3*138+4;txt('Power-up — pick 1',W/2,py+2,15,'#fff','center','#2a4a10');
+ POWER_LIST.forEach(([k,nm,ds],i)=>{const col=i%3,row=Math.floor(i/3),x=14+col*132,y=py+12+row*56,cw=122,ch=50,sel=PICK.power===k;
   hit(x,y,cw,ch,()=>{PICK.power=k;sfx('click',0);});
-  rr(x,y,cw,ch,16);ctx.fillStyle=sel?'#fff3b0':'#fffaf0';ctx.fill();ctx.strokeStyle=sel?'#e8a020':'#c8bca8';ctx.lineWidth=sel?4:2;ctx.stroke();
-  txt((sel?'✓ ':'')+nm,x+cw/2,y+24,17,'#3b2a14','center',null);txt(ds,x+cw/2,y+48,10.5,'#7a6a55','center',null,700);});
+  rr(x,y,cw,ch,13);ctx.fillStyle=sel?'#fff3b0':'#fffaf0';ctx.fill();ctx.strokeStyle=sel?'#e8a020':'#c8bca8';ctx.lineWidth=sel?4:2;ctx.stroke();
+  txt((sel?'✓ ':'')+nm,x+cw/2,y+17,fitTxtSize(nm,cw-10,13,8),'#3b2a14','center',null,900);txt(ds,x+cw/2,y+36,7.8,'#7a6a55','center',null,700);});
+ // pager for the 17-defense pool (page 1 keeps the exact v9.18 card geometry)
+ if(PAGES>1){button(W/2-92,py+126,184,32,'Defenses '+(DECKPAGE+1)+'/'+PAGES+' — '+(DECKPAGE+1<PAGES?'more ›':'‹ back'),'#8ab0d8','#4a74a8',()=>{DECKPAGE=(DECKPAGE+1)%PAGES;sfx('click',0);},13);}
  if(G.toast&&uiT-G.toast.t<2.4){rr(W/2-165,py-38,330,30,15);ctx.fillStyle='rgba(30,15,0,.8)';ctx.fill();txt(G.toast.s,W/2,py-22,12,'#ffe680','center',null,700);}
  txt('Match attacks: blunt cracks shells · bites tear soft · tongues snatch flyers · cut slices long',W/2,798,9.5,'#fff','center','rgba(0,0,0,.45)',700);
  const ok=deck.length>=1&&!!PICK.power;
@@ -1775,11 +2065,23 @@ function tap(x,y){if(screen==='play'&&G.tut&&!G.tut.skipped&&!G.tut.done){
  }
  for(let i=ui.length-1;i>=0;i--){const b=ui[i];if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h){if(b.fn)b.fn();return;}}
  if(screen!=='play')return;
- if(G.aim==='seed'){if(y>OY&&y<BARY){puThrow(x,y);}else G.aim=null;return;}const[c,r]=cellOf(x,y);const t=occupied(c,r);G.panelT=0;
- if(t){G.build=null;G.sel=G.sel===t?null:t;return;}G.sel=null;if(grass(c,r)){G.build={c,r};}else G.build=null;}
+ if(G.mortarAim){const tw=G.mortarAim;if(!tw||!G.towers.includes(tw)||!tw.mReady){G.mortarAim=null;}
+  else{const[mc,mr]=cellOf(x,y),occ=G.towers.find(o=>o.cells.some(q=>q[0]===mc&&q[1]===mr));
+   if(occ===tw){G.mortarAim=null;floatTxt(tw.x,tw.y-38,'Aim cancelled','#fff');sfx('click',0);return;}
+   if(occ){G.mortarAim=null;G.build=null;G.sel=occ;G.panelT=0;return;} // tap another tower: cancel aim (no shot, no reload spent) and select that tower
+   if(y>OY&&y<BARY){mortarFire(tw,x,y);return;}
+   G.mortarAim=null;return;}} // tap outside the board cancels aim
+ if(G.aim==='seed'){if(y>OY&&y<BARY){puThrow(x,y);}else G.aim=null;return;}
+ if(G.aim==='hose'){if(y>OY&&y<BARY)puHose(x,y);else G.aim=null;return;}
+ if(G.aim==='swatter'){if(y>OY&&y<BARY)puSwatter(x,y);else G.aim=null;return;}
+ if(G.aim==='mud'){if(y>OY&&y<BARY){if(!puMud(x,y))G.toast={t:uiT,s:'Mud Pie must land on the dirt path!'};}else G.aim=null;return;}
+ if(G.aim==='shovel'){if(y>OY&&y<BARY)puShovelTap(x,y);else{G.aim=null;G.shovelFrom=null;}return;}
+ const[c,r]=cellOf(x,y);const t=occupied(c,r);G.panelT=0;
+ if(t){G.build=null;if(t.type==='horseradish'&&t.mReady){G.sel=null;G.aim=null;G.mortarAim=t;sfx('click',0);floatTxt(t.x,t.y-44,'Tap where to lob!','#ffe680');}else G.sel=G.sel===t?null:t;return;} // v9.21 RULE: READY Mortar tap = aim (beats its upgrade panel); reloading Mortar tap = normal panel (upgrade there). Cancel via Mortar again / another tower / \u2715 Cancel.
+ G.sel=null;if(grass(c,r)||BLOCK.has(c+','+r)){G.build={c,r};}else G.build=null;} // decor/BLOCK tiles open the build sheet so a Mortar can be planted there (other defenses are gated by canPlace in pickBuild)
 function evXY(ev){const b=cv.getBoundingClientRect();return[(ev.clientX-b.left)/SC,(ev.clientY-b.top)/SC];}
 cv.addEventListener('pointerdown',ev=>{auInit();const[x,y]=evXY(ev);if(screen==='levels'){MAPDRAG={y0:y,map0:MAPY,moved:false,x,y};ev.preventDefault();return;}tap(x,y);ev.preventDefault();});
-cv.addEventListener('pointermove',ev=>{const[x,y]=evXY(ev);if(MAPDRAG){const dy=y-MAPDRAG.y0;if(Math.abs(dy)>6)MAPDRAG.moved=true;if(MAPDRAG.moved){MAPY=MAPDRAG.map0-dy;clampMAP();}ev.preventDefault();return;}if(!G||!G.zapFx)return;zapMove(x,y);ev.preventDefault();});
+cv.addEventListener('pointermove',ev=>{const[x,y]=evXY(ev);if(G)G.aimPos={x,y};if(MAPDRAG){const dy=y-MAPDRAG.y0;if(Math.abs(dy)>6)MAPDRAG.moved=true;if(MAPDRAG.moved){MAPY=MAPDRAG.map0-dy;clampMAP();}ev.preventDefault();return;}if(!G||!G.zapFx)return;zapMove(x,y);ev.preventDefault();});
 addEventListener('pointerup',ev=>{if(MAPDRAG){if(!MAPDRAG.moved)tap(MAPDRAG.x,MAPDRAG.y);MAPDRAG=null;return;}zapEnd();});cv.addEventListener('pointercancel',()=>{MAPDRAG=null;zapEnd();});
 cv.addEventListener('wheel',ev=>{if(screen==='levels'){MAPY+=ev.deltaY;clampMAP();ev.preventDefault();}},{passive:false});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&screen==='play')setScreen('pause');});
@@ -1790,5 +2092,5 @@ addEventListener('resize',resize);
 let last=0;const MANUAL=/manual/.test(location.search);
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;step(dt);render();requestAnimationFrame(loop);}
 resize();if(!MANUAL)requestAnimationFrame(loop);else render();
-window.GAME={get G(){return G},puUse,puThrow,PU,upCost,LEVELS,ZONES,DEF_UNLOCK,unlockedDefs,requiredDeck,cleanDeck,openDeck,openZone,zoneStats,zoneDotPos,zoneSpotPos,loadLevel,getWave,poolAt,isBossWave,get PATHS(){return PATHS},get LVI(){return LVI},get PROG(){return PROG},get PICK(){return PICK},get screen(){return screen},get PENDING(){return PENDING},get MAPY(){return MAPY},get ZONEVIEW(){return ZONEVIEW},setMAPY:v=>{MAPY=v;clampMAP();},setScreen,step,render,tap,placeTower,upgrade,startWave,newGame,skipTut,tutUpdate,TOWERS,ENEMY,TYPE_MULT,typeMult,typeCat,WAVES,isPath,grass,canPlace,rangeCells,bestDir,occupied,waveHP,setHP:v=>HPSCALE=v,setBoss:v=>BOSSHP=v};
+window.GAME={get G(){return G},mortarFire,mortarReloadTime,get BLOCK(){return BLOCK},get INFO(){return INFO},openInfo,closeInfo,atkStrengths,hitsText,specialText,INFO_PANEL,puUse,puThrow,puHose,puSwatter,puMud,puShovelTap,POWER_LIST,get DECKPAGE(){return DECKPAGE},setDECKPAGE:v=>{DECKPAGE=v;},spawn,hurt,PU,upCost,LEVELS,ZONES,DEF_UNLOCK,unlockedDefs,requiredDeck,cleanDeck,openDeck,openZone,zoneStats,zoneDotPos,zoneSpotPos,loadLevel,getWave,poolAt,isBossWave,get PATHS(){return PATHS},get LVI(){return LVI},get PROG(){return PROG},get PICK(){return PICK},get screen(){return screen},get PENDING(){return PENDING},get MAPY(){return MAPY},get ZONEVIEW(){return ZONEVIEW},setMAPY:v=>{MAPY=v;clampMAP();},setScreen,step,render,tap,placeTower,upgrade,startWave,newGame,skipTut,tutUpdate,TOWERS,ENEMY,TYPE_MULT,typeMult,typeCat,WAVES,isPath,grass,canPlace,rangeCells,bestDir,occupied,waveHP,setHP:v=>HPSCALE=v,setBoss:v=>BOSSHP=v};
 </script></body></html>
