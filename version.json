@@ -1,10 +1,10 @@
 {
-  "build": 202610302157,
-  "sha256": "899a2fae6612cc321dc51f1ad78c3347bd38e1c82a2887ac1727421d23e71fdb",
-  "size": 1515124,
-  "file": "game-v31-spaceport-bridge.html",
+  "build": 202610302245,
+  "sha256": "8f3d438ea6dcdadb1264a1f12d1fafd5076479d7281b16b4647e6adf89b47f93",
+  "size": 1515612,
+  "file": "game-v32-header-strip.html",
   "minVersionCode": 13,
   "bootSelector": "nav",
-  "generatedUtc": "2026-10-30T21:57:05Z",
-  "sig": "pfsPJm0FX7ueq58IBTK6lxeiWA3riaKWolChQjb+9z3nejA8yaJxlc/iOhxmY5C8eSxreNCZi7eCuXUyLBPm6w=="
+  "generatedUtc": "2026-10-30T22:38:24Z",
+  "sig": "QVZRcjuUCqQF7NfYZl/Qa6Snzp2Ws3iJgQpayqq7ED96IpHzJuboNR7euvCr8Idc7r2qi6m+IWjVud3vkPStmA=="
 }
