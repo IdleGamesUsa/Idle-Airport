@@ -1,13 +1,10 @@
 {
-  "build": 202610262100,
-  "sha256": "03d26d91353c09ac69daff28c909b54b60bc79b21b1a09fa9ab39a64a7e6f210",
-  "size": 1512728,
-  "file": "game-v29-splb.html",
-  "minVersionCode": 11,
+  "build": 202610302052,
+  "sha256": "d5687dca45e3e13e48f520c97fb7538246d7007f9788d49e64bbc5d1e1e532d2",
+  "size": 1514627,
+  "file": "game-v30-banner.html",
+  "minVersionCode": 13,
   "bootSelector": "nav",
-  "source": "ota",
-  "gameBuild": 29,
-  "label": "1.6.2",
-  "builtAtUtc": "2026-10-27T00:43:00Z",
-  "sig": "3JMv1CX+SGdINmEQbi1UsOHXjNAXz+AwcNQE5ZzvYLVYMzGtsDHRXAVbiX+EE5dukyRrFbewCFNBEuz3YqSjUg=="
+  "generatedUtc": "2026-10-30T20:52:10Z",
+  "sig": "KP/euaqGxJofoUYpLgMffLHXPql88hT/RBPZbKBPQzhg63nXp9ownRo4Ug/hXkAvM2u4BIdoM7HGWXbNnGRiRA=="
 }
