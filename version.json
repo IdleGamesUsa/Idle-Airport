@@ -1,10 +1,10 @@
 {
-  "build": 202610302245,
-  "sha256": "8f3d438ea6dcdadb1264a1f12d1fafd5076479d7281b16b4647e6adf89b47f93",
-  "size": 1515612,
-  "file": "game-v32-header-strip.html",
+  "build": 202610302300,
+  "sha256": "3c1201e3c34c2557214833db49d39f5dfe02b69338682c085250d1e73d63d472",
+  "size": 1485554,
+  "file": "game-v33-no-banner.html",
   "minVersionCode": 13,
   "bootSelector": "nav",
-  "generatedUtc": "2026-10-30T22:38:24Z",
-  "sig": "QVZRcjuUCqQF7NfYZl/Qa6Snzp2Ws3iJgQpayqq7ED96IpHzJuboNR7euvCr8Idc7r2qi6m+IWjVud3vkPStmA=="
+  "generatedUtc": "2026-10-30T22:45:55Z",
+  "sig": "7PhZtkI0n5vi/ZtncylisOv7ean0UYu1ft3a+nGFKrtIAQvg2QglWbRfjz/t8/99LWEqpzTpPbv2n+tGrj2SfQ=="
 }
