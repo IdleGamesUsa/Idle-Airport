@@ -1,10 +1,10 @@
 {
-  "build": 202610302300,
-  "sha256": "3c1201e3c34c2557214833db49d39f5dfe02b69338682c085250d1e73d63d472",
-  "size": 1485554,
-  "file": "game-v33-no-banner.html",
+  "build": 202610302310,
+  "sha256": "c0faab0d4806a168e50d6d128d9fcf840b28c09d2c08bc14ed1a3cffb7f0acff",
+  "size": 1487720,
+  "file": "game-v34-cargo-points.html",
   "minVersionCode": 13,
   "bootSelector": "nav",
-  "generatedUtc": "2026-10-30T22:45:55Z",
-  "sig": "7PhZtkI0n5vi/ZtncylisOv7ean0UYu1ft3a+nGFKrtIAQvg2QglWbRfjz/t8/99LWEqpzTpPbv2n+tGrj2SfQ=="
+  "generatedUtc": "2026-10-31T00:22:00Z",
+  "sig": "QP2fD/Ll2NxEuCS2aH1JkOzPJhbuSXTwKFFvOTLHfElr4zUr75H5M5V0B+JJznD3ZEX7jacPKMqvDpjeSidGyA=="
 }
