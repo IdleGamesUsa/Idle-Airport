@@ -1,10 +1,10 @@
 {
-  "build": 202611020800,
-  "sha256": "1fbc5803187eaa5bc4c4e03e40080f0f5bbbd5d65a6e96976c0e3952777e397d",
-  "size": 1488640,
-  "file": "game-v35-economy.html",
+  "build": 202611020954,
+  "sha256": "90f637b76b9f0036c02dfbdb66c2b74c83bc6d4814934c4bd648520a9c17cfc9",
+  "size": 1488669,
+  "file": "game-v36-skip-cash.html",
   "minVersionCode": 13,
   "bootSelector": "nav",
-  "generatedUtc": "2026-11-02T12:54:41Z",
-  "sig": "rmxnUfKPdeyOLcVEtFmP6lx438XpF20deEvlRWZ278yXGBKF6myRkO6OoDLpmZfP2ORCuIVr6L1crGLxKFKMbA=="
+  "generatedUtc": "2026-11-02T14:54:54Z",
+  "sig": "QPYbdLOAB2oZb6D/2ZEYsMEdsMfLB8Ew0YoOk4NiA58ySoIrHdtMWuRqznNvNZChYAGnlAL2tTivJSZyaKIhNw=="
 }
