@@ -7454,28 +7454,43 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
 var STG={cv:null,i:-1,raf:0};
 var SK=['#f1c7a3','#e0ac85','#c68863','#a86b48','#7d4b2e','#5a3420'],HC=['#2b1d12','#4a2d17','#7a4a22','#c9a063','#1a1a1a','#8a8f99','#b5532d'],SH=['#d6322e','#2f7fe0','#38d39f','#f0b34a','#8b6bff','#e86fa8','#3a4a6b','#ff8a2b','#2a9d8f','#c9d3e3'];
 function hsh(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);return ((n^(n>>>15))>>>0)/4294967296}
-function trLayout(i){var n=CARS[i],X0=34,X1=926,cw=(X1-X0)/n,P=18,cars=[],slots=[];
- for(var c=0;c<n;c++){var x0=X0+c*cw+6,x1=X0+(c+1)*cw-6,ix0=x0+(c===0?26:8),ix1=x1-(c===n-1?26:8),cols=Math.max(1,Math.floor((ix1-ix0-6)/P)),
-  sx=(ix0+ix1)/2-(cols-1)*P/2,doors=cw>260?[x0+(x1-x0)*.3,x0+(x1-x0)*.7]:[(x0+x1)/2];
-  cars.push({x0:x0,x1:x1,ix0:ix0,ix1:ix1,doors:doors});
-  for(var r=0;r<4;r++)for(var k=0;k<cols;k++){var sxk=sx+k*P;if(doors.some(d=>Math.abs(d-sxk)<P*.6)&&(r===0))continue;
-   var d=doors.reduce((a,b)=>Math.abs(b-sxk)<Math.abs(a-sxk)?b:a);slots.push({x:sxk,y:[216,232,262,278][r],door:d,ay:247})}}
- var seats=TR[i][1];slots=slots.slice(0,Math.min(slots.length,seats));
- // boarding order: nearest the aisle-far end of each door first, mixed across doors (like the gate load order)
- slots.forEach((s,j)=>{s.o=Math.abs(s.x-s.door)*-1+hsh(j*7+i)*40+(s.y===216||s.y===278?6:0)});slots.sort((a,b)=>a.o-b.o);
- slots.forEach((s,j)=>{s.wx=s.door+(hsh(j*13+i*3)-.5)*90;s.wy=90+hsh(j*29+i*5)*80;s.sk=SK[(hsh(j*3)*6)|0];s.hc=HC[(hsh(j*5)*7)|0];s.sh=SH[(hsh(j*11)*10)|0];s.sp=.85+hsh(j*17)*.3});
- return {cars:cars,slots:slots}}
+/* Seating charts from real vehicles (researched, see TRAIN-UI.md):
+   - Harbor Trolley = single-truck heritage trolley (Memphis/Porto type: ~30 ft, 2+1 transverse seating, end-platform doors front+rear,
+     longitudinal end benches) -> 8 rows of 2+1 + 4 bench seats = 28.
+   - City Streetcar = double-truck streetcar (Saskatoon #51 / Brill type: transverse 2+1 rows, longitudinal benches at both ends, end doors + centre door) -> 40.
+   - Metro Link and larger = 2.65 m LRV / coach: 2+2 transverse with centre aisle (APTA Modern Streetcar Guideline), 2 doors per car. */
+var SEATP=[{k:'trolley',ys:[220,236,280],ay:258,P:24,bench:4,doors:'ends'},{k:'street',ys:[220,236,280],ay:258,P:22,bench:4,doors:'ends+mid'}],
+ SEATD={k:'lrv',ys:[218,234,266,282],ay:250,P:20,bench:0,doors:'two'};
+function trLayout(i){var n=CARS[i],sp=SEATP[i]||SEATD,seats=TR[i][1],per=Math.ceil(seats/n),R=sp.ys.length,
+ rows=Math.ceil((per-sp.bench)/R),DG=26,VE=sp.doors==='two'?18:34,ndg=sp.doors==='ends+mid'?1:sp.doors==='two'?2:0,P=sp.P,
+ BZ=sp.bench?30:0,cw=function(){return rows*P+ndg*DG+2*VE+2*BZ+12},nv=n,tot=function(){return nv*cw()+(nv-1)*8};
+ while(tot()>892&&P>15)P--; // shrink pitch to fit the view
+ while(tot()>892&&nv>1)nv--; // long trains: the view shows the cars that fit (like a gate shows one jet bridge)
+ var W=tot(),X0=(960-W)/2,cars=[],slots=[];
+ for(var c=0;c<nv;c++){var x0=X0+c*(cw()+8),x1=x0+cw(),ix0=x0+6,ix1=x1-6,doors=[],cols=[],x=ix0+VE+BZ;
+  if(sp.doors!=='two'){doors.push(ix0+VE/2,ix1-VE/2)}
+  var mids=ndg===1?[Math.floor(rows/2)]:ndg===2?[Math.round(rows/3),Math.round(rows*2/3)]:[];
+  for(var r=0;r<rows;r++){if(mids.indexOf(r)>=0){doors.push(x+DG/2);x+=DG}cols.push(x+P/2);x+=P}
+  cars.push({x0:x0,x1:x1,ix0:ix0,ix1:ix1,doors:doors,ay:sp.ay});
+  var near=function(xx){return doors.reduce(function(a,b){return Math.abs(b-xx)<Math.abs(a-xx)?b:a})};
+  cols.forEach(function(cx){sp.ys.forEach(function(y){slots.push({x:cx,y:y,door:near(cx),ay:sp.ay,tv:1})})});
+  if(sp.bench){var bx=[ix0+VE+8,ix0+VE+22,ix1-VE-22,ix1-VE-8];for(var b=0;b<sp.bench;b++)slots.push({x:bx[b],y:284,door:near(bx[b]),ay:sp.ay,tv:0,bn:1})}}
+ slots=slots.slice(0,seats);
+ slots.forEach((s,j)=>{s.o=-Math.abs(s.x-s.door)+hsh(j*7+i)*40+(s.tv?0:-20)});slots.sort((a,b)=>a.o-b.o);
+ slots.forEach((s,j)=>{s.wx=s.door+(hsh(j*13+i*3)-.5)*90;s.wy=112+hsh(j*29+i*5)*62;s.sk=SK[(hsh(j*3)*6)|0];s.hc=HC[(hsh(j*5)*7)|0];s.sh=SH[(hsh(j*11)*10)|0];s.sp=.85+hsh(j*17)*.3});
+ return {cars:cars,slots:slots,ay:sp.ay,W:W}}
 function fig(g,x,y,s,ang,walk,t){g.save();g.translate(x,y);g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(1.2,1.6,6.2,4.6,0,0,6.3);g.fill();g.rotate(ang);
  if(walk){var sw=Math.sin(t*10)*2;g.fillStyle='#1c2435';g.beginPath();g.ellipse(-2.2,sw,1.6,2.2,0,0,6.3);g.fill();g.beginPath();g.ellipse(2.2,-sw,1.6,2.2,0,0,6.3);g.fill()}
  g.fillStyle=s.sh;g.strokeStyle='#0e1424';g.lineWidth=1;g.beginPath();g.ellipse(0,0,5.6,3.6,0,0,6.3);g.fill();g.stroke();
  g.fillStyle=s.sk;g.beginPath();g.arc(0,-.4,2.9,0,6.3);g.fill();g.stroke();g.fillStyle=s.hc;g.beginPath();g.arc(0,.5,2.6,Math.PI*1.05,Math.PI*1.95,true);g.fill();g.restore()}
-function seatG(g,x,y,f){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';g.fillRect(x-6.5,y+(y<247?-6:3),13,3)}
+function seatG(g,x,y,f,s){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';if(s&&s.tv)g.fillRect(x+3.5,y-6,3,12);else g.fillRect(x-6.5,y+3,13,3)}
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
  var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i)}var L=STG.L,g=cv.getContext('2d'),now=Date.now()/1000,t=now;
  var cyc=60/(0.6+0.08*T.bs[i]),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND);
  var dx=0;if(ph>.9)dx=Math.pow((ph-.9)/.05,2)*1000;if(ph>.95)dx=-(1-(ph-.95)/.05)*1000*(1-(ph-.95)/.05); // depart right, next train arrives from the left
  if(ph>.95)dx=-Math.pow(1-(ph-.95)/.05,2)*1000;
- g.clearRect(0,0,960,320);g.fillStyle='#141c2e';g.fillRect(0,0,960,320);
+ var z=Math.max(1,Math.min(2.2,900/L.W)),H=Math.max(320,Math.round(262*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);g.setTransform(z,0,0,z,480-480*z,H-312*z); // camera: small trains are zoomed in so the cabin reads like a gate
+ g.fillStyle='#141c2e';g.fillRect(-400,-400,1760,1200);
  // tracks
  g.fillStyle='#2a2f3a';g.fillRect(0,196,960,108);g.fillStyle='#4a3a2c';for(var x=0;x<960;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(0,212,960,3);g.fillRect(0,286,960,3);
  // platform + canopy
@@ -7488,10 +7503,10 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
  g.save();g.translate(dx,0);
  L.cars.forEach(function(c,k){g.fillStyle='#eef2f7';g.strokeStyle='#0e1424';g.lineWidth=2;g.beginPath();var r=k===0||k===L.cars.length-1?30:8;
   g.moveTo(c.x0+(k===0?r:6),202);g.lineTo(c.x1-(k===L.cars.length-1?r:6),202);g.quadraticCurveTo(c.x1,202,c.x1,250);g.quadraticCurveTo(c.x1,298,c.x1-(k===L.cars.length-1?r:6),298);g.lineTo(c.x0+(k===0?r:6),298);g.quadraticCurveTo(c.x0,298,c.x0,250);g.quadraticCurveTo(c.x0,202,c.x0+(k===0?r:6),202);g.fill();g.stroke();
-  g.fillStyle='#16213c';g.fillRect(c.ix0,208,c.ix1-c.ix0,84);g.fillStyle='#24304d';g.fillRect(c.ix0,242,c.ix1-c.ix0,10);
+  g.fillStyle='#16213c';g.fillRect(c.ix0,208,c.ix1-c.ix0,84);g.fillStyle='#24304d';g.fillRect(c.ix0,c.ay-6,c.ix1-c.ix0,12);
   if(k===0){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x0+14,250,8,30,0,0,6.3);g.fill()}if(k===L.cars.length-1){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x1-14,250,8,30,0,0,6.3);g.fill()}
   c.doors.forEach(function(d){var op=!dep&&ph>.02;g.fillStyle=op?'#3a4a6b':'#9aa7bd';g.fillRect(d-9,199,18,6);if(op){g.fillStyle='#38d39f';g.fillRect(d-9,197,18,2)}})});
- for(j=0;j<N;j++){s=S[j];seatG(g,s.x,s.y,j<seated);if(j<seated)fig(g,s.x,s.y+(s.y<247?1:-1),s,s.y<247?0:Math.PI,false,t)}
+ for(j=0;j<N;j++){s=S[j];seatG(g,s.x,s.y,j<seated,s);if(j<seated)fig(g,s.x-(s.tv?1:0),s.y-(s.tv?0:1),s,s.tv?Math.PI/2:Math.PI,false,t)}
  g.restore();
  // walkers: platform -> door -> aisle -> seat
  if(!dep)for(j=seated;j<N;j++){s=S[j];var tb2=(j/N)*BEND*cyc,tn2=ph*cyc,u=(tn2-(tb2-WALK*s.sp))/(WALK*s.sp);if(u<0)break;if(u>=1)continue;
