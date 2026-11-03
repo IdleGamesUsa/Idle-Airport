@@ -7483,6 +7483,10 @@ function fig(g,x,y,s,ang,walk,t){g.save();g.translate(x,y);g.fillStyle='rgba(0,0
  if(walk){var sw=Math.sin(t*10)*2;g.fillStyle='#1c2435';g.beginPath();g.ellipse(-2.2,sw,1.6,2.2,0,0,6.3);g.fill();g.beginPath();g.ellipse(2.2,-sw,1.6,2.2,0,0,6.3);g.fill()}
  g.fillStyle=s.sh;g.strokeStyle='#0e1424';g.lineWidth=1;g.beginPath();g.ellipse(0,0,5.6,3.6,0,0,6.3);g.fill();g.stroke();
  g.fillStyle=s.sk;g.beginPath();g.arc(0,-.4,2.9,0,6.3);g.fill();g.stroke();g.fillStyle=s.hc;g.beginPath();g.arc(0,.5,2.6,Math.PI*1.05,Math.PI*1.95,true);g.fill();g.restore()}
+/* passengers = the SAME top-down sprites the plane gates and spaceport use (figSprite / FR4 / NV4 from drawFig):
+   same variants, same 2-frame walk + bob, heading = direction of travel, the 'sit' pose once seated */
+function pfig(g,j,x,y,hd,moving,sit,t){try{var K=(g.getTransform?g.getTransform().a:0)||2,ph=(j*1.618)%6,fr=moving?((t*5.5+ph)|0)&1:0,sp=figSprite((j*5+1)%NV4,fr,sit,false,K);if(!sp)return;
+ var sz=FR4*6*(4.4/3.4);g.save();g.translate(x,y+(moving?Math.abs(Math.sin(t*11+ph))*-.35:0));g.rotate(hd);g.drawImage(sp,-sz/2,-sz/2,sz,sz);g.restore()}catch(e){fig(g,x,y,STG.L.slots[j]||STG.L.slots[0],hd,moving,t)}}
 function seatG(g,x,y,f,s){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';if(s&&s.tv)g.fillRect(x+3.5,y-6,3,12);else g.fillRect(x-6.5,y+3,13,3)}
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
  var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i)}var L=STG.L,g=cv.getContext('2d'),now=Date.now()/1000,t=now;
@@ -7498,7 +7502,8 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
  g.fillStyle='#f5c542';g.fillRect(0,180,960,6);g.fillStyle='#2f8f95';g.fillRect(10,14,940,48);g.fillStyle='#257479';for(x=14;x<946;x+=10)g.fillRect(x,14,2,48);g.fillStyle='#1d5d62';g.fillRect(10,58,940,4);
  var S=L.slots,N=S.length,seated=Math.floor(f*N),WALK=Math.min(3.2,cyc*BEND/3),dep=ph>BEND;
  // waiting crowd (next ~36 to board) on the platform
- for(var j=seated;j<Math.min(N,seated+60);j++){var s=S[j],tb=(j/N)*BEND*cyc,tn=ph*cyc;if(dep||tn>=tb-WALK)continue;fig(g,s.wx,s.wy,s,Math.PI,false,t)}
+ var tn=ph*cyc,ST=function(j){var A=(j/N)*BEND*cyc,s=S[j];return dep||tn>=A?2:tn>=A-WALK*s.sp?1:0}; // one clock per passenger: 0 waiting, 1 walking, 2 seated (same seat it walked to)
+ for(var j=0;j<N;j++){if(ST(j)!==0)continue;if(j>seated+60)break;var s=S[j];pfig(g,j,s.wx,s.wy,Math.PI,false,false,t)}
  // train
  g.save();g.translate(dx,0);
  L.cars.forEach(function(c,k){g.fillStyle='#eef2f7';g.strokeStyle='#0e1424';g.lineWidth=2;g.beginPath();var r=k===0||k===L.cars.length-1?30:8;
@@ -7506,13 +7511,13 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
   g.fillStyle='#16213c';g.fillRect(c.ix0,208,c.ix1-c.ix0,84);g.fillStyle='#24304d';g.fillRect(c.ix0,c.ay-6,c.ix1-c.ix0,12);
   if(k===0){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x0+14,250,8,30,0,0,6.3);g.fill()}if(k===L.cars.length-1){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x1-14,250,8,30,0,0,6.3);g.fill()}
   c.doors.forEach(function(d){var op=!dep&&ph>.02;g.fillStyle=op?'#3a4a6b':'#9aa7bd';g.fillRect(d-9,199,18,6);if(op){g.fillStyle='#38d39f';g.fillRect(d-9,197,18,2)}})});
- for(j=0;j<N;j++){s=S[j];seatG(g,s.x,s.y,j<seated,s);if(j<seated)fig(g,s.x-(s.tv?1:0),s.y-(s.tv?0:1),s,s.tv?Math.PI/2:Math.PI,false,t)}
+ for(j=0;j<N;j++){s=S[j];var st2=ST(j);seatG(g,s.x,s.y,st2===2,s);if(st2===2)pfig(g,j,s.x,s.y,s.tv?-Math.PI/2:0,false,true,t)}
  g.restore();
  // walkers: platform -> door -> aisle -> seat
- if(!dep)for(j=seated;j<N;j++){s=S[j];var tb2=(j/N)*BEND*cyc,tn2=ph*cyc,u=(tn2-(tb2-WALK*s.sp))/(WALK*s.sp);if(u<0)break;if(u>=1)continue;
+ if(!dep)for(j=0;j<N;j++){if(ST(j)!==1)continue;s=S[j];var tb2=(j/N)*BEND*cyc,tn2=tn,u=(tn2-(tb2-WALK*s.sp))/(WALK*s.sp);
   var pts=[[s.wx,s.wy],[s.door,190],[s.door,s.ay],[s.x,s.ay],[s.x,s.y]],seg=[],tot=0;for(var q=1;q<pts.length;q++){var l=Math.hypot(pts[q][0]-pts[q-1][0],pts[q][1]-pts[q-1][1]);seg.push(l);tot+=l}
   var dd=u*tot,q2=0;while(q2<seg.length-1&&dd>seg[q2]){dd-=seg[q2];q2++}var a=pts[q2],b=pts[q2+1],v=seg[q2]?dd/seg[q2]:1;
-  fig(g,a[0]+(b[0]-a[0])*v,a[1]+(b[1]-a[1])*v,s,Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2,true,t*s.sp)}
+  pfig(g,j,a[0]+(b[0]-a[0])*v,a[1]+(b[1]-a[1])*v,Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2,true,false,t)}
 }
 function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1'}
  slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
