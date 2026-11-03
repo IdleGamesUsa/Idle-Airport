@@ -7451,7 +7451,7 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
  '<section class="trCard" id="trLb"><h2>TRAIN PASSENGERS · THIS WEEK</h2><div class="sm">'+L.length+' pilots · resets Sunday · preview (local stub)</div>'+lbHTML(L,pod)+'</section>';
  setH(host,h);attachStage()}
 /* ---- v38 procedural platform stage: passengers walk from the platform, through the car doors, down the aisle and sit (same feel as gate boarding) ---- */
-var STG={cv:null,i:-1,raf:0};
+var STG={cv:null,i:-1,raf:0,uz:1,px:0,py:0,uzMax:1,H:320};
 var SK=['#f1c7a3','#e0ac85','#c68863','#a86b48','#7d4b2e','#5a3420'],HC=['#2b1d12','#4a2d17','#7a4a22','#c9a063','#1a1a1a','#8a8f99','#b5532d'],SH=['#d6322e','#2f7fe0','#38d39f','#f0b34a','#8b6bff','#e86fa8','#3a4a6b','#ff8a2b','#2a9d8f','#c9d3e3'];
 function hsh(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);return ((n^(n>>>15))>>>0)/4294967296}
 /* TRAIN BOARDING = THE GATE BOARDING CODE. Each car is a plane-geo-like object (like the spaceport's shipGateGeo) fed to the SAME
@@ -7515,13 +7515,13 @@ function hullPath(g,LK,a,b,y0,y1,first,last){var m=(y0+y1)/2,h=y1-y0,n=LK.nl,t=L
  else{var q=last?(t==='stub'||t==='round'?R:t==='wedge'?14:R):6;g.lineTo(b-q,y0);g.quadraticCurveTo(b+(last&&(t==='stub'||t==='round')?n*.6:0),y0,b+(last&&t!=='box'?n*.3:0),m);g.quadraticCurveTo(b+(last&&(t==='stub'||t==='round')?n*.6:0),y1,b-q,y1)}
  g.closePath()}
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
- var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1;}var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=Date.now()/1000,t=now;
+ var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1;STG.uz=1;STG.px=0;STG.py=0;}var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=Date.now()/1000,t=now;
  var cyc=vcyc(i),cn=Math.floor(now/cyc),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND;
  if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c)})} // a fresh boarding plan per departure, like each new plane
  var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*2400;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*2400; // departs to the left (front first), the next train arrives from the right
  var HB=HULL0+(HULL1-HULL0)*LK.hh,SB=Math.max(312,HB+16); // scene bottom grows for the Twin Deck's taller hull
  var z=Math.min(2.2,940/L.W),H=Math.max(160,Math.round((SB-8)*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
- g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);g.setTransform(z,0,0,z,480-480*z,H-SB*z);
+ g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);STG.H=H;STG.uzMax=Math.max(1,2.4/z);stClamp();var uz=STG.uz,ZZ=z*uz;g.setTransform(ZZ,0,0,ZZ,uz*(480-480*z-480)+480+STG.px,uz*(H-SB*z-H/2)+H/2+STG.py);
  var XA=-480/z+480-50,XW=960/z+100;
  g.fillStyle='#141c2e';g.fillRect(XA,-400,XW,1200);
  g.fillStyle='#2a2f3a';g.fillRect(XA,196,XW,SB-196);g.fillStyle='#4a3a2c';for(var x=Math.floor(XA/16)*16;x<XA+XW;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(XA,212,XW,3);g.fillRect(XA,286,XW,3);
@@ -7560,7 +7560,20 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
  });
 }
 try{window.__trainsStage=function(){return STG}}catch(e){}
-function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1'}
+function stClamp(){var S=STG;S.uz=Math.max(1,Math.min(S.uzMax,S.uz));var mx=480*(S.uz-1),my=S.H/2*(S.uz-1);S.px=Math.max(-mx,Math.min(mx,S.px));S.py=Math.max(-my,Math.min(my,S.py))}
+function stZoomAt(cx,cy,nz){var S=STG;nz=Math.max(1,Math.min(S.uzMax,nz));var k=nz/S.uz,ox=480+S.px,oy=S.H/2+S.py;S.px=cx-480-(cx-ox)*k;S.py=cy-S.H/2-(cy-oy)*k;S.uz=nz;stClamp()}
+function stReset(){STG.uz=1;STG.px=0;STG.py=0}
+function stGestures(cv){function pt(x,y){var r=cv.getBoundingClientRect(),s=cv.width/r.width;return[(x-r.left)*s,(y-r.top)*s*(cv.height/(r.height*s)||1)]}
+ function sc(){var r=cv.getBoundingClientRect();return cv.width/r.width}
+ cv.addEventListener('wheel',function(e){e.preventDefault();var p=pt(e.clientX,e.clientY);stZoomAt(p[0],p[1],STG.uz*Math.exp(-e.deltaY*.0015))},{passive:false});
+ var drag=null;cv.addEventListener('mousedown',function(e){drag=[e.clientX,e.clientY]});
+ window.addEventListener('mousemove',function(e){if(!drag)return;var s=sc();STG.px+=(e.clientX-drag[0])*s;STG.py+=(e.clientY-drag[1])*s;drag=[e.clientX,e.clientY];stClamp()});
+ window.addEventListener('mouseup',function(){drag=null});cv.addEventListener('dblclick',function(e){e.preventDefault();stReset()});
+ var t0=null,lastTap=0;function info(ts){if(ts.length>1){var a=ts[0],b=ts[1];return{x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2,d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}}return{x:ts[0].clientX,y:ts[0].clientY,d:0}}
+ cv.addEventListener('touchstart',function(e){if(e.touches.length===1){var n=Date.now();if(n-lastTap<300){stReset();lastTap=0;e.preventDefault()}else lastTap=n}t0=info(e.touches)},{passive:false});
+ cv.addEventListener('touchmove',function(e){if(!t0)return;e.preventDefault();var c=info(e.touches),s=sc();if(c.d&&t0.d){var p=pt(c.x,c.y);STG.px+=(c.x-t0.x)*s;STG.py+=(c.y-t0.y)*s;stZoomAt(p[0],p[1],STG.uz*c.d/t0.d)}else if(!c.d&&!t0.d){STG.px+=(c.x-t0.x)*s;STG.py+=(c.y-t0.y)*s;stClamp()}t0=c},{passive:false});
+ cv.addEventListener('touchend',function(e){t0=e.touches.length?info(e.touches):null},{passive:false})}
+function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1;touch-action:none';stGestures(STG.cv)}
  slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
 function render(){load();accrue();save();if(on('vTrSel'))renderSel();if(on('vTrain'))renderPl()}
 function on(id){var e=$(id);return !!(e&&!e.classList.contains('hide'))}
