@@ -7343,10 +7343,16 @@ function calm(){try{if(document.hidden)return false;var on=function(id){var e=do
  var pp=document.getElementById('popup');if(pp&&!pp.classList.contains('hide'))return false;var ad=document.getElementById('adScr');if(ad&&!ad.classList.contains('hide'))return false;
  if(document.getElementById('tutOv'))return false;return !document.getElementById('rateOv')}catch(e){return false}}
 function due(){var o=L();if(o.done||o.never)return false;if((o.nDays||0)<3||Date.now()-o.first<3*DAY)return false;if(o.snooze&&Date.now()<o.snooze)return false;if((o.asks||0)>=3)return false;return Date.now()-t0>90e3}
+/* Nov 3 fix: Play's in-app review API resolves OK even when Google decides NOT to show the sheet (quota, already reviewed, beta/test
+ installs), so the prompt just vanished. Now: if the review sheet doesn't visibly take focus within ~2.5 s, open the Play listing instead. */
 function rate(){var o=L();o.done=Date.now();W(o);close();
- try{var N=window.IdleNative;if(N&&N.isNative&&N.requestReview){N.requestReview().catch(function(){openStore()});return}}catch(e){}
- try{var C=window.Capacitor,P=C&&C.Plugins;if(P&&P.InAppReview&&P.InAppReview.requestReview){P.InAppReview.requestReview().catch(function(){openStore()});return}}catch(e){}openStore()}
-function openStore(){try{var C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform()){window.location.href='market://details?id='+PKG;return}}catch(e){}try{var Br=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Browser;if(Br&&Br.open){Br.open({url:WEB});return}}catch(e){}window.open(WEB,'_blank','noopener')}
+ var shown=false,fell=false;function mark(){shown=true}
+ document.addEventListener('visibilitychange',mark,{once:true});window.addEventListener('blur',mark,{once:true});
+ function fb(){if(fell)return;fell=true;openStore()}
+ function watch(p){p.then(function(){setTimeout(function(){if(!shown&&!document.hidden)fb()},2500)},fb)}
+ try{var N=window.IdleNative;if(N&&N.isNative&&N.requestReview){watch(N.requestReview());return}}catch(e){}
+ try{var C=window.Capacitor,P=C&&C.Plugins;if(P&&P.InAppReview&&P.InAppReview.requestReview){watch(P.InAppReview.requestReview());return}}catch(e){}openStore()}
+function openStore(){try{var C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform()){try{window.open('market://details?id='+PKG,'_system')||(window.location.href='market://details?id='+PKG)}catch(e){window.location.href='market://details?id='+PKG}return}}catch(e){}try{var Br=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Browser;if(Br&&Br.open){Br.open({url:WEB});return}}catch(e){}window.open(WEB,'_blank','noopener')}
 function close(){var e=document.getElementById('rateOv');if(e)e.remove()}
 function show(){if(document.getElementById('rateOv'))return;var o=L();o.asks=(o.asks||0)+1;o.lastAsk=Date.now();W(o);
  var d=document.createElement('div');d.id='rateOv';d.innerHTML='<div class="rtBox"><div class="rtIco">✈️</div><h3>Enjoying Idle Airport?</h3><p>If you’re having fun, a quick rating on Google Play really helps us keep adding planes, terminals and events. Thank you!</p><div class="rtStars">★★★★★</div><button id="rtYes" type="button">⭐ Rate Idle Airport</button><button id="rtLater" class="alt" type="button">Not now</button><a href="#" id="rtNever">Don’t ask again</a></div>';
