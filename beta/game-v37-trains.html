@@ -7480,7 +7480,7 @@ var LOOK=[
  {nm:'suburb',body:'#1c2f5e',roof:'#16264c',str:'#ffffff',win:'#0b1226',door:'#f4f6fa',acc:'#e8eef8',nose:'cab',nl:16,hh:1},
  {nm:'clipper',body:'#1d8f8a',roof:'#16706c',str:'#f5c542',win:'#0d2624',door:'#f5c542',acc:'#f5c542',nose:'cab',nl:18,hh:1},
  {nm:'voyager',body:'#3a3f48',roof:'#2b2f36',str:'#d4a73a',win:'#14161b',door:'#d4a73a',acc:'#d4a73a',nose:'wedge',nl:40,hh:1},
- {nm:'twindeck',body:'#8a2be2',roof:'#6a1fb0',str:'#ffd23f',win:'#1a0f2c',door:'#ffd23f',acc:'#ffffff',nose:'cab',nl:20,hh:1.5,dd:1},
+ {nm:'twindeck',body:'#8a2be2',roof:'#6a1fb0',str:'#ffd23f',win:'#1a0f2c',door:'#ffd23f',acc:'#ffffff',nose:'cab',nl:20,hh:1,tw:1},
  {nm:'arrow',body:'#d9dde3',roof:'#b8bec8',str:'#f07a1a',win:'#151a24',door:'#f07a1a',acc:'#f07a1a',nose:'point',nl:70,hh:1},
  {nm:'bolt',body:'#123a8c',roof:'#0d2c6c',str:'#2fd4f0',win:'#06122c',door:'#2fd4f0',acc:'#2fd4f0',nose:'point',nl:90,hh:1},
  {nm:'sovereign',body:'#f7f8fb',roof:'#e4e7ee',str:'#c99a2e',win:'#0e1a3a',door:'#14244e',acc:'#14244e',nose:'point',nl:80,hh:1,crown:1}];
@@ -7552,6 +7552,7 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
   if(last&&LK.nose!=='box'){g.fillRect(b+(LK.nose==='point'?LK.nl*.1:LK.nl*.05),HULL0+18,5,HULL1-HULL0-36)}
   // livery stripes on both long sides + roof accent
   g.fillStyle=LK.str;g.fillRect(a+2,HULL0+2,b-a-4,4);if(!LK.dd)g.fillRect(a+2,HULL1-6,b-a-4,4);
+  if(LK.tw){g.fillStyle=LK.acc;g.fillRect(a+8,HULL1-11,b-a-16,2)} // Twin Deck (Michael t1114u): straight top-down, flush hull like the others; slim white upper-deck pin-line inside the hull is its only cue
   if(LK.crown){g.fillStyle=LK.acc;g.fillRect(a+2,HULL0+6,b-a-4,2);g.fillRect(a+2,HULL1-8,b-a-4,2)}
   if(first&&(LK.nose==='point'||LK.nose==='wedge')){g.fillStyle=LK.str;g.beginPath();g.moveTo(a+4,HULL0+2);g.quadraticCurveTo(a-LK.nl*.5,HULL0+6,a-LK.nl*.92,(HULL0+HULL1)/2);g.quadraticCurveTo(a-LK.nl*.5,HULL0+12,a+4,HULL0+8);g.fill();
    g.beginPath();g.moveTo(a+4,HULL1-2);g.quadraticCurveTo(a-LK.nl*.5,HULL1-6,a-LK.nl*.92,(HULL0+HULL1)/2);g.quadraticCurveTo(a-LK.nl*.5,HULL1-12,a+4,HULL1-8);g.fill()}
