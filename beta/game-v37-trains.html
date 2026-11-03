@@ -7454,71 +7454,62 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
 var STG={cv:null,i:-1,raf:0};
 var SK=['#f1c7a3','#e0ac85','#c68863','#a86b48','#7d4b2e','#5a3420'],HC=['#2b1d12','#4a2d17','#7a4a22','#c9a063','#1a1a1a','#8a8f99','#b5532d'],SH=['#d6322e','#2f7fe0','#38d39f','#f0b34a','#8b6bff','#e86fa8','#3a4a6b','#ff8a2b','#2a9d8f','#c9d3e3'];
 function hsh(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);return ((n^(n>>>15))>>>0)/4294967296}
-/* Seating charts from real vehicles (researched, see TRAIN-UI.md):
-   - Harbor Trolley = single-truck heritage trolley (Memphis/Porto type: ~30 ft, 2+1 transverse seating, end-platform doors front+rear,
-     longitudinal end benches) -> 8 rows of 2+1 + 4 bench seats = 28.
-   - City Streetcar = double-truck streetcar (Saskatoon #51 / Brill type: transverse 2+1 rows, longitudinal benches at both ends, end doors + centre door) -> 40.
-   - Metro Link and larger = 2.65 m LRV / coach: 2+2 transverse with centre aisle (APTA Modern Streetcar Guideline), 2 doors per car. */
-var SEATP=[{k:'trolley',ys:[220,236,280],ay:258,P:24,bench:4,doors:'ends'},{k:'street',ys:[220,236,280],ay:258,P:22,bench:4,doors:'ends+mid'}],
- SEATD={k:'lrv',ys:[218,234,266,282],ay:250,P:20,bench:0,doors:'two'};
-function trLayout(i){var n=CARS[i],sp=SEATP[i]||SEATD,seats=TR[i][1],per=Math.ceil(seats/n),R=sp.ys.length,
- rows=Math.ceil((per-sp.bench)/R),DG=26,VE=sp.doors==='two'?18:34,ndg=sp.doors==='ends+mid'?1:sp.doors==='two'?2:0,P=sp.P,
- BZ=sp.bench?30:0,cw=function(){return rows*P+ndg*DG+2*VE+2*BZ+12},nv=n,tot=function(){return nv*cw()+(nv-1)*8};
- while(tot()>892&&P>15)P--; // shrink pitch to fit the view
- while(tot()>892&&nv>1)nv--; // long trains: the view shows the cars that fit (like a gate shows one jet bridge)
- var W=tot(),X0=(960-W)/2,cars=[],slots=[];
- for(var c=0;c<nv;c++){var x0=X0+c*(cw()+8),x1=x0+cw(),ix0=x0+6,ix1=x1-6,doors=[],cols=[],x=ix0+VE+BZ;
-  if(sp.doors!=='two'){doors.push(ix0+VE/2,ix1-VE/2)}
-  var mids=ndg===1?[Math.floor(rows/2)]:ndg===2?[Math.round(rows/3),Math.round(rows*2/3)]:[];
-  for(var r=0;r<rows;r++){if(mids.indexOf(r)>=0){doors.push(x+DG/2);x+=DG}cols.push(x+P/2);x+=P}
-  cars.push({x0:x0,x1:x1,ix0:ix0,ix1:ix1,doors:doors,ay:sp.ay});
-  var near=function(xx){return doors.reduce(function(a,b){return Math.abs(b-xx)<Math.abs(a-xx)?b:a})};
-  cols.forEach(function(cx){sp.ys.forEach(function(y){slots.push({x:cx,y:y,door:near(cx),ay:sp.ay,tv:1})})});
-  if(sp.bench){var bx=[ix0+VE+8,ix0+VE+22,ix1-VE-22,ix1-VE-8];for(var b=0;b<sp.bench;b++)slots.push({x:bx[b],y:284,door:near(bx[b]),ay:sp.ay,tv:0,bn:1})}}
- slots=slots.slice(0,seats);
- slots.forEach((s,j)=>{s.o=-Math.abs(s.x-s.door)+hsh(j*7+i)*40+(s.tv?0:-20)});slots.sort((a,b)=>a.o-b.o);
- slots.forEach((s,j)=>{s.wx=s.door+(hsh(j*13+i*3)-.5)*90;s.wy=112+hsh(j*29+i*5)*62;s.sk=SK[(hsh(j*3)*6)|0];s.hc=HC[(hsh(j*5)*7)|0];s.sh=SH[(hsh(j*11)*10)|0];s.sp=.85+hsh(j*17)*.3});
- return {cars:cars,slots:slots,ay:sp.ay,W:W}}
-function fig(g,x,y,s,ang,walk,t){g.save();g.translate(x,y);g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(1.2,1.6,6.2,4.6,0,0,6.3);g.fill();g.rotate(ang);
- if(walk){var sw=Math.sin(t*10)*2;g.fillStyle='#1c2435';g.beginPath();g.ellipse(-2.2,sw,1.6,2.2,0,0,6.3);g.fill();g.beginPath();g.ellipse(2.2,-sw,1.6,2.2,0,0,6.3);g.fill()}
- g.fillStyle=s.sh;g.strokeStyle='#0e1424';g.lineWidth=1;g.beginPath();g.ellipse(0,0,5.6,3.6,0,0,6.3);g.fill();g.stroke();
- g.fillStyle=s.sk;g.beginPath();g.arc(0,-.4,2.9,0,6.3);g.fill();g.stroke();g.fillStyle=s.hc;g.beginPath();g.arc(0,.5,2.6,Math.PI*1.05,Math.PI*1.95,true);g.fill();g.restore()}
-/* passengers = the SAME top-down sprites the plane gates and spaceport use (figSprite / FR4 / NV4 from drawFig):
-   same variants, same 2-frame walk + bob, heading = direction of travel, the 'sit' pose once seated */
-function pfig(g,j,x,y,hd,moving,sit,t){try{var K=(g.getTransform?g.getTransform().a:0)||2,ph=(j*1.618)%6,fr=moving?((t*5.5+ph)|0)&1:0,sp=figSprite((j*5+1)%NV4,fr,sit,false,K);if(!sp)return;
- var sz=FR4*6*(4.4/3.4);g.save();g.translate(x,y+(moving?Math.abs(Math.sin(t*11+ph))*-.35:0));g.rotate(hd);g.drawImage(sp,-sz/2,-sz/2,sz,sz);g.restore()}catch(e){fig(g,x,y,STG.L.slots[j]||STG.L.slots[0],hd,moving,t)}}
-function seatG(g,x,y,f,s){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';if(s&&s.tv)g.fillRect(x+3.5,y-6,3,12);else g.fillRect(x-6.5,y+3,13,3)}
+/* TRAIN BOARDING = THE GATE BOARDING CODE. Each car is a plane-geo-like object (like the spaceport's shipGateGeo) fed to the SAME
+   buildPlan() / paxPoint() / drawFig() the plane gates use: gate-agent call order, single-file line with min gap, the brief scan pause
+   at the door (T.Ls / SCAN_T), down the aisle section by section, sit the instant they reach THEIR seat and stay there.
+   Seat maps use the game's own cabin grammar (buildCabin), from researched vehicles (see TRAIN-UI.md):
+   Harbor Trolley = single-truck heritage trolley, 2+1 transverse (Memphis/Porto type) = 10 rows 2+1, last row trimmed = 28;
+   City Streetcar = double-truck 2+1 with a centre door (Saskatoon #51 / Brill) = 40; Metro Link+ = APTA LRV 2+2 centre aisle.
+   Frame: the gate code is "nose up" (x across, y along). The train is drawn with the frame TRANSPOSED (canvas x = frame y,
+   canvas y = frame x), so the front of the car is on the left and the doors face the platform (top). */
+var CABS=['g1.6 Y10:2-1t2 g1.2','g1.6 Y7:2-1 x1.4 Y7:2-1t2 g1.2','g1.6 Y10:2-2 g1.2','g1.6 Y12:2-2 g1.2','g1.6 Y14:2-2 g1.2','g1.6 Y15:2-2 g1.2','g1.6 Y16:2-2 g1.2','g1.6 Y16:2-2 g1.2','g1.6 Y17:2-2 g1.2','g1.6 Y17:2-2 g1.2'];
+var TRY=250,HULL0=202,HULL1=298; // canvas y: train centre line, hull top (platform side) / bottom
+function carGeo(i,oy,pU){var cabin=buildCabin({cab:CABS[i]}),D=cabin.decks[0],cw=Math.min(16,76/D.cells),ox=TRY,
+  geo={cabin:cabin,cw:cw,pU:pU,pitch:pU,cabinTop:0,cabinLen:D.units*pU,dd:[{ox:ox,oy:oy}],stairs:false,rear:false,share:0,s:1,gap:clamp(cw*1.5,7,10)};
+ cabin.seats.concat(cabin.crew).forEach(function(q){q.px=ox+q.xc*cw;q.py=oy+q.yu*pU});geo.seatXY=function(q){return{x:q.px,y:q.py}};
+ var g0=D.gaps[0],dY=oy+(g0&&g0.u0===0?g0.u*pU*.5:4),dX=HULL0+2;geo.doorX=dX;geo.doorY=dY;
+ // trunk (frame coords [x across, y along]): the single-file line runs along the platform edge towards the door (index 0 = tail .. 4 = head),
+ // then the step through the door; the scan pause happens just past the head, at the door, exactly like the gate podium / aircraft door.
+ var qx=176,tp=[[qx,dY+100],[qx,dY+75],[qx,dY+50],[qx,dY+25],[qx,dY+4],[190,dY],[dX,dY],[dX+8,dY]];geo.trunk=mkTrunk(tp);
+ // waiting area = the platform: one standing spot per seat, in columns behind the line (gate chairs -> platform spots, same route rules)
+ var N=cabin.seats.length,cols=Math.max(4,Math.ceil(N/4)),rows=Math.ceil(N/cols),x0=oy-6,x1=oy+D.units*pU+6,sp=(x1-x0)/cols,chairs=[];
+ for(var n=0;n<N;n++){var c=n%cols,r=(n/cols)|0;chairs.push({x:72+r*(84/Math.max(1,rows-1||1))+((c*7)%5)-2,y:x0+(c+.5)*sp,cy:x0+(c+.5)*sp+sp/2})}
+ var wa={chairs:chairs,aisles:[162],chY:dY+112,r:4.2,cs:sp,N:N};geo.waC=new Map([[N,wa]]);geo.wa=wa;geo.chairs=chairs;geo.aisles=wa.aisles;geo.chY=wa.chY;geo.wr=4.2;geo.edge={x:150,y:dY+120};
+ geo.x0=oy-12;geo.x1=oy+D.units*pU+12;return geo}
+function trLayout(i){var n=CARS[i],c0=buildCabin({cab:CABS[i]}),U=c0.decks[0].units,pU=U<16?24:U<20?20:18,len=function(){return U*pU+24},nv=n;
+ while(nv*len()+(nv-1)*10>892&&pU>15)pU--;while(nv>1&&nv*len()+(nv-1)*10>892)nv--;
+ var W=nv*len()+(nv-1)*10,X0=(960-W)/2,cars=[];for(var k=0;k<nv;k++)cars.push(carGeo(i,X0+k*(len()+10)+12,pU));return {cars:cars,W:W}}
+function seatG(g,x,y,f){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';g.fillRect(x+3.5,y-6,3,12)}
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
- var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i)}var L=STG.L,g=cv.getContext('2d'),now=Date.now()/1000,t=now;
- var cyc=60/(0.6+0.08*T.bs[i]),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND);
- var dx=0;if(ph>.9)dx=Math.pow((ph-.9)/.05,2)*1000;if(ph>.95)dx=-(1-(ph-.95)/.05)*1000*(1-(ph-.95)/.05); // depart right, next train arrives from the left
- if(ph>.95)dx=-Math.pow(1-(ph-.95)/.05,2)*1000;
- var z=Math.max(1,Math.min(2.2,900/L.W)),H=Math.max(320,Math.round(262*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);g.setTransform(z,0,0,z,480-480*z,H-312*z); // camera: small trains are zoomed in so the cabin reads like a gate
+ var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1}var L=STG.L,g=cv.getContext('2d'),now=Date.now()/1000,t=now;
+ var cyc=60/(0.6+0.08*T.bs[i]),cn=Math.floor(now/cyc),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND;
+ if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=buildPlan(c,c.cabin.seats.length)})} // a fresh boarding plan per departure, like each new plane
+ var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*1000;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*1000; // departs to the left (front first), the next train arrives from the right
+ var z=Math.max(1,Math.min(2.2,900/L.W)),H=Math.max(320,Math.round(262*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
+ g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);g.setTransform(z,0,0,z,480-480*z,H-312*z);
  g.fillStyle='#141c2e';g.fillRect(-400,-400,1760,1200);
- // tracks
- g.fillStyle='#2a2f3a';g.fillRect(0,196,960,108);g.fillStyle='#4a3a2c';for(var x=0;x<960;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(0,212,960,3);g.fillRect(0,286,960,3);
- // platform + canopy
- g.fillStyle='#8d939c';g.fillRect(0,40,960,148);g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;for(x=0;x<960;x+=24){g.beginPath();g.moveTo(x,64);g.lineTo(x,184);g.stroke()}
- g.fillStyle='#f5c542';g.fillRect(0,180,960,6);g.fillStyle='#2f8f95';g.fillRect(10,14,940,48);g.fillStyle='#257479';for(x=14;x<946;x+=10)g.fillRect(x,14,2,48);g.fillStyle='#1d5d62';g.fillRect(10,58,940,4);
- var S=L.slots,N=S.length,seated=Math.floor(f*N),WALK=Math.min(3.2,cyc*BEND/3),dep=ph>BEND;
- // waiting crowd (next ~36 to board) on the platform
- var tn=ph*cyc,ST=function(j){var A=(j/N)*BEND*cyc,s=S[j];return dep||tn>=A?2:tn>=A-WALK*s.sp?1:0}; // one clock per passenger: 0 waiting, 1 walking, 2 seated (same seat it walked to)
- for(var j=0;j<N;j++){if(ST(j)!==0)continue;if(j>seated+60)break;var s=S[j];pfig(g,j,s.wx,s.wy,Math.PI,false,false,t)}
- // train
- g.save();g.translate(dx,0);
- L.cars.forEach(function(c,k){g.fillStyle='#eef2f7';g.strokeStyle='#0e1424';g.lineWidth=2;g.beginPath();var r=k===0||k===L.cars.length-1?30:8;
-  g.moveTo(c.x0+(k===0?r:6),202);g.lineTo(c.x1-(k===L.cars.length-1?r:6),202);g.quadraticCurveTo(c.x1,202,c.x1,250);g.quadraticCurveTo(c.x1,298,c.x1-(k===L.cars.length-1?r:6),298);g.lineTo(c.x0+(k===0?r:6),298);g.quadraticCurveTo(c.x0,298,c.x0,250);g.quadraticCurveTo(c.x0,202,c.x0+(k===0?r:6),202);g.fill();g.stroke();
-  g.fillStyle='#16213c';g.fillRect(c.ix0,208,c.ix1-c.ix0,84);g.fillStyle='#24304d';g.fillRect(c.ix0,c.ay-6,c.ix1-c.ix0,12);
-  if(k===0){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x0+14,250,8,30,0,0,6.3);g.fill()}if(k===L.cars.length-1){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x1-14,250,8,30,0,0,6.3);g.fill()}
-  c.doors.forEach(function(d){var op=!dep&&ph>.02;g.fillStyle=op?'#3a4a6b':'#9aa7bd';g.fillRect(d-9,199,18,6);if(op){g.fillStyle='#38d39f';g.fillRect(d-9,197,18,2)}})});
- for(j=0;j<N;j++){s=S[j];var st2=ST(j);seatG(g,s.x,s.y,st2===2,s);if(st2===2)pfig(g,j,s.x,s.y,s.tv?-Math.PI/2:0,false,true,t)}
- g.restore();
- // walkers: platform -> door -> aisle -> seat
- if(!dep)for(j=0;j<N;j++){if(ST(j)!==1)continue;s=S[j];var tb2=(j/N)*BEND*cyc,tn2=tn,u=(tn2-(tb2-WALK*s.sp))/(WALK*s.sp);
-  var pts=[[s.wx,s.wy],[s.door,190],[s.door,s.ay],[s.x,s.ay],[s.x,s.y]],seg=[],tot=0;for(var q=1;q<pts.length;q++){var l=Math.hypot(pts[q][0]-pts[q-1][0],pts[q][1]-pts[q-1][1]);seg.push(l);tot+=l}
-  var dd=u*tot,q2=0;while(q2<seg.length-1&&dd>seg[q2]){dd-=seg[q2];q2++}var a=pts[q2],b=pts[q2+1],v=seg[q2]?dd/seg[q2]:1;
-  pfig(g,j,a[0]+(b[0]-a[0])*v,a[1]+(b[1]-a[1])*v,Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2,true,false,t)}
+ g.fillStyle='#2a2f3a';g.fillRect(-400,196,1760,108);g.fillStyle='#4a3a2c';for(var x=-400;x<1360;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(-400,212,1760,3);g.fillRect(-400,286,1760,3);
+ g.fillStyle='#8d939c';g.fillRect(-400,40,1760,148);g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;for(x=-400;x<1360;x+=24){g.beginPath();g.moveTo(x,64);g.lineTo(x,184);g.stroke()}
+ g.fillStyle='#f5c542';g.fillRect(-400,180,1760,6);g.fillStyle='#2f8f95';g.fillRect(-400,14,1760,48);g.fillStyle='#257479';for(x=-396;x<1356;x+=10)g.fillRect(x,14,2,48);g.fillStyle='#1d5d62';g.fillRect(-400,58,1760,4);
+ var K=Math.max(2,z*2);
+ L.cars.forEach(function(c,ci){var P=c.plan,sf=f*(P.steps-1),s0=Math.floor(sf),s1=Math.min(s0+1,P.steps-1),fr=sf-s0,sat=new Uint8Array(P.N),term=[];
+  for(var j=0;j<P.N;j++){var o=dep?{k:5}:paxPoint(P,c,j,s0,s1,fr);if(o.k===5)sat[j]=1;else term.push([j,o])}
+  // train layer (moves on departure): hull, seats, seated passengers
+  g.save();g.translate(dx,0);var a=c.x0,b=c.x1,first=ci===0,last=ci===L.cars.length-1;
+  g.fillStyle='#eef2f7';g.strokeStyle='#0e1424';g.lineWidth=2;g.beginPath();g.roundRect?g.roundRect(a,HULL0,b-a,HULL1-HULL0,[first?30:8,last?30:8,last?30:8,first?30:8]):g.rect(a,HULL0,b-a,HULL1-HULL0);g.fill();g.stroke();
+  g.fillStyle='#16213c';g.fillRect(a+8,HULL0+6,b-a-16,HULL1-HULL0-12);
+  var D=c.cabin.decks[0];D.secs.forEach(function(sc){g.fillStyle='#24304d';g.fillRect(c.dd[0].oy+sc.u0*c.pU,TRY+sc.aisles[0]*c.cw-5,(sc.u1-sc.u0)*c.pU,10)});
+  var op=!dep&&ph>.01;g.fillStyle=op?'#3a4a6b':'#9aa7bd';g.fillRect(c.doorY-10,HULL0-3,20,6);if(op){g.fillStyle='#38d39f';g.fillRect(c.doorY-10,HULL0-5,20,2)}
+  var seatOf=new Map();P.pax.forEach(function(q,j){seatOf.set(q.seat,j)});
+  c.cabin.seats.forEach(function(q){var j=seatOf.get(q);seatG(g,q.py,q.px,j!=null&&sat[j])});
+  g.transform(0,1,1,0,0,0); // gate frame (transposed)
+  P.pax.forEach(function(q,j){if(sat[j])drawFig(g,P,j,q.seat.px,q.seat.py,4.4,t,true,K,false,1)});
+  g.restore();
+  // platform / door / aisle walkers: exactly the gate's drawFig (heading from motion, 2-frame walk, bob); waiting = standing on the platform
+  if(!dep){g.save();g.transform(0,1,1,0,0,0);term.forEach(function(e){var o=e[1];drawFig(g,P,e[0],o.x,o.y,4.4,t,false,K,false,1)});g.restore()}
+ });
 }
+try{window.__trainsStage=function(){return STG}}catch(e){}
 function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1'}
  slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
 function render(){load();accrue();save();if(on('vTrSel'))renderSel();if(on('vTrain'))renderPl()}
