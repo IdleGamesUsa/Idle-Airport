@@ -7239,7 +7239,7 @@ function tst(m){var t=$('iaToast');if(!t){t=document.createElement('div');t.id='
 var SOON=[['⛴️','Seaport','port'],['🚁','Helipad','heli'],['🛂','Security Checkpoint','sec']];
 var VIEWS=['vGate','vMap','vUp','vStore','vRew','vRank','vEv','vAdmin','vCargo','vSpace','vSet','vPilot','vHome','vTerms','vCgSel','vSpPick','vTrSel','vTrain'];
 function isOn(id){var e=$(id);return !!(e&&!e.classList.contains('hide'))}
-function chrome(){var b=document.body;b.classList.toggle('avOn',isOn('vHome')||isOn('vAdmin'));b.classList.toggle('cleanView',isOn('vAdmin')||isOn('vSpace'));b.classList.toggle('spPickView',isOn('vSpPick'));try{window.__b3Bridge.syncCgHud()}catch(e){}}
+function chrome(){var b=document.body;b.classList.toggle('avOn',isOn('vHome')||isOn('vAdmin'));b.classList.toggle('cleanView',isOn('vAdmin')||isOn('vSpace'));b.classList.toggle('spPickView',isOn('vSpPick'));b.classList.toggle('trainView',isOn('vTrSel')||isOn('vTrain'));try{window.__b3Bridge.syncCgHud()}catch(e){}}
 window.__iaChrome=chrome;
 window.__iaShowOnly=function(id){VIEWS.forEach(function(v){var e=$(v);if(e)e.classList.toggle('hide',v!==id)});try{window.scrollTo(0,0)}catch(e){}chrome()};
 var tSel=0;
@@ -7357,7 +7357,9 @@ var st=document.createElement('style');st.textContent='#rateOv{position:fixed;in
 window.__rateTest=show;window.__rateState=L;
 var force=false;try{force=localStorage.getItem('ia_rate_force')==='1'}catch(e){}
 setInterval(function(){try{if((force||due())&&calm()){force=false;try{localStorage.removeItem('ia_rate_force')}catch(e){}show()}}catch(e){}},5000);})();</script>
-<style id="trainCss">.trHud{background:linear-gradient(#2a2410,#151208);border:1px solid #c9a23a;border-radius:12px;padding:10px 12px;margin-bottom:10px}
+<style id="trainCss">.trUp.can{background:linear-gradient(#f7b23b,#e0861a);border-color:#ffd27a;color:#2a1600}.trUp.can small{color:#3d2200}.trUp.lack{opacity:.85}
+body.trainView header{display:none!important}body.trainView #b3hud,body.trainView #ccChip{display:none!important}
+.trHud{background:linear-gradient(#2a2410,#151208);border:1px solid #c9a23a;border-radius:12px;padding:10px 12px;margin-bottom:10px}
 .trHud small{display:block;color:#e8c66a;font:800 10px system-ui;letter-spacing:.04em}
 .trHudL>b{display:flex;align-items:center;gap:6px;font-size:24px;color:#ffe08a}.trHud img,.trRtBig img{width:22px;height:22px;vertical-align:middle}
 .trHudS{display:flex;gap:18px;margin-top:6px;align-items:flex-end}.trHudS b{color:#fff}.trBoost{margin-left:auto;border:1px solid #f5c542;border-radius:999px;padding:3px 10px;color:#ffe08a;font:800 12px system-ui}
@@ -7440,12 +7442,12 @@ function renderSel(){var host=$('tsBody');if(!host)return;var h=hud();
 var phase=0;
 function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0],seats=TR[i][1];
  var cyc=vcyc(i),pct=Math.min(100,Math.floor(((Date.now()/1000)%cyc)/cyc*100*popFrac(T.pop[i])));
- var b=(k,lab,ic)=>{var lv=T[k][i],mx=lv>=MAXLV,c=upCost(i,lv);return '<button type="button" class="trUp" data-tru="'+k+'"'+(!mx&&T.rt<c?' disabled':'')+'>'+ic+' '+lab+' '+lv+'/'+MAXLV+'<small>'+(mx?'MAX':rt(c))+'</small></button>'};
+ var b=(k,lab,ic)=>{var lv=T[k][i],mx=lv>=MAXLV,c=upCost(i,lv);return '<button type="button" class="trUp'+(mx?'':T.rt>=c?' can':' lack')+'" data-tru="'+k+'"'+(mx?' disabled':'')+'>'+ic+' '+lab+' '+lv+'/'+MAXLV+'<small>'+(mx?'MAX':rt(c))+'</small></button>'};
  var R=prCheck(),row=(ic,l,x,isR)=>{var f=Math.max(0,Math.min(1,x.c/x.t));return '<div class="prq'+(x.ok?' ok':'')+'"><span class="pri">'+(x.ok?'✅':ic)+'</span><div class="prm"><div class="prl"><b>'+l+'</b><span>'+(isR?nf(x.c)+' / '+rt(x.t):Math.min(x.c,x.t)+' / '+x.t)+'</span></div><div class="mbar"><i style="width:'+(f*100).toFixed(1)+'%"></i></div></div></div>'};
  var L=lb(),pod=[L[1],L[0],L[2]].map((r,k)=>r?'<div class="trPod'+(k===1?' g':'')+(r.me?' me':'')+'"><div class="av">🧑‍✈️</div><span class="rk">'+[2,1,3][k]+'</span><b>'+r.n+'</b><small>“'+r.t+'”</small><b>'+nf(r.v)+'</b></div>':'').join('');
  var h=hud()+'<section class="trCard"><div class="trRtBig"><div><small>RAIL TOKENS <img src="'+TRA('rt.png')+'" alt=""></small><b>'+rt(T.rt)+'</b><span class="sm">'+rt(totRate())+'/min</span></div><div style="text-align:right"><small>PASSENGERS BOARDED</small><b>'+nf(T.pax)+'</b><span class="sm">'+nf(paxRate(i))+' pax/min here</span></div></div></section>'+adBtn()+
- '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">Boarding · '+pct+'% on board · '+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="mbar"><i style="width:'+pct+'%"></i></div><div class="trUps">'+b('bs','Efficiency','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
- '<div class="trArt"><span id="trStageSlot"></span><div class="trLf"><small>BOARDED</small><b>'+pct+'%</b></div><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
+ '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">'+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="trUps">'+b('bs','Efficiency','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
+ '<div class="trArt"><span id="trStageSlot"></span><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
  '<section class="trCard"><h2>🚆 Train Prestige ★</h2>'+(R.max?'<div class="prhero"><div class="prlv">★ 10</div><div><b>Maximum train prestige</b></div></div>':
  '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Efficiency maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
  '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Efficiency &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
@@ -7577,7 +7579,13 @@ function stGestures(cv){function pt(x,y){var r=cv.getBoundingClientRect(),s=cv.w
  cv.addEventListener('touchend',function(e){t0=e.touches.length?info(e.touches):null},{passive:false})}
 function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1;touch-action:none';stGestures(STG.cv)}
  slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
-function render(){load();accrue();save();if(on('vTrSel'))renderSel();if(on('vTrain'))renderPl()}
+/* v37 beta: cover an RT shortfall with plane tickets (mirrors airport affordPlan: 5 tickets = 7.5 min of CURRENT RT/min, boosts excluded) */
+function tixCover(k,i){var g=G(),S=g&&g.S;if(!S){tst('Not enough Rail Tokens');return}var lv=T[k][i],c=upCost(i,lv),short=Math.max(0,c-T.rt),per=Math.max(1e-9,Math.max(totRate(),baseRate(0))*1.5),need=Math.max(1,Math.ceil(short/per-1e-9)),have=S.tickets||0,lab=k==='bs'?'Efficiency':'Popularity';
+ if(need>have){if(g.askConfirm)g.askConfirm({title:'Not enough Rail Tokens',body:'<p>Short <b>'+rt(short)+'</b>. Covering it needs <b>'+need+' tickets</b> but you have '+nf(have)+'.</p>',ok:'Open Store'},function(){try{g.setView('store')}catch(_){}});else tst('Not enough tickets ('+have+'/'+need+')');return}
+ var go=function(){var lv2=T[k][i],c2=upCost(i,lv2),sh=Math.max(0,c2-T.rt),n2=Math.max(1,Math.ceil(sh/per-1e-9));if(lv2>=MAXLV||(S.tickets||0)<n2)return;S.tickets-=n2;T.rt+=n2*per;if(T.rt<c2)T.rt=c2;T.rt-=c2;T[k][i]=lv2+1;save();try{g.save()}catch(_){}tst('⭐ '+lab+' Lv '+(lv2+1)+' · −'+n2+' tickets');render()};
+ if(g.askConfirm)g.askConfirm({title:'Cover the shortfall?',body:'<p>Short <b>'+rt(short)+'</b> for '+lab+' Lv '+(lv+1)+'.</p><p>Cover the shortfall with <b>'+need+' tickets</b> (you have '+nf(have)+') and buy now?</p>',ok:'Spend '+need+' tickets'},go);else go()}
+function syncTrChrome(){try{document.body.classList.toggle('trainView',on('vTrSel')||on('vTrain'))}catch(e){}}
+function render(){load();accrue();save();syncTrChrome();if(on('vTrSel'))renderSel();if(on('vTrain'))renderPl()}
 function on(id){var e=$(id);return !!(e&&!e.classList.contains('hide'))}
 function show(v){try{G().setView(v)}catch(e){}render()}
 function tst(m){var t=$('iaToast');if(!t){t=document.createElement('div');t.id='iaToast';t.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#0b1220ee;color:#fff;border:1px solid #f0b34a;border-radius:999px;padding:9px 16px;font:700 14px system-ui;z-index:999;pointer-events:none;transition:opacity .3s';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(t._k);t._k=setTimeout(function(){t.style.opacity=0},1800)}
@@ -7592,7 +7600,7 @@ document.addEventListener('click',function(e){var t=e.target.closest?e.target.cl
  if(t.dataset.tr==='prestige'){prDo();return}
  if(t.dataset.tr==='ranks'){if(!T.unlocked){tst('🔒 Unlock the Train Station first');return}show('train');setTimeout(function(){var l=$('trLb');if(l)l.scrollIntoView({behavior:'smooth'})},50);return}
  if(t.dataset.trp!=null){var i=+t.dataset.trp;if(T.un[i]){T.sel=i;show('train');return}var nx=T.un.indexOf(0);if(i!==nx){tst('🔒 Unlock Platform '+(nx+1)+' first');return}accrue();var cst=unlockCost(i);if(T.rt<cst){tst('Need '+rt(cst-T.rt)+' more for Platform '+(i+1));return}T.rt-=cst;T.un[i]=1;save();tst('🚆 '+TR[i][0]+' arrives at Platform '+(i+1));render();return}
- if(t.dataset.tru){var k=t.dataset.tru,i2=T.sel,lv=T[k][i2],c2=upCost(i2,lv);if(lv<MAXLV&&T.rt>=c2){T.rt-=c2;T[k][i2]++;save()}render();return}
+ if(t.dataset.tru){var k=t.dataset.tru,i2=T.sel,lv=T[k][i2],c2=upCost(i2,lv);if(lv>=MAXLV)return;if(T.rt>=c2){T.rt-=c2;T[k][i2]++;save();render();return}tixCover(k,i2);return}
  if(t.dataset.trms){var m=MS.find(x=>x.k===t.dataset.trms),cl=T.ms[m.k]|0;if(m.cur()>=m.tiers[cl]){T.rt+=m.rw[cl];T.ms[m.k]=cl+1;save();tst('+'+rt(m.rw[cl]));try{window.__trainCos&&__trainCos.sync()}catch(_){}}try{window.__msGo('trains')}catch(_){}return}
 });
 setInterval(function(){if(!document.hidden)render()},1000);
