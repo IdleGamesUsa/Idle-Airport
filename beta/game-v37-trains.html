@@ -7392,7 +7392,9 @@ function baseRate(i){return 5*Math.pow(3,i)}                              /* RT/
 function rate(i){if(!T.un[i])return 0;return baseRate(i)*(1+0.15*(T.bs[i]-1))*(1+0.15*(T.pop[i]-1))*prMul()}
 function boostOn(){return T.boost>Date.now()}
 function totRate(){if(!T.unlocked)return 0;var t=0;for(var i=0;i<10;i++)t+=rate(i);return t*(boostOn()?2:1)}
-function paxRate(i){return T.un[i]?TR[i][1]*(0.5+0.05*T.bs[i])*(1+0.03*(T.pop[i]-1)):0} /* passengers/min */
+function popFrac(l){return 0.2+0.8*Math.max(0,Math.min(1,(l-1)/(MAXLV-1)))} /* Popularity: L1 = 20% of seats board, L20 = 100% */
+function effW(l){return 1-Math.max(0,Math.min(1,(l-1)/(MAXLV-1)))} /* Efficiency: 1 = lots of seat-searching wander (L1), 0 = straight to seat (L20) */
+function paxRate(i){return T.un[i]?TR[i][1]*(0.5+0.05*T.bs[i])*1.57*popFrac(T.pop[i]):0} /* passengers/min */
 function unlockCost(i){return i===0?0:Math.round(60*Math.pow(3.2,i))}
 function upCost(i,lv){return Math.round(baseRate(i)*8*Math.pow(1.32,lv-1))}
 function accrue(){var n=Date.now(),dt=Math.min(8*3600e3,Math.max(0,n-T.last))/60000;T.last=n;if(!T.unlocked)return;
@@ -7407,7 +7409,7 @@ function prDo(){var R=prCheck();if(!R.ready)return;T.rt-=R.rt.t;T.un=[1,0,0,0,0,
 /* milestones (Rewards → Trains) */
 var MS=[{k:'pl',n:'Platforms open',u:'platforms',tiers:[1,3,5,8,10],rw:[50,500,5e3,5e4,5e5],cur:()=>T.un.filter(Boolean).length},
  {k:'px',n:'Train passengers',u:'passengers',tiers:[1e3,5e4,1e6,2e7,5e8],rw:[100,2e3,4e4,8e5,1.6e7],cur:()=>T.pax},
- {k:'lv',n:'Boarding speed + Popularity levels',u:'levels',tiers:[30,80,160,280,400],rw:[200,4e3,8e4,1.6e6,3.2e7],cur:()=>T.bs.reduce((a,b,i)=>a+(T.un[i]?b+T.pop[i]:0),0)}];
+ {k:'lv',n:'Efficiency + Popularity levels',u:'levels',tiers:[30,80,160,280,400],rw:[200,4e3,8e4,1.6e6,3.2e7],cur:()=>T.bs.reduce((a,b,i)=>a+(T.un[i]?b+T.pop[i]:0),0)}];
 function msState(){load();accrue();return MS.map(m=>{var c=m.cur(),cl=T.ms[m.k]|0,dn=m.tiers.filter(x=>c>=x).length;return{k:m.k,n:m.n,u:m.u,tiers:m.tiers,rw:m.rw,cur:Math.floor(c),done:dn,claimed:cl,claimable:dn>cl}})}
 window.__trainMs={info:function(){var s=msState(),dn=0,tt=0,cl=0,nx=null;s.forEach(t=>{dn+=t.done;tt+=t.tiers.length;if(t.claimable)cl++;if(!nx&&t.done<t.tiers.length)nx=t.n+' · '+nf(t.cur)+'/'+nf(t.tiers[t.done])});return{done:dn,total:tt,claim:cl,next:T.unlocked?(nx||'All done'):'Locked · Airport · Train Station'}},
  html:function(){var s=msState(),h=T.unlocked?'':'<div class="sm">Locked · unlock the Train Station from Airport ($5M + 1,000 CC)</div>';
@@ -7437,16 +7439,16 @@ function renderSel(){var host=$('tsBody');if(!host)return;var h=hud();
  setH(host,h)}
 var phase=0;
 function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0],seats=TR[i][1];
- var cyc=vcyc(i),pct=Math.min(100,Math.floor(((Date.now()/1000)%cyc)/cyc*100));
+ var cyc=vcyc(i),pct=Math.min(100,Math.floor(((Date.now()/1000)%cyc)/cyc*100*popFrac(T.pop[i])));
  var b=(k,lab,ic)=>{var lv=T[k][i],mx=lv>=MAXLV,c=upCost(i,lv);return '<button type="button" class="trUp" data-tru="'+k+'"'+(!mx&&T.rt<c?' disabled':'')+'>'+ic+' '+lab+' '+lv+'/'+MAXLV+'<small>'+(mx?'MAX':rt(c))+'</small></button>'};
  var R=prCheck(),row=(ic,l,x,isR)=>{var f=Math.max(0,Math.min(1,x.c/x.t));return '<div class="prq'+(x.ok?' ok':'')+'"><span class="pri">'+(x.ok?'✅':ic)+'</span><div class="prm"><div class="prl"><b>'+l+'</b><span>'+(isR?nf(x.c)+' / '+rt(x.t):Math.min(x.c,x.t)+' / '+x.t)+'</span></div><div class="mbar"><i style="width:'+(f*100).toFixed(1)+'%"></i></div></div></div>'};
  var L=lb(),pod=[L[1],L[0],L[2]].map((r,k)=>r?'<div class="trPod'+(k===1?' g':'')+(r.me?' me':'')+'"><div class="av">🧑‍✈️</div><span class="rk">'+[2,1,3][k]+'</span><b>'+r.n+'</b><small>“'+r.t+'”</small><b>'+nf(r.v)+'</b></div>':'').join('');
  var h=hud()+'<section class="trCard"><div class="trRtBig"><div><small>RAIL TOKENS <img src="'+TRA('rt.png')+'" alt=""></small><b>'+rt(T.rt)+'</b><span class="sm">'+rt(totRate())+'/min</span></div><div style="text-align:right"><small>PASSENGERS BOARDED</small><b>'+nf(T.pax)+'</b><span class="sm">'+nf(paxRate(i))+' pax/min here</span></div></div></section>'+adBtn()+
- '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">Boarding · '+pct+'% on board · '+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="mbar"><i style="width:'+pct+'%"></i></div><div class="trUps">'+b('bs','Boarding speed','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
+ '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">Boarding · '+pct+'% on board · '+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="mbar"><i style="width:'+pct+'%"></i></div><div class="trUps">'+b('bs','Efficiency','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
  '<div class="trArt"><span id="trStageSlot"></span><div class="trLf"><small>BOARDED</small><b>'+pct+'%</b></div><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
  '<section class="trCard"><h2>🚆 Train Prestige ★</h2>'+(R.max?'<div class="prhero"><div class="prlv">★ 10</div><div><b>Maximum train prestige</b></div></div>':
- '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Boarding speed maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
- '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Boarding speed &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
+ '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Efficiency maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
+ '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Efficiency &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
  (R.max?'':'<button class="prbtn" type="button" data-tr="prestige"'+(R.ready?'':' disabled')+'>'+(R.ready?'★ Train prestige to level '+R.next:R.reqOk?'Need '+rt(R.rt.t-R.rt.c)+' more':'Complete the checklist')+'</button>')+'</section>'+
  '<section class="trCard" id="trLb"><h2>TRAIN PASSENGERS · THIS WEEK</h2><div class="sm">'+L.length+' pilots · resets Sunday · preview (local stub)</div>'+lbHTML(L,pod)+'</section>';
  setH(host,h);attachStage()}
@@ -7499,9 +7501,9 @@ function trLayout(i){var n=CARS[i],LK=LOOK[i],GAP=10,us=[];for(var k=0;k<n;k++)u
 function seatG(g,x,y,f,s,fc){g.save();g.translate(x,y);g.scale(s,1);g.fillStyle=f?(fc?'#7a5a12':'#24407a'):(fc?'#b8862a':'#2f5cae');g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(-6.5,-6,13,12);g.fill();g.stroke();g.fillStyle=fc?'#5e440c':'#1d3566';g.fillRect(3.5,-6,3,12);g.restore()}
 /* pace (Michael: "a small trolley should load at normal speed"): passengers walk at the gate speed x PSPD, and the visual boarding cycle is
    only as long as that boarding takes (+ departure) - capped by the economy cycle, which also drives the BOARDED % badge (same clock) */
-var PSPD=1.35;STG.tb={}; // ALL trains: passengers walk 1.35x the gate walking speed (PX.v); the door scan pause (SCAN_T) stays real-time
-function tPlan(c){var v0=PX.v;PX.v=v0*PSPD;try{return buildPlan(c,c.cabin.seats.length)}finally{PX.v=v0}}
-function vcyc(i){var base=60/(0.6+0.08*T.bs[i]);if(STG.tb[i]==null){try{var L=trLayout(i);STG.tb[i]=Math.max.apply(null,L.cars.map(function(c){return tPlan(c).total}))+1.5}catch(e){return base}}
+var PSPD=1.35;STG.tb={};STG.tbk={}; // ALL trains: passengers walk 1.35x the gate walking speed (PX.v); the door scan pause (SCAN_T) stays real-time
+function tPlan(c,i){var v0=PX.v,n=c.cabin.seats.length;if(i!=null)n=Math.max(1,Math.round(n*popFrac(T.pop[i])));PX.v=v0*PSPD;try{return buildPlan(c,n)}finally{PX.v=v0}}
+function vcyc(i){var base=60/(0.6+0.08*T.bs[i]),tk=i+'_'+T.pop[i];if(STG.tbk[i]!==tk){STG.tbk[i]=tk;STG.tb[i]=null;if(STG.i===i)STG.cyc=-1}if(STG.tb[i]==null){try{var L=trLayout(i);STG.tb[i]=Math.max.apply(null,L.cars.map(function(c){return tPlan(c,i).total}))+1.5}catch(e){return base}}
  return Math.min(base,STG.tb[i]/.84)}
 function rr(g,x,y,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)}
 // hull outline path for one car: front (left) nose on the lead car, rear cab/taper on the last car, per LOOK
@@ -7517,7 +7519,7 @@ function hullPath(g,LK,a,b,y0,y1,first,last){var m=(y0+y1)/2,h=y1-y0,n=LK.nl,t=L
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
  var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1;STG.uz=1;STG.px=0;STG.py=0;}var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=Date.now()/1000,t=now;
  var cyc=vcyc(i),cn=Math.floor(now/cyc),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND;
- if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c)})} // a fresh boarding plan per departure, like each new plane
+ if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c,i)})} // a fresh boarding plan per departure, like each new plane
  var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*2400;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*2400; // departs to the left (front first), the next train arrives from the right
  var HB=HULL0+(HULL1-HULL0)*LK.hh,SB=Math.max(312,HB+16); // scene bottom grows for the Twin Deck's taller hull
  var z=Math.min(2.2,940/L.W),H=Math.max(160,Math.round((SB-8)*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
@@ -7556,7 +7558,7 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
   P.pax.forEach(function(q,j){if(sat[j])drawFig(g,P,j,q.seat.px,q.seat.py,4.4,t,true,K,false,1)});
   g.restore();
   // platform / door / aisle walkers: exactly the gate's drawFig (heading from motion, 2-frame walk, bob); waiting = standing on the platform
-  if(!dep){g.save();g.transform(0,1,1,0,0,0);term.forEach(function(e){var o=e[1];drawFig(g,P,e[0],o.x,o.y,4.4,t,o.k===0,K,false,1)});g.restore()}
+  if(!dep){var EW=effW(T.bs[i]);g.save();g.transform(0,1,1,0,0,0);term.forEach(function(e){var o=e[1],j=e[0],ox=0,oy=0;if(EW>0&&o.k!==0){var s1=j*2.37+ci*5.1;ox=EW*7*Math.sin(t*1.1+s1)*Math.sin(t*.37+s1*1.7);oy=EW*14*Math.sin(t*.6+s1*.9)+EW*5*Math.sin(t*1.9+s1)}drawFig(g,P,j,o.x+ox,o.y+oy,4.4,t,o.k===0,K,false,1)});g.restore()}
  });
 }
 try{window.__trainsStage=function(){return STG}}catch(e){}
