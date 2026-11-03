@@ -7418,8 +7418,11 @@ window.__trainMs={info:function(){var s=msState(),dn=0,tt=0,cl=0,nx=null;s.forEa
 /* weekly LB stub (deterministic fake rivals + you) */
 function lb(){var seed=0;for(var c of T.wk)seed=(seed*31+c.charCodeAt(0))>>>0;var rnd=()=>((seed=(seed*1103515245+12345)>>>0)/4294967296);
  var nm=['RailFan88','Conductor Kim','ExpressEd','TrackStar','PlatformPat','NightTrainNia','SteamySam','LoopLine','SignalSue','Pilot9287','Vesver','ArTuR'],ttl=['Platform Pro','Ticket Agent','Conductor','Express Rider','Engineer','Station Master','Rookie Pilot'];
- var rows=nm.map((n,i)=>({n:n,t:ttl[Math.floor(rnd()*ttl.length)],v:i<5?Math.floor(rnd()*4e6/(i+1)):0}));var me='You';try{me=(G().pil().name||'You')}catch(e){}
- rows.push({n:me+' · you',t:T.pr?PRNAME[T.pr]:'Platform Rookie',v:Math.floor(T.paxWk),me:1});rows.sort((a,b)=>b.v-a.v);return rows}
+ var rows=nm.map((n,i)=>({n:n,t:ttl[Math.floor(rnd()*ttl.length)],v:i<5?Math.floor(rnd()*4e6/(i+1)):0}));var me='You';try{me=myName()}catch(e){}
+ rows.push({n:me,t:T.pr?PRNAME[T.pr]:'Platform Rookie',v:Math.floor(T.paxWk),me:1});rows.sort((a,b)=>b.v-a.v);return rows}
+/* leaderboard rows use the SAME pilot-profile render path as the cargo / weekly boards (rk23Podium / rk23Row, avImg, mockPilot): your real name, title, frame, hat, glasses... */
+function lbHTML(L,pod){try{rk23Css();var rows=L.map(function(r,k){return {n:r.n,s:r.v,r:k+1,me:r.me,p:r.me?null:mockPilot(r.n,k+1,{cash:r.v*2400})}});
+ return '<div class="rk23">'+rk23Podium(rows.slice(0,3),'pax')+rows.slice(3).map(function(x){return rk23Row(x,'pax')}).join('')+'</div>'}catch(e){return '<div class="trPods">'+pod+'</div>'}}
 /* rendering */
 function hud(){return '<section class="trHud"><div class="trHudL"><small>RAIL TOKENS / MIN</small><b><img src="'+TRA('rt.png')+'" alt="">'+rt(totRate())+'</b><span class="sm">base '+rt(totRate()/(boostOn()?2:1))+'/min × bonus x'+(boostOn()?'2.00':'1.00')+' · prestige ×'+prMul()+'</span>'+
  '<div class="trHudS"><div><small>RAIL TOKENS</small><b>'+rt(T.rt)+'</b></div><div><small>PLATFORMS</small><b>'+T.un.filter(Boolean).length+'/10</b></div>'+(boostOn()?'<div class="trBoost">⚡ 2× '+Math.ceil((T.boost-Date.now())/60000)+'m</div>':'')+'</div></div></section>'}
@@ -7440,13 +7443,64 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
  var L=lb(),pod=[L[1],L[0],L[2]].map((r,k)=>r?'<div class="trPod'+(k===1?' g':'')+(r.me?' me':'')+'"><div class="av">🧑‍✈️</div><span class="rk">'+[2,1,3][k]+'</span><b>'+r.n+'</b><small>“'+r.t+'”</small><b>'+nf(r.v)+'</b></div>':'').join('');
  var h=hud()+'<section class="trCard"><div class="trRtBig"><div><small>RAIL TOKENS <img src="'+TRA('rt.png')+'" alt=""></small><b>'+rt(T.rt)+'</b><span class="sm">'+rt(totRate())+'/min</span></div><div style="text-align:right"><small>PASSENGERS BOARDED</small><b>'+nf(T.pax)+'</b><span class="sm">'+nf(paxRate(i))+' pax/min here</span></div></div></section>'+adBtn()+
  '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">Boarding · '+pct+'% on board · '+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="mbar"><i style="width:'+pct+'%"></i></div><div class="trUps">'+b('bs','Boarding speed','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
- '<div class="trArt"><img src="'+TRA(String(i+1).padStart(2,'0')+'.jpg')+'" alt="'+nm+' at platform"><div class="trLf"><small>BOARDED</small><b>'+pct+'%</b></div><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
+ '<div class="trArt"><span id="trStageSlot"></span><div class="trLf"><small>BOARDED</small><b>'+pct+'%</b></div><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
  '<section class="trCard"><h2>🚆 Train Prestige ★</h2>'+(R.max?'<div class="prhero"><div class="prlv">★ 10</div><div><b>Maximum train prestige</b></div></div>':
  '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Boarding speed maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
  '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Boarding speed &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
  (R.max?'':'<button class="prbtn" type="button" data-tr="prestige"'+(R.ready?'':' disabled')+'>'+(R.ready?'★ Train prestige to level '+R.next:R.reqOk?'Need '+rt(R.rt.t-R.rt.c)+' more':'Complete the checklist')+'</button>')+'</section>'+
- '<section class="trCard" id="trLb"><h2>TRAIN PASSENGERS · THIS WEEK</h2><div class="sm">'+L.length+' pilots · resets Sunday · preview (local stub)</div><div class="trPods">'+pod+'</div>'+L.slice(3).map((r,k)=>'<div class="trLbr'+(r.me?' me':'')+'"><span class="av">🧑‍✈️</span><span class="rk">'+(k+4)+'</span><span style="flex:1"><b>'+r.n+'</b><br><small>“'+r.t+'”</small></span><b>'+nf(r.v)+'</b></div>').join('')+'</section>';
- setH(host,h)}
+ '<section class="trCard" id="trLb"><h2>TRAIN PASSENGERS · THIS WEEK</h2><div class="sm">'+L.length+' pilots · resets Sunday · preview (local stub)</div>'+lbHTML(L,pod)+'</section>';
+ setH(host,h);attachStage()}
+/* ---- v38 procedural platform stage: passengers walk from the platform, through the car doors, down the aisle and sit (same feel as gate boarding) ---- */
+var STG={cv:null,i:-1,raf:0};
+var SK=['#f1c7a3','#e0ac85','#c68863','#a86b48','#7d4b2e','#5a3420'],HC=['#2b1d12','#4a2d17','#7a4a22','#c9a063','#1a1a1a','#8a8f99','#b5532d'],SH=['#d6322e','#2f7fe0','#38d39f','#f0b34a','#8b6bff','#e86fa8','#3a4a6b','#ff8a2b','#2a9d8f','#c9d3e3'];
+function hsh(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);return ((n^(n>>>15))>>>0)/4294967296}
+function trLayout(i){var n=CARS[i],X0=34,X1=926,cw=(X1-X0)/n,P=18,cars=[],slots=[];
+ for(var c=0;c<n;c++){var x0=X0+c*cw+6,x1=X0+(c+1)*cw-6,ix0=x0+(c===0?26:8),ix1=x1-(c===n-1?26:8),cols=Math.max(1,Math.floor((ix1-ix0-6)/P)),
+  sx=(ix0+ix1)/2-(cols-1)*P/2,doors=cw>260?[x0+(x1-x0)*.3,x0+(x1-x0)*.7]:[(x0+x1)/2];
+  cars.push({x0:x0,x1:x1,ix0:ix0,ix1:ix1,doors:doors});
+  for(var r=0;r<4;r++)for(var k=0;k<cols;k++){var sxk=sx+k*P;if(doors.some(d=>Math.abs(d-sxk)<P*.6)&&(r===0))continue;
+   var d=doors.reduce((a,b)=>Math.abs(b-sxk)<Math.abs(a-sxk)?b:a);slots.push({x:sxk,y:[216,232,262,278][r],door:d,ay:247})}}
+ var seats=TR[i][1];slots=slots.slice(0,Math.min(slots.length,seats));
+ // boarding order: nearest the aisle-far end of each door first, mixed across doors (like the gate load order)
+ slots.forEach((s,j)=>{s.o=Math.abs(s.x-s.door)*-1+hsh(j*7+i)*40+(s.y===216||s.y===278?6:0)});slots.sort((a,b)=>a.o-b.o);
+ slots.forEach((s,j)=>{s.wx=s.door+(hsh(j*13+i*3)-.5)*90;s.wy=90+hsh(j*29+i*5)*80;s.sk=SK[(hsh(j*3)*6)|0];s.hc=HC[(hsh(j*5)*7)|0];s.sh=SH[(hsh(j*11)*10)|0];s.sp=.85+hsh(j*17)*.3});
+ return {cars:cars,slots:slots}}
+function fig(g,x,y,s,ang,walk,t){g.save();g.translate(x,y);g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(1.2,1.6,6.2,4.6,0,0,6.3);g.fill();g.rotate(ang);
+ if(walk){var sw=Math.sin(t*10)*2;g.fillStyle='#1c2435';g.beginPath();g.ellipse(-2.2,sw,1.6,2.2,0,0,6.3);g.fill();g.beginPath();g.ellipse(2.2,-sw,1.6,2.2,0,0,6.3);g.fill()}
+ g.fillStyle=s.sh;g.strokeStyle='#0e1424';g.lineWidth=1;g.beginPath();g.ellipse(0,0,5.6,3.6,0,0,6.3);g.fill();g.stroke();
+ g.fillStyle=s.sk;g.beginPath();g.arc(0,-.4,2.9,0,6.3);g.fill();g.stroke();g.fillStyle=s.hc;g.beginPath();g.arc(0,.5,2.6,Math.PI*1.05,Math.PI*1.95,true);g.fill();g.restore()}
+function seatG(g,x,y,f){g.fillStyle=f?'#24407a':'#2f5cae';g.strokeStyle='#0e1a36';g.lineWidth=1;g.beginPath();g.rect(x-6.5,y-6,13,12);g.fill();g.stroke();g.fillStyle='#1d3566';g.fillRect(x-6.5,y+(y<247?-6:3),13,3)}
+function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;return}STG.raf=requestAnimationFrame(drawStage);
+ var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i)}var L=STG.L,g=cv.getContext('2d'),now=Date.now()/1000,t=now;
+ var cyc=60/(0.6+0.08*T.bs[i]),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND);
+ var dx=0;if(ph>.9)dx=Math.pow((ph-.9)/.05,2)*1000;if(ph>.95)dx=-(1-(ph-.95)/.05)*1000*(1-(ph-.95)/.05); // depart right, next train arrives from the left
+ if(ph>.95)dx=-Math.pow(1-(ph-.95)/.05,2)*1000;
+ g.clearRect(0,0,960,320);g.fillStyle='#141c2e';g.fillRect(0,0,960,320);
+ // tracks
+ g.fillStyle='#2a2f3a';g.fillRect(0,196,960,108);g.fillStyle='#4a3a2c';for(var x=0;x<960;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(0,212,960,3);g.fillRect(0,286,960,3);
+ // platform + canopy
+ g.fillStyle='#8d939c';g.fillRect(0,40,960,148);g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;for(x=0;x<960;x+=24){g.beginPath();g.moveTo(x,64);g.lineTo(x,184);g.stroke()}
+ g.fillStyle='#f5c542';g.fillRect(0,180,960,6);g.fillStyle='#2f8f95';g.fillRect(10,14,940,48);g.fillStyle='#257479';for(x=14;x<946;x+=10)g.fillRect(x,14,2,48);g.fillStyle='#1d5d62';g.fillRect(10,58,940,4);
+ var S=L.slots,N=S.length,seated=Math.floor(f*N),WALK=Math.min(3.2,cyc*BEND/3),dep=ph>BEND;
+ // waiting crowd (next ~36 to board) on the platform
+ for(var j=seated;j<Math.min(N,seated+60);j++){var s=S[j],tb=(j/N)*BEND*cyc,tn=ph*cyc;if(dep||tn>=tb-WALK)continue;fig(g,s.wx,s.wy,s,Math.PI,false,t)}
+ // train
+ g.save();g.translate(dx,0);
+ L.cars.forEach(function(c,k){g.fillStyle='#eef2f7';g.strokeStyle='#0e1424';g.lineWidth=2;g.beginPath();var r=k===0||k===L.cars.length-1?30:8;
+  g.moveTo(c.x0+(k===0?r:6),202);g.lineTo(c.x1-(k===L.cars.length-1?r:6),202);g.quadraticCurveTo(c.x1,202,c.x1,250);g.quadraticCurveTo(c.x1,298,c.x1-(k===L.cars.length-1?r:6),298);g.lineTo(c.x0+(k===0?r:6),298);g.quadraticCurveTo(c.x0,298,c.x0,250);g.quadraticCurveTo(c.x0,202,c.x0+(k===0?r:6),202);g.fill();g.stroke();
+  g.fillStyle='#16213c';g.fillRect(c.ix0,208,c.ix1-c.ix0,84);g.fillStyle='#24304d';g.fillRect(c.ix0,242,c.ix1-c.ix0,10);
+  if(k===0){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x0+14,250,8,30,0,0,6.3);g.fill()}if(k===L.cars.length-1){g.fillStyle='#2b3d63';g.beginPath();g.ellipse(c.x1-14,250,8,30,0,0,6.3);g.fill()}
+  c.doors.forEach(function(d){var op=!dep&&ph>.02;g.fillStyle=op?'#3a4a6b':'#9aa7bd';g.fillRect(d-9,199,18,6);if(op){g.fillStyle='#38d39f';g.fillRect(d-9,197,18,2)}})});
+ for(j=0;j<N;j++){s=S[j];seatG(g,s.x,s.y,j<seated);if(j<seated)fig(g,s.x,s.y+(s.y<247?1:-1),s,s.y<247?0:Math.PI,false,t)}
+ g.restore();
+ // walkers: platform -> door -> aisle -> seat
+ if(!dep)for(j=seated;j<N;j++){s=S[j];var tb2=(j/N)*BEND*cyc,tn2=ph*cyc,u=(tn2-(tb2-WALK*s.sp))/(WALK*s.sp);if(u<0)break;if(u>=1)continue;
+  var pts=[[s.wx,s.wy],[s.door,190],[s.door,s.ay],[s.x,s.ay],[s.x,s.y]],seg=[],tot=0;for(var q=1;q<pts.length;q++){var l=Math.hypot(pts[q][0]-pts[q-1][0],pts[q][1]-pts[q-1][1]);seg.push(l);tot+=l}
+  var dd=u*tot,q2=0;while(q2<seg.length-1&&dd>seg[q2]){dd-=seg[q2];q2++}var a=pts[q2],b=pts[q2+1],v=seg[q2]?dd/seg[q2]:1;
+  fig(g,a[0]+(b[0]-a[0])*v,a[1]+(b[1]-a[1])*v,s,Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2,true,t*s.sp)}
+}
+function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1'}
+ slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
 function render(){load();accrue();save();if(on('vTrSel'))renderSel();if(on('vTrain'))renderPl()}
 function on(id){var e=$(id);return !!(e&&!e.classList.contains('hide'))}
 function show(v){try{G().setView(v)}catch(e){}render()}
