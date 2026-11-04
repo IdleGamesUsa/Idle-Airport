@@ -5274,17 +5274,17 @@ document.addEventListener('click',e=>{const b=e.target.closest('button[data-k]')
 // ---------- v22: real Ranks (Firestore via api/board): Weekly + Lifetime cash, top 50 + your own row; the made-up players are gone ----------
 // Scores go through api/score (server caps realistic gains per time window and flags impossible jumps). Google Play Games boards are still
 // posted by the shell (pgsPush) and can be opened with the "Play Games boards" button. Reads are cheap: one call per tab open, cached 60 s.
-const RK={week:null,life:null,pax:null,cargo:null,score:null,at:{},busy:{},err:{},errAt:{}};
+const RK={week:null,life:null,pax:null,cargo:null,train:null,score:null,at:{},busy:{},err:{},errAt:{}};
 let rkLastPush=0,rkPushBusy=false;
 function rkProfile(){const p=pil();const eq={};for(const sl in DEFEQ)eq[sl]=p.eq[sl];const fr=IT[eq.frame];const dyn=fr&&fr.champ?(S.dyn||[]).find(d=>d.id===fr.id):null;
  return{cfg:Object.assign({},p.cfg),eq,dyn:dyn?{id:dyn.id,tier:dyn.tier,lab:dyn.lab,name:dyn.name}:null,pr:prLvl(),gates:gateCount(),title:(IT[eq.title]||{}).name||''}}
 window.__rkPush=f=>rkScorePush(f);async function rkScorePush(force){if(rkPushBusy)return null;if(!force&&Date.now()-rkLastPush<240e3)return null;rkPushBusy=true;rkLastPush=Date.now();
  try{const N=NAT(),pg=N&&N.pgsState?N.pgsState():null,E=S.ev;
   const body={life:Math.floor(S.life||0),week:Math.floor(weeklyScore()),weekStart:S.wk?S.wk.k:0,name:S.name||'',profile:rkProfile(),pgs:pg&&pg.signedIn?String(pg.player||'').slice(0,64):'',
-   ev:E&&!E.closed?{id:E.id,tons:Math.floor(E.tons)}:null,sp:(()=>{try{return window.__spScore?window.__spScore():null}catch(e){return null}})(),created:S.created||0,score:Math.floor(scUpd()),scV:SC_VER,sc:S.scC,paxL:Math.floor(S.pax||0),cgL:Math.floor((S.cgP&&S.cgP.tons)||0)};
+   ev:E&&!E.closed?{id:E.id,tons:Math.floor(E.tons)}:null,sp:(()=>{try{return window.__spScore?window.__spScore():null}catch(e){return null}})(),created:S.created||0,score:Math.floor(scUpd()),scV:SC_VER,sc:S.scC,paxL:Math.floor(S.pax||0),cgL:Math.floor((S.cgP&&S.cgP.tons)||0)};try{const t=window.__trainPaxL&&window.__trainPaxL();if(t!=null&&Number.isFinite(t))body.trL=t}catch(e){}
   return await netCall('score',body)}catch(e){return null}finally{rkPushBusy=false}}
 async function rkFetch(kind,force){if(RK.busy[kind])return;if(!force&&RK[kind]&&Date.now()-(RK.at[kind]||0)<60e3)return;if(!force&&RK.err[kind]&&Date.now()-(RK.errAt[kind]||0)<20e3)return;RK.busy[kind]=true;
- try{await rkScorePush(false);const r=await netCall('board',{board:kind==='week'?'growth':kind==='pax'?'paxWeek':kind==='cargo'?'cargoWeek':kind});if(r&&r.ok){RK[kind]={top:Array.isArray(r.top)?r.top:[],me:r.me||null,total:r.total||0};RK.at[kind]=Date.now();RK.err[kind]=''}else{RK.err[kind]=r&&r.reason||'offline';RK.errAt[kind]=Date.now()}}
+ try{await rkScorePush(false);const r=await netCall('board',{board:kind==='week'?'growth':kind==='pax'?'paxWeek':kind==='cargo'?'cargoWeek':kind==='train'?'trainWeek':kind});if(r&&r.ok){RK[kind]={top:Array.isArray(r.top)?r.top:[],me:r.me||null,total:r.total||0};RK.at[kind]=Date.now();RK.err[kind]=''}else{RK.err[kind]=r&&r.reason||'offline';RK.errAt[kind]=Date.now()}}
  catch(e){RK.err[kind]='offline';RK.errAt[kind]=Date.now()}
  finally{RK.busy[kind]=false;sigs.rankT=0;if(window._ui&&view==='rank')renderRank(true);try{rkSideRefresh(true)}catch(e){}}}
 // other players' pilots: only known items are drawn (anything unknown falls back to the default kit); podium frames are rebuilt from their label
@@ -5546,18 +5546,18 @@ document.addEventListener('click',e=>{const pin=e.target.closest('.rk23 .pin23.j
  if(row){box.style.scrollBehavior='auto';box.scrollTop=row.offsetTop-box.clientHeight/2+row.offsetHeight/2;box.style.scrollBehavior='';row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash')}
  else{box.scrollTo({top:0,behavior:'smooth'});const pd=pin.parentNode.querySelector('.pod.me');if(pd)pd.scrollIntoView({block:'nearest',behavior:'smooth'})}},true);
 function rk23Set(el,h){const b=el.querySelector('.rkscroll'),st=b?b.scrollTop:0;setHTML(el,h);const n=el.querySelector('.rkscroll');if(n&&st&&n.scrollTop!==st){n.style.scrollBehavior='auto';n.scrollTop=st;n.style.scrollBehavior=''}}
-const RKDEF={pax:{t:'Passengers hauled · this week',u:'pax',note:'<p>Passengers flown from your gates since the week started (Monday reset, same clock as the weekly boards). Every boarded passenger counts, offline flights included.</p>'},
+const RKDEF={train:{t:'Train passengers · this week',u:'pax',note:'<p>Passengers your Train Station platforms boarded since the week started (Sunday reset, same clock as the other weekly boards). Offline boarding counts.</p>'},pax:{t:'Passengers hauled · this week',u:'pax',note:'<p>Passengers flown from your gates since the week started (Monday reset, same clock as the weekly boards). Every boarded passenger counts, offline flights included.</p>'},
  cargo:{t:'Cargo hauled · this week',u:'t',note:'<p>Tonnes your Cargo ramps shipped since the week started (Monday reset). Offline hauling counts. Event tonnes have their own event board.</p>'},
  score:{t:'Overall leaderboard · pilot score',u:'pts',note:'<p>Your pilot score counts what you have built, not money. Every unlock adds points, however you got it (waiting, an ad, tickets or a purchase):</p><p>Research level 0.12 · Ground Handling Efficiency or Hospitality level 0.4 · research line maxed +3 · gate 1 · terminal 5 · plane tier up 0.5 (tier 5: 1) · ground service 0.3 · food or vending spot 0.2 · milestone 2 · rare flight 1 (up to 25) · prestige ★P 100 + 25 × P. Cargo: Cargo area 5 · cargo ramp 1 · Handling or Demand level 0.4 · line maxed +3 · cargo prestige ★C 25 + 5 × C. Events do not count.</p><p>Your score never goes down: prestige keeps it and adds its bonus.</p>'}};
 // local weekly estimate (own row until the server answers); server value wins once known
 function rkWkLocal(kind){const k=S.wk&&S.wk.k||0,cg=Math.floor((S.cgP&&S.cgP.tons)||0),px=Math.floor(S.pax||0);let w=S.lbw;
  if(!w||w.k!==k){w=S.lbw={k,p0:px,c0:cg}}if(w.p0>px)w.p0=px;if(w.c0>cg)w.c0=cg;return kind==='pax'?px-w.p0:cg-w.c0}
-function rkMine(kind){if(kind==='score')return scUpd();const D=RK[kind],sv=D&&D.me&&+D.me.score||0;return Math.max(sv,rkWkLocal(kind))}
+function rkMine(kind){if(kind==='score')return scUpd();if(kind==='train'){const D=RK.train,sv=D&&D.me&&+D.me.score||0;let l=0;try{l=Math.floor(window.__trainPaxWk&&window.__trainPaxWk()||0)}catch(e){}return Math.max(sv,l)}const D=RK[kind],sv=D&&D.me&&+D.me.score||0;return Math.max(sv,rkWkLocal(kind))}
 function rkBoardHTML(kind,o){o=o||{};rk23Css();const Df=RKDEF[kind],D=RK[kind],mine=rkMine(kind),U=Df.u,now=Date.now();
  let h=(o.title!==false?'<h2 class="rk23h">'+Df.t+'</h2>':'')+(o.name?`<div class="namebar"><span>Playing as <b class="gold">${esc(myName())}</b></span><button class="alt" data-k="nameEdit">✎ Edit name</button></div>`:'');
  if(kind==='score'){const td=Math.max(0,mine-((S.scDay&&S.scDay.b)||mine));h+='<div class="rkmeta">you: <b class="gold">'+fmtPts1(mine)+' pts</b>'+(td>0?' · +'+fmtPts1(td)+' today':'')+'</div>'}
  if(!D){h+='<div class="rkmeta">'+(RK.busy[kind]||!RK.err[kind]?'Loading the leaderboard…':'The leaderboard can’t be reached right now (offline?). Your progress is posted automatically when you’re back online.')+'</div>'+rk23Row({r:0,me:1,s:mine},U);rkFetch(kind)}
- else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U);if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
+ else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+(kind==='train'?'resets Sunday · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U);if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
  h+='<details class="rknote"><summary>ⓘ How this board works</summary>'+Df.note+'<p>Your pilot name and look are shown to other players here. Scores that grow faster than the game allows are held for review.</p></details>';
  return h}
 let rkCtx='pax';
@@ -5567,7 +5567,9 @@ window.__rkBoard=function(top,meRank,mine,unit,o){rk23Css();return'<div class="r
 function rkSideRefresh(force){const now=Date.now();if(!force&&rkSideRefresh._t&&now-rkSideRefresh._t<1500)return;rkSideRefresh._t=now;
  const va=document.getElementById('vAdmin'),vc=document.getElementById('vCargo');
  if(va&&!va.classList.contains('hide'))rkRenderInto(document.getElementById('admLb'),'score',{name:1});
- if(vc&&!vc.classList.contains('hide'))rkRenderInto(document.getElementById('cgLb'),'cargo')}
+ if(vc&&!vc.classList.contains('hide'))rkRenderInto(document.getElementById('cgLb'),'cargo');
+ const vt=document.getElementById('vTrain'),tl=document.getElementById('trLb');if(vt&&!vt.classList.contains('hide')&&tl)rkRenderInto(tl,'train')}
+window.__rkTrainLb=function(el){try{rkRenderInto(el,'train')}catch(e){}};
 setInterval(()=>{try{rkSideRefresh(false)}catch(e){}},1000);
 function renderRank(force){const now=Date.now();if(!force&&sigs.rankT&&now-sigs.rankT<1000)return;sigs.rankT=now;rollMonth();rk23Css();
  const K=window.__rkArea==='cargo'?'cargo':'pax';rkTab=K;const tb=$('rkTabs');if(tb){setHTML(tb,'');tb.style.display='none'}
@@ -7424,6 +7426,7 @@ function accrue(){var n=Date.now(),gapMs=Math.max(0,n-T.last),off=gapMs>20000,ca
  if(T.wk!==weekId()){T.wk=weekId();T.paxWk=0}
  var b=boostOn()?2:1,rt0=T.rt;for(var i=0;i<10;i++){if(!T.un[i])continue;T.rt+=rate(i)*b*dt;var p=paxRate(i)*dt;T.pax+=p;T.paxWk+=p}
  if(off){var drt=T.rt-rt0,sv=null;try{sv=G().S}catch(e){}if(drt>0&&sv){T.rt=rt0;var cp=gapMs>capMs;if(sv.pending){sv.pending.rt=(+sv.pending.rt||0)+drt;sv.pending.rtCapped=sv.pending.rtCapped||cp}else sv.pending={amount:0,pax:0,secs:gapMs/1000,cred:Math.min(gapMs,capMs)/1000,capped:cp,capH:capMs/3600e3,boostSecs:0,done:[],pre:0,wkK:0,cc:0,rt:drt,rtCapped:cp,ccOnly:1};try{G().save()}catch(e){}setTimeout(function(){try{G().nextPopup()}catch(e){}},0)}}} /* offline RT like cash/CC: same Offline Storage cap, collected (and ad-doubled) on the welcome-back card */
+window.__trainPaxL=function(){load();return T.unlocked?Math.floor(T.pax||0):null};window.__trainPaxWk=function(){load();return T.wk===weekId()?T.paxWk||0:0};
 window.__trainOffline={credit:function(n){load();T.rt+=n;save();try{render()}catch(e){}}};
 function cc(){try{var c=window.__cargoBridge&&window.__cargoBridge.ensure();return c?c:null}catch(e){return null}}
 /* prestige */
@@ -7443,13 +7446,6 @@ window.__trainMs={info:function(){var s=msState(),dn=0,tt=0,cl=0,nx=null;s.forEa
    var rw=i<tr.claimed?'<span class="sm">✓ +'+rt(tr.rw[i])+'</span>':(i===tr.claimed&&tr.cur>=x&&T.unlocked?'<button data-trms="'+tr.k+'">Claim +'+rt(tr.rw[i])+'</button>':'<span class="sm">+'+rt(tr.rw[i])+'</span>');
    return '<div class="mtr '+st+'"><span class="dot">'+(i<tr.claimed?'✓':i+1)+'</span><div class="mtb"><div class="mtt">'+nf(x)+' '+tr.u+'</div>'+bar+'</div><div class="mtw">'+rw+'</div></div>'}).join('')+'</div></div>').join('')}};
 /* weekly LB stub (deterministic fake rivals + you) */
-function lb(){var seed=0;for(var c of T.wk)seed=(seed*31+c.charCodeAt(0))>>>0;var rnd=()=>((seed=(seed*1103515245+12345)>>>0)/4294967296);
- var nm=['RailFan88','Conductor Kim','ExpressEd','TrackStar','PlatformPat','NightTrainNia','SteamySam','LoopLine','SignalSue','Pilot9287','Vesver','ArTuR'],ttl=['Platform Pro','Ticket Agent','Conductor','Express Rider','Engineer','Station Master','Rookie Pilot'];
- var rows=nm.map((n,i)=>({n:n,t:ttl[Math.floor(rnd()*ttl.length)],v:i<5?Math.floor(rnd()*4e6/(i+1)):0}));var me='You';try{me=myName()}catch(e){}
- rows.push({n:me,t:T.pr?PRNAME[T.pr]:'Platform Rookie',v:Math.floor(T.paxWk),me:1});rows.sort((a,b)=>b.v-a.v);return rows}
-/* leaderboard rows use the SAME pilot-profile render path as the cargo / weekly boards (rk23Podium / rk23Row, avImg, mockPilot): your real name, title, frame, hat, glasses... */
-function lbHTML(L,pod){try{rk23Css();var rows=L.map(function(r,k){return {n:r.n,s:r.v,r:k+1,me:r.me,p:r.me?null:mockPilot(r.n,k+1,{cash:r.v*2400})}});
- return '<div class="rk23">'+rk23Podium(rows.slice(0,3),'pax')+rows.slice(3).map(function(x){return rk23Row(x,'pax')}).join('')+'</div>'}catch(e){return '<div class="trPods">'+pod+'</div>'}}
 /* rendering */
 function hud(){return '<section class="trHud"><div class="trHudL"><small>RAIL TOKENS / MIN</small><b><img src="'+TRA('rt.png')+'" alt="">'+rt(totRate())+'</b><span class="sm">base '+rt(totRate()/(boostOn()?2:1))+'/min × bonus x'+(boostOn()?'2.00':'1.00')+' · prestige ×'+prMul()+'</span>'+
  '<div class="trHudS"><div><small>RAIL TOKENS</small><b>'+rt(T.rt)+'</b></div><div><small>PLATFORMS</small><b>'+T.un.filter(Boolean).length+'/10</b></div>'+(boostOn()?'<div class="trBoost">⚡ 2× '+Math.ceil((T.boost-Date.now())/60000)+'m</div>':'')+'</div></div></section>'}
@@ -7467,7 +7463,6 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
  var cyc=vcyc(i),pct=Math.min(100,Math.floor(((vclk(i))%cyc)/cyc*100*popFrac(T.pop[i])));
  var b=(k,lab,ic)=>{var lv=T[k][i],mx=lv>=MAXLV,c=upCost(i,lv);return '<button type="button" class="trUp'+(mx?'':T.rt>=c?' can':' lack')+'" data-tru="'+k+'"'+(mx?' disabled':'')+'>'+ic+' '+lab+' '+lv+'/'+MAXLV+'<small>'+(mx?'MAX':rt(c))+'</small></button>'};
  var R=prCheck(),row=(ic,l,x,isR)=>{var f=Math.max(0,Math.min(1,x.c/x.t));return '<div class="prq'+(x.ok?' ok':'')+'"><span class="pri">'+(x.ok?'✅':ic)+'</span><div class="prm"><div class="prl"><b>'+l+'</b><span>'+(isR?nf(x.c)+' / '+rt(x.t):Math.min(x.c,x.t)+' / '+x.t)+'</span></div><div class="mbar"><i style="width:'+(f*100).toFixed(1)+'%"></i></div></div></div>'};
- var L=lb(),pod=[L[1],L[0],L[2]].map((r,k)=>r?'<div class="trPod'+(k===1?' g':'')+(r.me?' me':'')+'"><div class="av">🧑‍✈️</div><span class="rk">'+[2,1,3][k]+'</span><b>'+r.n+'</b><small>“'+r.t+'”</small><b>'+nf(r.v)+'</b></div>':'').join('');
  var h=hud()+'<section class="trCard"><div class="trRtBig"><div><small>RAIL TOKENS <img src="'+TRA('rt.png')+'" alt=""></small><b>'+rt(T.rt)+'</b><span class="sm">'+rt(totRate())+'/min</span></div><div style="text-align:right"><small>PASSENGERS BOARDED</small><b>'+nf(T.pax)+'</b><span class="sm">'+nf(paxRate(i))+' pax/min here</span></div></div></section>'+adBtn()+
  '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">'+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="trUps">'+b('bs','Efficiency','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
  '<div class="trArt"><span id="trStageSlot"></span><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
@@ -7475,8 +7470,9 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
  '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Efficiency maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
  '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Efficiency &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
  (R.max?'':'<button class="prbtn" type="button" data-tr="prestige"'+(R.ready?'':' disabled')+'>'+(R.ready?'★ Train prestige to level '+R.next:R.reqOk?'Need '+rt(R.rt.t-R.rt.c)+' more':'Complete the checklist')+'</button>')+'</section>'+
- '<section class="trCard" id="trLb"><h2>TRAIN PASSENGERS · THIS WEEK</h2><div class="sm">'+L.length+' pilots · resets Sunday · preview (local stub)</div>'+lbHTML(L,pod)+'</section>';
- setH(host,h);attachStage()}
+ '<section class="trCard" id="trLb"></section>';
+ setH(host,h);var tl=$('trLb');if(tl){if(LBN&&tl!==LBN)tl.replaceWith(LBN);else LBN=tl;try{window.__rkTrainLb&&window.__rkTrainLb(LBN)}catch(e){}}attachStage()}
+var LBN=null;
 /* ---- v38 procedural platform stage: passengers walk from the platform, through the car doors, down the aisle and sit (same feel as gate boarding) ---- */
 var STG={cv:null,i:-1,raf:0,uz:1,px:0,py:0,uzMax:1,H:320};
 var SK=['#f1c7a3','#e0ac85','#c68863','#a86b48','#7d4b2e','#5a3420'],HC=['#2b1d12','#4a2d17','#7a4a22','#c9a063','#1a1a1a','#8a8f99','#b5532d'],SH=['#d6322e','#2f7fe0','#38d39f','#f0b34a','#8b6bff','#e86fa8','#3a4a6b','#ff8a2b','#2a9d8f','#c9d3e3'];
