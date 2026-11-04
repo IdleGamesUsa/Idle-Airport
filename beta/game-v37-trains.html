@@ -1677,7 +1677,7 @@ function claimMilestone(id){const m=MILESTONES.find(x=>x.id===id);if(!m||!S.ms[i
 function claimAllMilestones(){let n=0;for(const m of MILESTONES)n+=claimMilestone(m.id);return n}
 const msClaimable=()=>MILESTONES.filter(m=>S.ms[m.id]&&!S.msClaim[m.id]);
 let msClock=0;
-function checkMilestones(){for(const m of MILESTONES)if(!S.ms[m.id]&&(p=>p[0]>=p[1])(m.prog())){S.ms[m.id]=true;if(window._ui)toast('Milestone: '+m.name+' (+'+MS_BONUS*100+'% pay)')}scUpd()}
+function checkMilestones(){for(const m of MILESTONES)if(!S.ms[m.id]&&(p=>p[0]>=p[1])(m.prog())){S.ms[m.id]=true;if(window._ui)toast('Milestone: '+m.name+' (+'+MS_BONUS*100+'% passenger pay)')}scUpd()}
 // ===== build 30: lifetime PILOT SCORE (proposal 2026-10-14). Integer centi-points (x100); the same table lives in the server's logic.js (SC); named PSC here because the game already has an SC.
 // Points come from the UNLOCK, never from how it was paid: the score is read from the airport state (research levels, gates, plane tiers, terminals,
 // services, spots, milestones, rare flights, prestige), so a level finished by waiting, an ad skip, a ticket skip or an extra (ticket) research slot,
@@ -2579,7 +2579,7 @@ const INFO_TXT={
  upg:()=>`<h3>Global upgrades</h3><p>Buying a level pays cash now and starts a real-time timer; the effect applies when it finishes, even while the app is closed. Timers grow from 10 s (Lv 1) to 24 h (Lv 100).</p><p>Watch an ad to shave 30 min off a running upgrade, or spend tickets to finish it now. An upgrade never restarts the plane on screen: the next plane gets the new numbers.</p>`,
  daily:()=>`<h3>Daily login rewards</h3><p>Claim once per day to keep your streak; missing a day resets it. Day 7 is a chest.</p><p>Income rewards use your current income per minute. Tickets are not doubled by ads. Free boosts <b>add time</b> to any running 2x boost and may exceed 2 h; the ad button adds 30 min per ad up to a 2 h total and never shortens a longer boost. Resets every day at 3:00 AM Eastern (2:00 AM in winter), the same moment for everyone.</p>`,
  gate:()=>`<h3>Gate details</h3><p><b>Per flight</b> is the lump sum paid when you watch the plane depart; the same income also flows continuously ( /min ) whether you watch or not. Watching a whole boarding also earns 1 free ticket.</p><p><b>Cycle</b> = boarding + departure + turnaround before the next plane. The terminal shows every seat of the plane; passengers (the load factor from Plane popularity) take random seats, empty seats stay visible until popularity 100.</p><p>Tap the <i>i</i> on the tarmac for the class colours.</p>`,
- ms:()=>`<h3>Milestones</h3><p>Every milestone gives <b>+${MS_BONUS*100}% pay</b> automatically and a ticket reward you claim in the Rewards tab. Some also unlock a pilot item for your Dresser.</p><p>Tier-5 ladder: get 1, 5, 10, 25 and all 50 gates to tier 5 (the last plane of their terminal line).</p>`
+ ms:()=>`<h3>Milestones</h3><p>Each area rewards its own currency and pilot cosmetics (titles, frames, hats and Dresser items):</p><ul><li><b>Passenger planes</b> (Gates, Terminals, Planes, Passengers, Earnings): <b>+${MS_BONUS*100}% passenger cash pay</b> each, automatically, plus tickets you claim here. Some unlock a pilot item.</li><li><b>Food &amp; Services</b>: tickets, cash and pilot items.</li><li><b>Cargo</b>: Cargo Credits (CC) and cargo pilot items.</li><li><b>Trains</b>: Rail Tokens (RT) and train pilot items.</li></ul><p>Cargo and Train milestones never change your passenger cash pay.</p><p>Tier-5 ladder: get 1, 5, 10, 25 and all 50 gates to tier 5 (the last plane of their terminal line).</p>`
 };
 function infoHTML(k){
  if(k.startsWith('frame:'))return frameInfoHTML(k.slice(6));
@@ -2718,7 +2718,7 @@ function renderMsCats(){
   var dn=0,tt=0,cl=0,nx=null;(cg.tracks||[]).forEach(tr=>{dn+=tr.done;tt+=tr.tiers.length;if(tr.claimable)cl++;if(!nx&&tr.done<tr.tiers.length)nx=tr.n+' \u00B7 '+fmt(tr.cur)+'/'+fmt(tr.tiers[tr.done])});
   return{done:dn,total:tt,claim:cl,next:cg.unlocked?(nx||'All done'):'Locked \u00B7 Airport \u00B7 Cargo Ramp'}}
  if(!msCat){
-  var h='<div class="sm" style="margin-bottom:4px">'+msCount()+'/'+MILESTONES.length+' done \u00B7 pay +'+(MS_BONUS*msCount()*100).toFixed(0)+'%'+IB('ms')+'</div>';
+  var h='<div class="sm" style="margin-bottom:4px">'+msCount()+'/'+MILESTONES.length+' passenger \u00B7 cash pay +'+(MS_BONUS*msCount()*100).toFixed(0)+'%'+IB('ms')+'</div>';
   var _n=msClaimable().length;
   if(_n>1)h+='<button data-k="msClaimAll" style="width:100%;margin:4px 0">Claim all ('+_n+') \u00B7 +'+msClaimable().reduce((a,m)=>a+m.tix,0)+' '+TIX_SVG+'</button>';
   h+=cats.map(c=>{var i=info(c);return '<button class="alt" onclick="window.__msGo(\''+c.id+'\')" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:5px 0;padding:10px 12px"><span style="font-size:22px">'+c.ic+'</span><span style="flex:1"><b>'+c.n+'</b><br><span class="sm">'+i.done+'/'+i.total+' \u00B7 '+i.next+'</span></span>'+(i.claim?'<span class="nbadge2">'+i.claim+'</span>':'')+'</button>'}).join('');
@@ -2739,7 +2739,7 @@ function renderMsCats(){
    var rows=tr.tiers.map((x,i)=>{
     var st=i<tr.claimed?'ok':(i===tr.done?'nx':'');
     var bar=(i===tr.done&&cg.unlocked)?'<div class="mbar"><i style="width:'+Math.min(100,tr.cur/x*100).toFixed(0)+'%"></i></div><small class="sm">'+fmt(tr.cur)+' / '+fmt(x)+'</small>':'';
-    var rw=(i<tr.claimed)?'<span class="sm">\u2714 +'+fmt(tr.rw[i])+' CC</span>':(i===tr.claimed&&tr.cur>=x&&cg.unlocked?'<button data-cgms="'+tr.k+'">Claim +'+fmt(tr.rw[i])+' CC</button>':'<span class="sm">+'+fmt(tr.rw[i])+' CC</span>');
+    var _ci=window.__cargoCos&&__cargoCos.item(tr.k,i+1),_cs=_ci?' + '+_ci.name:'';var rw=(i<tr.claimed)?'<span class="sm">\u2714 +'+fmt(tr.rw[i])+' CC'+_cs+'</span>':(i===tr.claimed&&tr.cur>=x&&cg.unlocked?'<button data-cgms="'+tr.k+'">Claim +'+fmt(tr.rw[i])+' CC'+_cs+'</button>':'<span class="sm">+'+fmt(tr.rw[i])+' CC'+_cs+'</span>');
     return '<div class="mtr '+st+'"><span class="dot">'+(i<tr.claimed?'\u2713':i+1)+'</span><div class="mtb"><div class="mtt">'+fmt(x)+' '+tr.u+'</div>'+bar+'</div><div class="mtw">'+rw+'</div></div>'}).join('');
    return '<div class="mtc"><div class="mth"><div class="mtn"><b>'+tr.n+'</b><small>'+fmt(tr.cur)+' '+tr.u+'</small></div><span class="mtp">Tier '+tr.claimed+'/5</span></div><div class="mtl">'+rows+'</div></div>'}).join('');
  }
@@ -2769,7 +2769,7 @@ let _lbM=null;
 function lbData(kind){if(kind==='all')return LB_ALL;const k=monthKeyNow()+'|'+new Date().getDate();if(!_lbM||_lbM.k!==k){const fr=lbMonthFrac();_lbM={k,a:LB_ALL.map((e,i)=>({name:e.name,cash:e.cash*e.f*fr*(.85+.3*rngOf(i*7919+(+monthKeyNow().replace('-','')))()) })).sort((x,y)=>y.cash-x.cash)}}return _lbM.a}
 let rkTab='all'; // 'all' | 'month' (v19: Milestones moved to the Rewards tab)
 function renderMilestones(){const n=msClaimable().length,tot=MILESTONES.reduce((a,m)=>a+(S.msClaim[m.id]?0:m.tix),0);
- return`<div class="sm" style="margin-bottom:4px">${msCount()}/${MILESTONES.length} done · pay +${(MS_BONUS*msCount()*100).toFixed(0)}%${IB('ms')}</div>`+(n>1?`<button data-k="msClaimAll" style="width:100%;margin:4px 0">Claim all (${n}) · +${msClaimable().reduce((a,m)=>a+m.tix,0)} ${TIX_SVG}</button>`:'')+
+ return`<div class="sm" style="margin-bottom:4px">${msCount()}/${MILESTONES.length} passenger · cash pay +${(MS_BONUS*msCount()*100).toFixed(0)}%${IB('ms')}</div>`+(n>1?`<button data-k="msClaimAll" style="width:100%;margin:4px 0">Claim all (${n}) · +${msClaimable().reduce((a,m)=>a+m.tix,0)} ${TIX_SVG}</button>`:'')+
  MILESTONES.map(m=>{const [c,t]=m.prog(),f=clamp(c/t,0,1),dn=!!S.ms[m.id],cl=!!S.msClaim[m.id];
   return`<div class="mrow ${dn?'done':''}"><div class="top"><span style="${dn?'color:var(--acc)':''}">${dn?'✔':'○'} ${m.name}</span><span class="sm">${fmt(Math.floor(Math.min(c,t)))}/${fmt(t)}</span></div><div class="mbar"><i style="width:${(dn?1:f)*100}%"></i></div>`+
   `<div class="mrw">${dn&&!cl?`<button data-k="msClaim" data-a="${m.id}">Claim +${m.tix} ${TIX_SVG}</button>`:`<span class="sm">${cl?'✔ ':''}${m.tix} ${TIX_SVG}</span>`}</div></div>`}).join('')}
@@ -4244,6 +4244,21 @@ const TR_ITEMS=[
 TR_ITEMS.forEach(x=>{ITEMS.push(x);IT[x.id]=x});
 window.__trainCos={items:TR_ITEMS,sync(){let n=0;try{const ms=(window.__trains&&__trains.state().ms)||{};const TS=(window.__trains&&__trains.state())||{un:[],pop:[]};TR_ITEMS.forEach(x=>{if((x.need?x.need(TS):(ms[x.trm]|0)>=x.trt)&&grantItem(x.id))n++});if(n){pilotPersist();save()}}catch(e){}return n}};
 setTimeout(()=>window.__trainCos.sync(),3000);
+/* Michael Nov 3: Cargo milestones (Rewards → Cargo) grant Cargo Credits + cargo-themed pilot items on claim (no passenger pay %) */
+const CGM_ITEMS=[
+ {id:'ttl_cgm_handler',slot:'title',name:'Freight Handler',r:1,cgm:'tons',cgt:1,src:'Cargo milestone · Tonnes shipped tier 1'},
+ {id:'cap_cgm_tonnage',slot:'cap',name:'Tonnage hard hat',r:2,kind:'hard',col:'#f5c542',trim:'#1c2540',cgm:'tons',cgt:3,src:'Cargo milestone · Tonnes shipped tier 3'},
+ {id:'ttl_cgm_mover',slot:'title',name:'Mega-Tonne Mover',r:3,cgm:'tons',cgt:5,src:'Cargo milestone · Tonnes shipped tier 5'},
+ {id:'frm_cgm_ramplights',slot:'frame',name:'Ramp Lights frame',r:1,col:['#c6ef3a','#2a3350'],cgm:'ramps',cgt:2,src:'Cargo milestone · Ramps open tier 2'},
+ {id:'out_cgm_rampboss',slot:'outfit',name:'Ramp Boss jacket',r:2,kind:'jacket',col:'#2a3350',lap:'#3a4766',trim:'#c6ef3a',cgm:'ramps',cgt:5,src:'Cargo milestone · Ramps open tier 5'},
+ {id:'gl_cgm_scanner',slot:'glasses',name:'Scanner goggles',r:2,kind:'goggles',col:'rgba(198,239,58,.7)',trim:'#1c2540',cgm:'upg',cgt:3,src:'Cargo milestone · Handling + Demand tier 3'},
+ {id:'frm_cgm_steel',slot:'frame',name:'Freight Steel frame',r:3,col:['#9aa6bd','#ff8a1f'],cgm:'upg',cgt:5,src:'Cargo milestone · Handling + Demand tier 5'},
+ {id:'ttl_cgm_spotter',slot:'title',name:'Wild Cargo Spotter',r:1,cgm:'wild',cgt:1,src:'Cargo milestone · Wild Cargo tier 1'},
+ {id:'cap_cgm_wild',slot:'cap',name:'Wild Cargo cap',r:2,kind:'cap',col:'#7a4a22',trim:'#ffd95a',cgm:'wild',cgt:3,src:'Cargo milestone · Wild Cargo tier 3'},
+ {id:'ttl_cgm_wrangler',slot:'title',name:'Wild Cargo Wrangler',r:3,cgm:'wild',cgt:5,src:'Cargo milestone · Wild Cargo tier 5'}];
+CGM_ITEMS.forEach(x=>{ITEMS.push(x);IT[x.id]=x});
+window.__cargoCos={items:CGM_ITEMS,item:(k,t)=>CGM_ITEMS.find(x=>x.cgm===k&&x.cgt===t),sync(){let n=0;const got=[];try{const st=(window.__cargoBridge&&__cargoBridge.msState)?__cargoBridge.msState():{tracks:[]};const cl={};(st.tracks||[]).forEach(t=>cl[t.k]=t.claimed|0);CGM_ITEMS.forEach(x=>{if((cl[x.cgm]|0)>=x.cgt&&grantItem(x.id)){n++;got.push(x)}});if(n){pilotPersist();save()}}catch(e){}return got}};
+setTimeout(()=>window.__cargoCos.sync(),3000);
 
 /* 1.6.4 cargo prestige titles (one per level) */
 ['Freight Rookie','Bronze Hauler','Silver Hauler','Gold Hauler','Cargo Captain','Freight Baron','Ramp Master','Heavy-Lift Legend','Global Freighter','Cargo Tycoon'].forEach((n,i)=>{const x={id:'ttl_cgp'+(i+1),slot:'title',name:n,r:i<3?1:i<7?2:3,src:'Cargo Prestige '+(i+1)};ITEMS.push(x);IT[x.id]=x}); /* registered always so earned prizes survive load-time cleanup; un-owned ones are hidden from the Dresser unless __SP_EVENT_LIVE */
@@ -6545,7 +6560,7 @@ var CGMS=[{k:'tons',n:'Tonnes shipped',u:'t',tiers:[100,1000,10000,50000,200000]
 function cgmsCur(c,k){if(k==='tons')return c.tons||0;if(k==='ramps')return c.un.filter(function(x){return x}).length;if(k==='upg')return c.h.reduce(function(a,x){return a+x},0)+c.d.reduce(function(a,x){return a+x},0);if(k==='wild')return c.wildN||0;return 0}
 function cgmsState(){var c=cgpEnsure();if(!c)return{unlocked:0,tracks:[]};if(!c.msC||typeof c.msC!=='object')c.msC={};return{unlocked:c.unlocked?1:0,tracks:CGMS.map(function(tr){var cur=cgmsCur(c,tr.k),cl=c.msC[tr.k]|0,done=tr.tiers.filter(function(x){return cur>=x}).length;return{k:tr.k,n:tr.n,u:tr.u,cur:Math.floor(cur),tiers:tr.tiers,rw:tr.rw,claimed:cl,done:done,claimable:done>cl?1:0}})}}
 function cgmsClaimable(){return cgmsState().tracks.filter(function(tr){return tr.claimable}).length}
-function cgmsClaim(k){var c=cgpEnsure();if(!c||!c.unlocked)return 0;if(!c.msC||typeof c.msC!=='object')c.msC={};var tr=null;CGMS.forEach(function(x){if(x.k===k)tr=x});if(!tr)return 0;var cl=c.msC[k]|0;if(cl>=tr.tiers.length||cgmsCur(c,k)<tr.tiers[cl])return 0;c.cc+=tr.rw[cl];c.msC[k]=cl+1;cgpSave();try{toast('Cargo milestone: +'+tr.rw[cl]+' CC')}catch(e){}return 1}
+function cgmsClaim(k){var c=cgpEnsure();if(!c||!c.unlocked)return 0;if(!c.msC||typeof c.msC!=='object')c.msC={};var tr=null;CGMS.forEach(function(x){if(x.k===k)tr=x});if(!tr)return 0;var cl=c.msC[k]|0;if(cl>=tr.tiers.length||cgmsCur(c,k)<tr.tiers[cl])return 0;c.cc+=tr.rw[cl];c.msC[k]=cl+1;cgpSave();var gi=[];try{gi=window.__cargoCos?__cargoCos.sync():[]}catch(e){}try{toast('Cargo milestone: +'+tr.rw[cl]+' CC'+(gi.length?' · new pilot item: '+gi[0].name:''))}catch(e){}return 1}
 document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('[data-cgms]'):null;if(b)cgmsClaim(b.getAttribute('data-cgms'))});
 function cgpSave(){try{G().save()}catch(e){}}
 function cgpChip(){var chip=document.getElementById('ccChip');if(!chip)return;var c=cgpEnsure();if(!c||!c.unlocked){chip.classList.add('hide');return}chip.classList.remove('hide');var r=cgpRates(c);chip.innerHTML=CC_ICON+'<span class="cct">Cargo Credits</span><span>'+cgpFmt(c.cc)+' CC</span><span class="ccs">'+cgpFmt(c.tons)+' t shipped · '+cgpFmt(r.cc)+' CC/min</span>'}
