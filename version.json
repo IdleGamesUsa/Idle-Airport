@@ -1,10 +1,10 @@
 {
-  "build": 202611020954,
-  "sha256": "90f637b76b9f0036c02dfbdb66c2b74c83bc6d4814934c4bd648520a9c17cfc9",
-  "size": 1488669,
-  "file": "game-v36-skip-cash.html",
-  "minVersionCode": 13,
+  "build": 202611040635,
+  "sha256": "d7877a638fb637a49ca6cba48f4765da208b1917884014c117d6337fb9e1f1a9",
+  "size": 2383932,
+  "file": "game-v37-trains.html",
+  "minVersionCode": 17,
   "bootSelector": "nav",
-  "generatedUtc": "2026-11-02T14:54:54Z",
-  "sig": "QPYbdLOAB2oZb6D/2ZEYsMEdsMfLB8Ew0YoOk4NiA58ySoIrHdtMWuRqznNvNZChYAGnlAL2tTivJSZyaKIhNw=="
+  "generatedUtc": "2026-11-04T11:36:59Z",
+  "sig": "1xAVpWwgWuoo7TQUR/YzYYaO0eD2RJbTsCKd2brTEJEnVejsfAUjTispJvw4KLJSbCjJ6kgPCw3OLn03jCUotA=="
 }
