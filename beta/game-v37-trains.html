@@ -7550,8 +7550,8 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
  if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c,i)})} // a fresh boarding plan per departure, like each new plane
  var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*2400;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*2400; // departs to the left (front first), the next train arrives from the right
  var HB=HULL0+(HULL1-HULL0)*LK.hh,SB=Math.max(312,HB+16); // scene bottom grows for the Twin Deck's taller hull
- var z=Math.min(2.2,940/L.W),H=Math.max(160,Math.round((SB-8)*z));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
- g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);STG.H=H;STG.uzMax=Math.max(1,2.4/z);stClamp();var uz=STG.uz,ZZ=z*uz;g.setTransform(ZZ,0,0,ZZ,uz*(480-480*z-480)+480+STG.px,uz*(H-SB*z-H/2)+H/2+STG.py);
+ var z=Math.min(2.2,940/L.W),H=Math.min(720,Math.max(320,Math.round((SB-8)*z*2)));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
+ g.setTransform(1,0,0,1,0,0);g.fillStyle='#141c2e';g.fillRect(0,0,960,H);STG.H=H;STG.uzMax=Math.max(1,4/z);stClamp();var uz=STG.uz,ZZ=z*uz;g.setTransform(ZZ,0,0,ZZ,uz*(480-480*z-480)+480+STG.px,uz*((H-SB*z)/2-H/2)+H/2+STG.py);
  var XA=-480/z+480-50,XW=960/z+100;
  g.fillStyle='#141c2e';g.fillRect(XA,-400,XW,1200);
  g.fillStyle='#2a2f3a';g.fillRect(XA,196,XW,SB-196);g.fillStyle='#4a3a2c';for(var x=Math.floor(XA/16)*16;x<XA+XW;x+=16)g.fillRect(x,198,8,104);g.fillStyle='#9aa3b2';g.fillRect(XA,212,XW,3);g.fillRect(XA,286,XW,3);
@@ -7604,7 +7604,7 @@ function stGestures(cv){function pt(x,y){var r=cv.getBoundingClientRect(),s=cv.w
  cv.addEventListener('touchstart',function(e){if(e.touches.length===1){var n=Date.now();if(n-lastTap<300){stReset();lastTap=0;e.preventDefault()}else lastTap=n}t0=info(e.touches)},{passive:false});
  cv.addEventListener('touchmove',function(e){if(!t0)return;e.preventDefault();var c=info(e.touches),s=sc();if(c.d&&t0.d){var p=pt(c.x,c.y);STG.px+=(c.x-t0.x)*s;STG.py+=(c.y-t0.y)*s;stZoomAt(p[0],p[1],STG.uz*c.d/t0.d)}else if(!c.d&&!t0.d){STG.px+=(c.x-t0.x)*s;STG.py+=(c.y-t0.y)*s;stClamp()}t0=c},{passive:false});
  cv.addEventListener('touchend',function(e){t0=e.touches.length?info(e.touches):null},{passive:false})}
-function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=320;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/1;touch-action:none';stGestures(STG.cv)}
+function attachStage(){var slot=$('trStageSlot');if(!slot)return;if(!STG.cv){STG.cv=document.createElement('canvas');STG.cv.width=960;STG.cv.height=640;STG.cv.style.cssText='width:100%;display:block;aspect-ratio:3/2;touch-action:none';stGestures(STG.cv)}
  slot.replaceWith(STG.cv);if(!STG.raf)STG.raf=requestAnimationFrame(drawStage)}
 /* v37 beta: cover an RT shortfall with plane tickets (mirrors airport affordPlan: 5 tickets = 7.5 min of CURRENT RT/min, boosts excluded) */
 function tixCover(k,i){var g=G(),S=g&&g.S;if(!S){tst('Not enough Rail Tokens');return}var lv=T[k][i],c=upCost(i,lv),short=Math.max(0,c-T.rt),per=Math.max(1e-9,Math.max(totRate(),baseRate(0))*1.5),need=Math.max(1,Math.ceil(short/per-1e-9)),have=S.tickets||0,lab=k==='bs'?'Efficiency':'Popularity';
