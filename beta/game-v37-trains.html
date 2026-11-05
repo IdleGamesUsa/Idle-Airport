@@ -5281,7 +5281,7 @@ function rkProfile(){const p=pil();const eq={};for(const sl in DEFEQ)eq[sl]=p.eq
 window.__rkPush=f=>rkScorePush(f);async function rkScorePush(force){if(rkPushBusy)return null;if(!force&&Date.now()-rkLastPush<240e3)return null;rkPushBusy=true;rkLastPush=Date.now();
  try{const N=NAT(),pg=N&&N.pgsState?N.pgsState():null,E=S.ev;
   const body={life:Math.floor(S.life||0),week:Math.floor(weeklyScore()),weekStart:S.wk?S.wk.k:0,name:S.name||'',profile:rkProfile(),pgs:pg&&pg.signedIn?String(pg.player||'').slice(0,64):'',
-   ev:E&&!E.closed?{id:E.id,tons:Math.floor(E.tons)}:null,sp:(()=>{try{return window.__spScore?window.__spScore():null}catch(e){return null}})(),created:S.created||0,score:Math.floor(scUpd()),scV:SC_VER,sc:S.scC,paxL:Math.floor(S.pax||0),cgL:Math.floor((S.cgP&&S.cgP.tons)||0)};try{const t=window.__trainPaxL&&window.__trainPaxL();if(t!=null&&Number.isFinite(t))body.trL=t}catch(e){}
+   ev:E&&!E.closed?{id:E.id,tons:Math.floor(E.tons)}:null,sp:(()=>{try{return window.__spScore?window.__spScore():null}catch(e){return null}})(),created:S.created||0,score:Math.floor(scUpd()),scV:SC_VER,sc:S.scC,paxL:Math.floor(S.pax||0),cgL:Math.floor((S.cgP&&S.cgP.tons)||0)};try{const t=window.__trainPaxL&&window.__trainPaxL();if(t!=null&&Number.isFinite(t)){body.trL=t;const w=window.__trainPaxWk&&window.__trainPaxWk();if(Number.isFinite(w))body.trWk=Math.floor(w)}}catch(e){}
   return await netCall('score',body)}catch(e){return null}finally{rkPushBusy=false}}
 async function rkFetch(kind,force){if(RK.busy[kind])return;if(!force&&RK[kind]&&Date.now()-(RK.at[kind]||0)<60e3)return;if(!force&&RK.err[kind]&&Date.now()-(RK.errAt[kind]||0)<20e3)return;RK.busy[kind]=true;
  try{await rkScorePush(false);const r=await netCall('board',{board:kind==='week'?'growth':kind==='pax'?'paxWeek':kind==='cargo'?'cargoWeek':kind==='train'?'trainWeek':kind});if(r&&r.ok){RK[kind]={top:Array.isArray(r.top)?r.top:[],me:r.me||null,total:r.total||0};RK.at[kind]=Date.now();RK.err[kind]=''}else{RK.err[kind]=r&&r.reason||'offline';RK.errAt[kind]=Date.now()}}
@@ -5533,12 +5533,12 @@ function rkDedupe(top){const seen=new Map(),out=[];for(const x of top||[]){const
   if(!seen.has(k)){seen.set(k,out.length);out.push(x);continue}if(mine){const i=seen.get(k);out[i]=Object.assign({},x,{s:Math.max(+x.s||0,+out[i].s||0)})}}
  return out.map((x,i)=>Object.assign({},x,{r:i+1}))}
 function rk23Board(top,meRank,mineVal,unit,o){o=o||{};let h='',mineIn=false;top=rkDedupe(top);
- const rows=top.slice(0,100).map(x=>{const m=!!(x.me||(NET.uid&&x.u===NET.uid));if(m)mineIn=true;return Object.assign({},x,{me:m,s:m?Math.max(x.s||0,mineVal):x.s})});
+ const rows=top.slice(0,100).map(x=>{const m=!!(x.me||(NET.uid&&x.u===NET.uid));if(m)mineIn=true;return Object.assign({},x,{me:m,s:m?Math.max(x.s||0,mineVal):x.s})});if(o.drop0){for(let i=rows.length-1;i>=0;i--)if(!rows[i].me&&!(+rows[i].s>0))rows.splice(i,1)}rows.sort((p,q)=>(+q.s||0)-(+p.s||0)||(p.r||0)-(q.r||0));rows.forEach((x,i)=>x.r=i+1);
  if(!rows.length)return'<div class="sm" style="margin:8px 0">No scores yet: be the first!</div>'+rk23Row({r:meRank||0,me:1,s:mineVal},unit,'','pin23');
  if(rows.length>=3)h+=rk23Podium(rows,unit,o.prize);
  h+='<div class="rkscroll">'+rows.slice(rows.length>=3?3:0).map(x=>rk23Row(x,unit,o.band?o.band(x.r):'',x.me?'mine':'')).join('')+'</div>';
  const myR=mineIn?(rows.find(x=>x.me)||{}).r:meRank;
- const myRow=rows.find(x=>x.me);h+=rk23Row({r:myR||0,me:1,s:myRow?myRow.s:mineVal},unit,o.band&&myR?o.band(myR):(myR?'':'not ranked yet'),'pin23'+(mineIn?' jump':''));
+ const myRow=rows.find(x=>x.me);if(!(mineIn&&rows.length<=10))h+=rk23Row({r:myR||0,me:1,s:myRow?myRow.s:mineVal},unit,o.band&&myR?o.band(myR):(myR?'':'not ranked yet'),'pin23'+(mineIn?' jump':''));
  return h}
 // tapping your pinned row scrolls the list to your row when you are in the top 100 (podium rows: scroll to top); else it opens your card
 document.addEventListener('click',e=>{const pin=e.target.closest('.rk23 .pin23.jump');if(!pin)return;e.stopImmediatePropagation();e.preventDefault();
@@ -5557,7 +5557,7 @@ function rkBoardHTML(kind,o){o=o||{};rk23Css();const Df=RKDEF[kind],D=RK[kind],m
  let h=(o.title!==false?'<h2 class="rk23h">'+Df.t+'</h2>':'')+(o.name?`<div class="namebar"><span>Playing as <b class="gold">${esc(myName())}</b></span><button class="alt" data-k="nameEdit">✎ Edit name</button></div>`:'');
  if(kind==='score'){const td=Math.max(0,mine-((S.scDay&&S.scDay.b)||mine));h+='<div class="rkmeta">you: <b class="gold">'+fmtPts1(mine)+' pts</b>'+(td>0?' · +'+fmtPts1(td)+' today':'')+'</div>'}
  if(!D){h+='<div class="rkmeta">'+(RK.busy[kind]||!RK.err[kind]?'Loading the leaderboard…':'The leaderboard can’t be reached right now (offline?). Your progress is posted automatically when you’re back online.')+'</div>'+rk23Row({r:0,me:1,s:mine},U);rkFetch(kind)}
- else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+(kind==='train'?'resets Sunday · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U);if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
+ else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+(kind==='train'?'resets Sunday · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U,kind==='train'?{drop0:1}:{});if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
  h+='<details class="rknote"><summary>ⓘ How this board works</summary>'+Df.note+'<p>Your pilot name and look are shown to other players here. Scores that grow faster than the game allows are held for review.</p></details>';
  return h}
 let rkCtx='pax';
@@ -7199,6 +7199,7 @@ function renderAdmin(){var host=document.getElementById('admBody');if(!host)retu
  +card('CASH',G().money(sv.cash))+card('INCOME/MIN',est?G().money(est.perSec*60):'—')+card('PAY BONUS','×'+(+G().payBonus()).toFixed(2))+card('GATES',gates+'/50')+card('TERMINALS',(sv.term|0)+'/5')+card('TICKETS',cgpFmt(sv.tickets||0))+card('PAX BOOST',fmtLeft(sv.boostEnd||0))
  +'<div class="admSec">CARGO</div>'
  +(c&&c.unlocked?card('CARGO CREDITS',cgpFmt(c.cc)+' CC')+card('CC/MIN',cgpFmt(r.cc))+card('TONNES',cgpFmt(c.tons)+' t')+card('RAMPS',c.un.filter(function(x){return x}).length+'/10')+card('CARGO BOOST',fmtLeft(sv.cgBoostEnd||0))+card('WILD ×2.5',c.wildEnd?fmtLeft(c.wildEnd):'off'):card('CARGO','Locked'))
+ +(function(){var t=null;try{t=window.__trains&&window.__trains.admin()}catch(e){}return '<div class="admSec">TRAIN / RAIL</div>'+(t&&t.unlocked?card('RAIL TOKENS',t.rt)+card('RT/MIN',t.rate.replace(/ RT$/,''))+card('PAX (LIFETIME)',t.pax)+card('PAX THIS WEEK',t.paxWk)+card('PLATFORMS',t.plat)+card('TRAIN BOOST',t.boost)+card('RAIL PRESTIGE',t.pr+'/10'):card('TRAIN','Locked'))})()
  +'</div>';if(host._h!==h){host._h=h;host.innerHTML=h}}
 function openAdmin(){if(window.__iaShowOnly)window.__iaShowOnly('vAdmin');var vm=document.getElementById('vMap'),vc=document.getElementById('vCargo'),va=document.getElementById('vAdmin');if(vm)vm.classList.add('hide');if(vc)vc.classList.add('hide');if(va)va.classList.remove('hide');try{window.scrollTo(0,0)}catch(e){}renderAdmin();try{rkSideRefresh(true)}catch(e){}}
 function closeAdmin(){var va=document.getElementById('vAdmin');if(va)va.classList.add('hide');try{G().setView('map')}catch(e){var vm=document.getElementById('vMap');if(vm)vm.classList.remove('hide')}}
@@ -7524,7 +7525,7 @@ function seatG(g,x,y,f,s,fc){g.save();g.translate(x,y);g.scale(s,1);g.fillStyle=
    only as long as that boarding takes (+ departure) - capped by the economy cycle, which also drives the BOARDED % badge (same clock) */
 var PSPD=1.35;STG.tb={};STG.tbk={}; // ALL trains: passengers walk 1.35x the gate walking speed (PX.v); the door scan pause (SCAN_T) stays real-time
 function tPlan(c,i){var v0=PX.v,n=c.cabin.seats.length;if(i!=null)n=Math.max(1,Math.round(n*popFrac(T.pop[i])));PX.v=v0*PSPD;try{return buildPlan(c,n)}finally{PX.v=v0}}
-function vcyc(i){var base=60/(0.6+0.08*T.bs[i]),tk=i+'_'+T.pop[i];if(STG.tbk[i]!==tk){STG.tbk[i]=tk;STG.tb[i]=null;if(STG.i===i)STG.cyc=-1}if(STG.tb[i]==null){try{var L=trLayout(i);STG.tb[i]=Math.max.apply(null,L.cars.map(function(c){return tPlan(c,i).total}))+1.5}catch(e){return base}}
+function vcyc(i){var base=60/(0.6+0.08*T.bs[i]),tk=i+'_'+T.pop[i];if(STG.tbk[i]!==tk){STG.tbk[i]=tk;STG.tb[i]=null}if(STG.tb[i]==null){try{var L=trLayout(i);STG.tb[i]=Math.max.apply(null,L.cars.map(function(c){return tPlan(c,i).total}))+1.5}catch(e){return base}}
  return Math.min(base,STG.tb[i]/.84)}
 function rr(g,x,y,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)}
 // hull outline path for one car: front (left) nose on the lead car, rear cab/taper on the last car, per LOOK
@@ -7542,7 +7543,9 @@ STG.vt={};function vclk(i){if(STG.vt[i]==null)STG.vt[i]=Date.now()/1000;return S
 function vtick(i){var w=Date.now()/1000;vclk(i);if(STG.lw&&STG.li===i){var d=w-STG.lw;if(d>0&&d<0.25)STG.vt[i]+=d}STG.lw=w;STG.li=i;return STG.vt[i]}
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;STG.lw=0;return}STG.raf=requestAnimationFrame(drawStage);
  var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1;STG.uz=1;STG.px=0;STG.py=0;}var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=vtick(i),t=now;
- var cyc=vcyc(i),cn=Math.floor(now/cyc),ph=(now%cyc)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND;
+ STG.run=STG.run||{};var RN=STG.run[i];if(!RN||STG.cyc===-1&&RN.sel!==STG.selN){var c0=vcyc(i);RN=STG.run[i]={s:now-(now%c0),c:c0,tb:STG.tb[i],bs:T.bs[i],n:0};STG.selN=(STG.selN|0)+1;RN.sel=STG.selN;STG.cyc=-1}
+ while(now>=RN.s+RN.c){RN.s+=RN.c;RN.c=vcyc(i);RN.tb=STG.tb[i];RN.bs=T.bs[i];RN.n++;if(now-RN.s>RN.c*50)RN.s=now-(now-RN.s)%RN.c} // upgrades (Efficiency/Popularity) only take effect at the next departure
+ var cyc=RN.c,cn=RN.n,ph=(now-RN.s)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND,TB=RN.tb==null?BEND*cyc:RN.tb;
  if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c,i)})} // a fresh boarding plan per departure, like each new plane
  var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*2400;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*2400; // departs to the left (front first), the next train arrives from the right
  var HB=HULL0+(HULL1-HULL0)*LK.hh,SB=Math.max(312,HB+16); // scene bottom grows for the Twin Deck's taller hull
@@ -7555,7 +7558,7 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
  g.fillStyle='#f5c542';g.fillRect(XA,180,XW,6);g.fillStyle='#2f8f95';g.fillRect(XA,14,XW,48);g.fillStyle='#257479';for(x=Math.floor(XA/10)*10+4;x<XA+XW;x+=10)g.fillRect(x,14,2,48);g.fillStyle='#1d5d62';g.fillRect(XA,58,XW,4);
  var K=Math.max(2,z*2),ss=Math.min(1,L.pU/14);
  L.cars.forEach(function(c){c.chairs.forEach(function(ch){var w=Math.min(12,c.wa.cs*.9);g.fillStyle='#5b4632';g.fillRect(ch.y-w/2,ch.x-6,w,12);g.fillStyle='#3e2f22';g.fillRect(ch.y+w/2-2,ch.x-6,2,12)})});
- L.cars.forEach(function(c,ci){var P=c.plan,sf=Math.min(P.steps-1,f*BEND*cyc*Math.max(1,STG.tb[i]/(BEND*cyc))/P.DT),s0=Math.floor(sf),s1=Math.min(s0+1,P.steps-1),fr=sf-s0,sat=new Uint8Array(P.N),term=[];
+ L.cars.forEach(function(c,ci){var P=c.plan,sf=Math.min(P.steps-1,f*BEND*cyc*Math.max(1,TB/(BEND*cyc))/P.DT),s0=Math.floor(sf),s1=Math.min(s0+1,P.steps-1),fr=sf-s0,sat=new Uint8Array(P.N),term=[];
   for(var j=0;j<P.N;j++){var o=dep?{k:5}:paxPoint(P,c,j,s0,s1,fr);if(o.k===5)sat[j]=1;else term.push([j,o])}
   // train layer (moves on departure): hull (per-LOOK nose/livery/height), seats, seated passengers
   g.save();g.translate(dx,0);var a=c.x0,b=c.x1,first=ci===0,last=ci===L.cars.length-1;
@@ -7583,7 +7586,7 @@ function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.r
   P.pax.forEach(function(q,j){if(sat[j])drawFig(g,P,j,q.seat.px,q.seat.py,4.4,t,true,K,false,1)});
   g.restore();
   // platform / door / aisle walkers: exactly the gate's drawFig (heading from motion, 2-frame walk, bob); waiting = standing on the platform
-  if(!dep){var EW=effW(T.bs[i]);g.save();g.transform(0,1,1,0,0,0);term.forEach(function(e){var o=e[1],j=e[0],ox=0,oy=0;if(EW>0&&o.k!==0){var s1=j*2.37+ci*5.1;ox=EW*7*Math.sin(t*1.1+s1)*Math.sin(t*.37+s1*1.7);oy=EW*14*Math.sin(t*.6+s1*.9)+EW*5*Math.sin(t*1.9+s1)}drawFig(g,P,j,o.x+ox,o.y+oy,4.4,t,o.k===0,K,false,1)});g.restore()}
+  if(!dep){var EW=effW(RN.bs);g.save();g.transform(0,1,1,0,0,0);term.forEach(function(e){var o=e[1],j=e[0],ox=0,oy=0;if(EW>0&&o.k!==0){var s1=j*2.37+ci*5.1;ox=EW*7*Math.sin(t*1.1+s1)*Math.sin(t*.37+s1*1.7);oy=EW*14*Math.sin(t*.6+s1*.9)+EW*5*Math.sin(t*1.9+s1)}drawFig(g,P,j,o.x+ox,o.y+oy,4.4,t,o.k===0,K,false,1)});g.restore()}
  });
 }
 try{window.__trainsStage=function(){return STG}}catch(e){}
@@ -7612,7 +7615,7 @@ function render(){load();accrue();save();syncTrChrome();if(on('vTrSel'))renderSe
 function on(id){var e=$(id);return !!(e&&!e.classList.contains('hide'))}
 function show(v){try{G().setView(v)}catch(e){}render()}
 function tst(m){var t=$('iaToast');if(!t){t=document.createElement('div');t.id='iaToast';t.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#0b1220ee;color:#fff;border:1px solid #f0b34a;border-radius:999px;padding:9px 16px;font:700 14px system-ui;z-index:999;pointer-events:none;transition:opacity .3s';document.body.appendChild(t)}t.textContent=m;t.style.opacity=1;clearTimeout(t._k);t._k=setTimeout(function(){t.style.opacity=0},1800)}
-window.__trains={open:function(){show('trsel')},state:function(){return load()},homeLine:function(){load();return T.unlocked?(T.un.filter(Boolean).length+'/10 platforms open · '+rt(totRate())+'/min'):'Trains & Rail Tokens · unlock with cash + CC'},render:render};
+window.__trains={open:function(){show('trsel')},state:function(){return load()},homeLine:function(){load();return T.unlocked?(T.un.filter(Boolean).length+'/10 platforms open · '+rt(totRate())+'/min'):'Trains & Rail Tokens · unlock with cash + CC'},render:render,admin:function(){load();return{unlocked:!!T.unlocked,rt:rt(T.rt||0),rate:rt(totRate()),pax:nf(Math.floor(T.pax||0)),paxWk:nf(T.wk===weekId()?(T.paxWk||0):0),plat:T.un.filter(Boolean).length+'/10',boost:boostOn()?(Math.floor((T.boost-Date.now())/60000)+':'+('0'+Math.floor((T.boost-Date.now())%60000/1000)).slice(-2)):'off',pr:T.pr|0}}};
 document.addEventListener('click',function(e){var t=e.target.closest?e.target.closest('button'):null;if(!t)return;load();
  if(t.id==='iaTrain'){show('trsel');return}
  if(t.id==='tsBack'){G().setView('home');return}
