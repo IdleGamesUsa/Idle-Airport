@@ -7422,7 +7422,7 @@ function load(){if(T)return T;try{T=JSON.parse(localStorage.getItem(KEY)||'null'
  if(!T||!T.un)T={unlocked:0,un:[1,0,0,0,0,0,0,0,0,0],bs:[1,1,1,1,1,1,1,1,1,1],pop:[1,1,1,1,1,1,1,1,1,1],rt:0,pax:0,paxWk:0,wk:weekId(),last:Date.now(),boost:0,pr:0,sel:0,ms:{}};return T}
 function save(){try{setTimeout(function(){try{window.__trainCos&&__trainCos.sync()}catch(_){}},0)}catch(_){}try{localStorage.setItem(KEY,JSON.stringify(T))}catch(e){}}
 /* placeholder economy */
-function prMul(){return Math.pow(2,T.pr)}
+function prMul(){var p=Math.floor(+T.pr||0);if(p<0)p=0;else if(p>PRMAX)p=PRMAX;return Math.pow(2,p)} /* income ×2^prestige; clamped so a bad save cannot overflow */
 function baseRate(i){return 5*Math.pow(3,i)}                              /* RT/min at lvl1 */
 function rate(i){if(!T.un[i])return 0;return baseRate(i)*(1+0.15*(T.bs[i]-1))*(1+0.15*(T.pop[i]-1))*prMul()}
 function boostOn(){var n=Date.now();if(T.boost>n+2*3600e3)T.boost=n+2*3600e3;return T.boost>n} /* ad boost: +15 min per ad, capped at 2h; over-cap old saves clamp to 2h */
@@ -7430,8 +7430,9 @@ function totRate(){if(!T.unlocked)return 0;var t=0;for(var i=0;i<10;i++)t+=rate(
 function popFrac(l){return 0.2+0.8*Math.max(0,Math.min(1,(l-1)/(MAXLV-1)))} /* Popularity: L1 = 20% of seats board, L20 = 100% */
 function effW(l){return 1-Math.max(0,Math.min(1,(l-1)/(MAXLV-1)))} /* Efficiency: 1 = lots of seat-searching wander (L1), 0 = straight to seat (L20) */
 function paxRate(i){return T.un[i]?TR[i][1]*(0.5+0.05*T.bs[i])*1.57*popFrac(T.pop[i]):0} /* passengers/min */
-function unlockCost(i){return i===0?0:Math.round(60*Math.pow(3.2,i))}
-function upCost(i,lv){return Math.round(baseRate(i)*8*Math.pow(1.32,lv-1))}
+function trCost(x){var y=x*prMul();if(!(y>0)||y!==y)return 0;if(y>=Number.MAX_SAFE_INTEGER)return Number.MAX_SAFE_INTEGER;return Math.round(y)} /* same ×2^prestige as income; pr 0 stays the old price */
+function unlockCost(i){return i<=0?0:trCost(60*Math.pow(3.2,i))}
+function upCost(i,lv){return trCost(baseRate(i)*8*Math.pow(1.32,lv-1))}
 function accrue(){var n=Date.now(),gapMs=Math.max(0,n-T.last),off=gapMs>20000,capMs=(function(){try{return G().offCap()*3600e3}catch(e){return 4*3600e3}})(),dt=Math.min(off?capMs:8*3600e3,gapMs)/60000;T.last=n;if(!T.unlocked)return;
  if(T.wk!==weekId()){T.wk=weekId();T.paxWk=0}
  var b=boostOn()?2:1,rt0=T.rt;for(var i=0;i<10;i++){if(!T.un[i])continue;T.rt+=rate(i)*b*dt;var p=paxRate(i)*dt;T.pax+=p;T.paxWk+=p}
@@ -7477,7 +7478,7 @@ function renderPl(){var host=$('tpBody');if(!host)return;var i=T.sel,nm=TR[i][0]
  '<section class="trCard trPlat"><div class="prl"><b>🚆 Platform '+(i+1)+' · '+nm+'</b><span class="sm">'+CARS[i]+' car'+(CARS[i]>1?'s':'')+' · '+seats+' seats</span></div><div class="sm">'+rt(rate(i)*(boostOn()?2:1))+'/min</div><div class="trUps">'+b('bs','Efficiency','⏱')+b('pop','Popularity','⭐')+'</div></section>'+
  '<div class="trArt"><span id="trStageSlot"></span><div class="trCap">Platform '+(i+1)+' · '+nm+' · '+nf(paxRate(i))+' pax/min</div></div>'+
  '<section class="trCard"><h2>🚆 Train Prestige ★</h2>'+(R.max?'<div class="prhero"><div class="prlv">★ 10</div><div><b>Maximum train prestige</b></div></div>':
- '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Efficiency maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
+ '<div class="prhero"><div class="prlv">★ '+R.P+'<small>/ '+PRMAX+'</small></div><div><b>'+(R.P?'Train Prestige '+R.P+' · '+PRNAME[R.P]:'No train prestige yet')+'</b><div class="sm">Next: <b class="gold">★ '+R.next+' “'+PRNAME[R.next]+'”</b> title · rail ×'+Math.pow(2,R.next)+' · prices ×'+Math.pow(2,R.next)+'</div></div></div><div class="prqs">'+row('🚉','All 10 platforms open',R.pl)+row('⏱','Efficiency maxed on every platform',R.bs)+row('⭐','Popularity maxed on every platform',R.pop)+row('🚆','Train prestige price',R.rt,true)+'</div>')+
  '<div class="prcols"><div><h4>🔄 Resets</h4><ul><li>Platforms 2–10 (closed again)</li><li>Efficiency &amp; Popularity levels</li></ul></div><div><h4>✅ You keep</h4><ul><li>Your RT (minus the price)</li><li>Passengers boarded &amp; train ranks</li><li>Train milestones</li><li>All passenger, cargo progress &amp; prestige</li><li>Pilot, cosmetics &amp; titles</li></ul></div></div><p class="sm">🖼️ Each level also unlocks a train pilot frame + title.</p>'+
  (R.max?'':'<button class="prbtn" type="button" data-tr="prestige"'+(R.ready?'':' disabled')+'>'+(R.ready?'★ Train prestige to level '+R.next:R.reqOk?'Need '+rt(R.rt.t-R.rt.c)+' more':'Complete the checklist')+'</button>')+'</section>'+
  '<section class="trCard" id="trLb"></section>';
