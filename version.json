@@ -1,10 +1,10 @@
 {
-  "build": 202611050946,
-  "sha256": "cf7d3648d48ea5c704af1c6eb4206221d8f8b9672154473b399dd50c9010d28c",
-  "size": 2385598,
+  "build": 202611052222,
+  "sha256": "92edf066eace6af89f5f1bce523daae3e892deea277c5c708fba82ce46287870",
+  "size": 2386529,
   "file": "game-v37-trains.html",
   "minVersionCode": 17,
   "bootSelector": "nav",
-  "generatedUtc": "2026-11-05T14:47:56Z",
-  "sig": "bs0nqfg0Dl4ZV2Y/2y+oNMzIQus4VZxMXM5Z6YZxuSlZqKkQsI/bjXfxfMTce43wGac8R+DQPWEw9ZI+HY51fQ=="
+  "generatedUtc": "2026-11-05T22:22:32Z",
+  "sig": "aJ7nn5kfukrWtYLtkuVr0aY0oOU1wREgRaGa2a0Eoda7lqP6bEi0iK8B2PfOrBWf1LLseHq7vKH9K6PiJ0PUMQ=="
 }
