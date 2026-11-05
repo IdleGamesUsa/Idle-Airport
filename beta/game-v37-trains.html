@@ -5537,9 +5537,13 @@ function rk23Podium(top,unit,prize){const order=[1,0,2];return'<div class="podiu
 function rkDedupe(top){const seen=new Map(),out=[];for(const x of top||[]){const k=String(x.n||'').trim().toLowerCase()||('\u0000'+(x.u||out.length));const mine=!!(x.me||(NET.uid&&x.u===NET.uid));
   if(!seen.has(k)){seen.set(k,out.length);out.push(x);continue}if(mine){const i=seen.get(k);out[i]=Object.assign({},x,{s:Math.max(+x.s||0,+out[i].s||0)})}}
  return out.map((x,i)=>Object.assign({},x,{r:i+1}))}
+// Train rivals must be a real Firebase player: uid + saved profile (cfg or eq) + a positive weekly score.
+// Name-only rows and zero-score uploads are not drawn, and no portrait is invented for them.
+function rkTrainRival(x){if(!x||x.me)return false;const u=typeof x.u==='string'?x.u:'';if(!/^[A-Za-z0-9_-]{8,128}$/.test(u))return false;const p=x.p;if(!p||typeof p!=='object')return false;if(!(p.cfg&&typeof p.cfg==='object')&&!(p.eq&&typeof p.eq==='object'))return false;return (+x.s>0)}
+window.__rkTrainRival=rkTrainRival;
 function rk23Board(top,meRank,mineVal,unit,o){o=o||{};let h='',mineIn=false;top=rkDedupe(top);
- const rows=top.slice(0,100).map(x=>{const m=!!(x.me||(NET.uid&&x.u===NET.uid));if(m)mineIn=true;return Object.assign({},x,{me:m,s:m?Math.max(x.s||0,mineVal):x.s})});if(o.drop0){for(let i=rows.length-1;i>=0;i--)if(!rows[i].me&&!(+rows[i].s>0))rows.splice(i,1)}rows.sort((p,q)=>(+q.s||0)-(+p.s||0)||(p.r||0)-(q.r||0));rows.forEach((x,i)=>x.r=i+1);
- if(!rows.length)return'<div class="sm" style="margin:8px 0">No scores yet: be the first!</div>'+rk23Row({r:meRank||0,me:1,s:mineVal},unit,'','pin23');
+ const rows=top.slice(0,100).map(x=>{const m=!!(x.me||(NET.uid&&x.u===NET.uid));if(m)mineIn=true;return Object.assign({},x,{me:m,s:m?Math.max(x.s||0,mineVal):x.s})});if(o.real){for(let i=rows.length-1;i>=0;i--)if(!rows[i].me&&!rkTrainRival(rows[i]))rows.splice(i,1)}else if(o.drop0){for(let i=rows.length-1;i>=0;i--)if(!rows[i].me&&!(+rows[i].s>0))rows.splice(i,1)}rows.sort((p,q)=>(+q.s||0)-(+p.s||0)||(p.r||0)-(q.r||0));rows.forEach((x,i)=>x.r=i+1);
+ if(!rows.length)return'<div class="sm" style="margin:8px 0">'+(o.empty||'No scores yet: be the first!')+'</div>'+rk23Row({r:meRank||0,me:1,s:mineVal},unit,'','pin23');
  if(rows.length>=3)h+=rk23Podium(rows,unit,o.prize);
  h+='<div class="rkscroll">'+rows.slice(rows.length>=3?3:0).map(x=>rk23Row(x,unit,o.band?o.band(x.r):'',x.me?'mine':'')).join('')+'</div>';
  const myR=mineIn?(rows.find(x=>x.me)||{}).r:meRank;
@@ -5562,7 +5566,7 @@ function rkBoardHTML(kind,o){o=o||{};rk23Css();const Df=RKDEF[kind],D=RK[kind],m
  let h=(o.title!==false?'<h2 class="rk23h">'+Df.t+'</h2>':'')+(o.name?`<div class="namebar"><span>Playing as <b class="gold">${esc(myName())}</b></span><button class="alt" data-k="nameEdit">✎ Edit name</button></div>`:'');
  if(kind==='score'){const td=Math.max(0,mine-((S.scDay&&S.scDay.b)||mine));h+='<div class="rkmeta">you: <b class="gold">'+fmtPts1(mine)+' pts</b>'+(td>0?' · +'+fmtPts1(td)+' today':'')+'</div>'}
  if(!D){h+='<div class="rkmeta">'+(RK.busy[kind]||!RK.err[kind]?'Loading the leaderboard…':'The leaderboard can’t be reached right now (offline?). Your progress is posted automatically when you’re back online.')+'</div>'+rk23Row({r:0,me:1,s:mine},U);rkFetch(kind)}
- else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+(kind==='train'?'resets Sunday · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U,kind==='train'?{drop0:1}:{});if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
+ else{h+='<div class="rkmeta">'+(D.total?D.total.toLocaleString(I18N.loc)+' pilots · ':'')+(kind==='train'?'resets Sunday · ':'')+'tap a pilot to see their card</div>'+rk23Board(D.top||[],D.me&&D.me.rank||0,mine,U,kind==='train'?{real:1,empty:'No other pilots have boarded train passengers this week yet.'}:{} );if(now-(RK.at[kind]||0)>60e3)rkFetch(kind)}
  h+='<details class="rknote"><summary>ⓘ How this board works</summary>'+Df.note+'<p>Your pilot name and look are shown to other players here. Scores that grow faster than the game allows are held for review.</p></details>';
  return h}
 let rkCtx='pax';
@@ -5577,12 +5581,12 @@ function rkSideRefresh(force){const now=Date.now();if(!force&&rkSideRefresh._t&&
 window.__rkTrainLb=function(el){try{rkRenderInto(el,'train')}catch(e){}};
 setInterval(()=>{try{rkSideRefresh(false)}catch(e){}},1000);
 function renderRank(force){const now=Date.now();if(!force&&sigs.rankT&&now-sigs.rankT<1000)return;sigs.rankT=now;rollMonth();rk23Css();
- const K=window.__rkArea==='cargo'?'cargo':'pax';rkTab=K;const tb=$('rkTabs');if(tb){setHTML(tb,'');tb.style.display='none'}
+ const K=window.__rkArea==='cargo'?'cargo':window.__rkArea==='train'?'train':'pax';rkTab=K;const tb=$('rkTabs');if(tb){setHTML(tb,'');tb.style.display='none'}
  const lb=$('lb');lb.style.display='';const pin=$('lbPin');if(pin)pin.style.display='none';
  const db=$('discordBtn');if(db&&db.parentNode&&!db.dataset.mv){db.dataset.mv='1';db.classList.add('dsm');db.parentNode.appendChild(db)}
- $('rkH').textContent=RKDEF[K].t;rkCtx=K;lb.classList.add('rk23');const at=$('rkAreaT');if(at)at.textContent=K==='cargo'?'📦 Ramps · Ranks':'✈️ Terminals · Ranks';
+ $('rkH').textContent=RKDEF[K].t;rkCtx=K;lb.classList.add('rk23');const at=$('rkAreaT');if(at)at.textContent=K==='cargo'?'📦 Ramps · Ranks':K==='train'?'🚆 Trains · Ranks':'✈️ Terminals · Ranks';
  let h=rkBoardHTML(K,{title:false,name:1});
- h+='<div class="pgs23"><div><b>More boards</b><div class="sm">'+(K==='cargo'?'Passengers hauled: Terminals / Gates':'Cargo hauled: Cargo Ramps')+' · Pilot score: Admin</div></div></div>';
+ h+='<div class="pgs23"><div><b>More boards</b><div class="sm">'+(K==='train'?'Passengers: Terminals / Gates · Cargo: Ramps':K==='cargo'?'Passengers hauled: Terminals / Gates':'Cargo hauled: Cargo Ramps')+' · Pilot score: Admin</div></div></div>';
  h+='<div class="pgs23"><div><b>Google Play Games boards</b><div class="sm">Lifetime and weekly cash on Google Play</div></div><button class="alt" data-k="rkPgs">Open</button></div>';
  rk23Set(lb,h)}
 // ---- event Ranks tab: same look, prizes on the podium, prize band under ranks 4-10 ----
@@ -7350,8 +7354,8 @@ function boot(){try{if(S()){renderHome();chrome()}else setTimeout(boot,200)}catc
 (function(){var DURL='https://discord.gg/gvywqZ5H29',back='home';
 document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-rkarea],#nDiscord,#rkBack');if(!t)return;e.stopImmediatePropagation();e.preventDefault();
  if(t.id==='nDiscord'){try{var C=window.Capacitor,Br=C&&C.Plugins&&C.Plugins.Browser;if(Br&&Br.open){Br.open({url:DURL});return}}catch(_){}window.open(DURL,'_blank','noopener');return}
- if(t.id==='rkBack'){try{setView(back)}catch(_){}return}
- window.__rkArea=t.getAttribute('data-rkarea');try{back=(typeof view!=='undefined'&&view!=='rank')?view:'home';sigs.rankT=0;setView('rank')}catch(_){} },true);})();</script>
+ if(t.id==='rkBack'){try{setView(window.__rkBack||back)}catch(_){}window.__rkBack='';return}
+ window.__rkBack='';window.__rkArea=t.getAttribute('data-rkarea');try{back=(typeof view!=='undefined'&&view!=='rank')?view:'home';sigs.rankT=0;setView('rank')}catch(_){} },true);})();</script>
 <script>/* Oct 30 next-patch: soft "rate us" prompt.
  Rules: shown only after the player has played on 3+ different days AND 3+ calendar days since first launch, only on a calm screen
  (Airport home / Terminals / Upgrades / Rewards; never mid-gate/spaceport/ad/popup), at least 90 s into a session.
@@ -7451,7 +7455,7 @@ window.__trainMs={info:function(){var s=msState(),dn=0,tt=0,cl=0,nx=null;s.forEa
    var bar=(i===tr.done&&T.unlocked)?'<div class="mbar"><i style="width:'+Math.min(100,tr.cur/x*100).toFixed(0)+'%"></i></div><small class="sm">'+nf(tr.cur)+' / '+nf(x)+'</small>':'';
    var rw=i<tr.claimed?'<span class="sm">✓ +'+rt(tr.rw[i])+'</span>':(i===tr.claimed&&tr.cur>=x&&T.unlocked?'<button data-trms="'+tr.k+'">Claim +'+rt(tr.rw[i])+'</button>':'<span class="sm">+'+rt(tr.rw[i])+'</span>');
    return '<div class="mtr '+st+'"><span class="dot">'+(i<tr.claimed?'✓':i+1)+'</span><div class="mtb"><div class="mtt">'+nf(x)+' '+tr.u+'</div>'+bar+'</div><div class="mtw">'+rw+'</div></div>'}).join('')+'</div></div>').join('')}};
-/* weekly LB stub (deterministic fake rivals + you) */
+/* Train weekly board: Firebase trainWeek only, via __rkTrainLb. No local rival names. */
 /* rendering */
 function hud(){return '<section class="trHud"><div class="trHudL"><small>RAIL TOKENS / MIN</small><b><img src="'+TRA('rt.png')+'" alt="">'+rt(totRate())+'</b><span class="sm">base '+rt(totRate()/(boostOn()?2:1))+'/min × bonus x'+(boostOn()?'2.00':'1.00')+' · prestige ×'+prMul()+'</span>'+
  '<div class="trHudS"><div><small>RAIL TOKENS</small><b>'+rt(T.rt)+'</b></div><div><small>PLATFORMS</small><b>'+T.un.filter(Boolean).length+'/10</b></div>'+(boostOn()?'<div class="trBoost">⚡ 2× '+Math.ceil((T.boost-Date.now())/60000)+'m</div>':'')+'</div></div></section>'}
@@ -7629,7 +7633,7 @@ document.addEventListener('click',function(e){var t=e.target.closest?e.target.cl
  if(t.dataset.tr==='unlock'){var c=cc(),S=G().S;if(S.cash>=UNLOCK_CASH&&c&&c.cc>=UNLOCK_CC){S.cash-=UNLOCK_CASH;c.cc-=UNLOCK_CC;T.unlocked=1;T.last=Date.now();try{G().save()}catch(_){}tst('🚆 Train Station unlocked!')}render();return}
  if(t.dataset.tr==='ad'){var g=function(){var _n=Date.now(),_l=Math.max(0,T.boost-_n),_c=2*3600e3,_nl=_l>=_c-60e3?_l:Math.min(_c,_l+15*60e3);T.boost=_n+_nl;save();tst(_nl>_l?'⚡ +'+Math.round((_nl-_l)/60e3)+' min 2× Rail Tokens ('+Math.ceil(_nl/60e3)+'m left)':'⚡ 2× Rail Tokens full (2h max)');render()};try{(window.openAd||G().openAd)(g)}catch(_){g()}return}
  if(t.dataset.tr==='prestige'){prDo();return}
- if(t.dataset.tr==='ranks'){if(!T.unlocked){tst('🔒 Unlock the Train Station first');return}show('train');setTimeout(function(){var l=$('trLb');if(l)l.scrollIntoView({behavior:'smooth'})},50);return}
+ if(t.dataset.tr==='ranks'){if(!T.unlocked){tst('🔒 Unlock the Train Station first');return}window.__rkArea='train';window.__rkBack='trsel';try{G().setView('rank')}catch(e){show('train')}return}
  if(t.dataset.trp!=null){var i=+t.dataset.trp;if(T.un[i]){T.sel=i;show('train');return}var nx=T.un.indexOf(0);if(i!==nx){tst('🔒 Unlock Platform '+(nx+1)+' first');return}accrue();var cst=unlockCost(i);if(T.rt<cst){tst('Need '+rt(cst-T.rt)+' more for Platform '+(i+1));return}T.rt-=cst;T.un[i]=1;save();tst('🚆 '+TR[i][0]+' arrives at Platform '+(i+1));render();return}
  if(t.dataset.tru){var k=t.dataset.tru,i2=T.sel,lv=T[k][i2],c2=upCost(i2,lv);if(lv>=MAXLV)return;if(T.rt>=c2){T.rt-=c2;T[k][i2]++;save();render();return}tixCover(k,i2);return}
  if(t.dataset.trms){var m=MS.find(x=>x.k===t.dataset.trms),cl=T.ms[m.k]|0;if(m.cur()>=m.tiers[cl]){T.rt+=m.rw[cl];T.ms[m.k]=cl+1;save();tst('+'+rt(m.rw[cl]));try{window.__trainCos&&__trainCos.sync()}catch(_){}}try{window.__msGo('trains')}catch(_){}return}
