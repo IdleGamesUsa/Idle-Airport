@@ -1733,9 +1733,13 @@ function scUpd(){if(!(S.scV>=1))return scInit();const c=scCounters();S.scHi=Math
  const dk=new Date().toDateString();if(!S.scDay||S.scDay.k!==dk)S.scDay={k:dk,b:S.sc};return S.sc}
 const fmtPts=c=>Math.floor((+c||0)/100).toLocaleString(I18N.loc);
 const fmtPts1=c=>(Math.floor(+c||0)/100).toLocaleString(I18N.loc,{minimumFractionDigits:1,maximumFractionDigits:1});
-// pilot card (proposal: "Pilot score 1,220.4 · ★2 · 40/50 gates · 312 research"): 4 cells, the width the card has room for
-function scCardStats(s,c,p){p=p||{};const pr=c?c.pr:p.pr|0,o=[['Score',fmtPts1(s)],['Prestige',pr?'★ '+pr:'—'],['Gates',(c?c.gates:p.gates|0)+'/50']];
- if(c&&typeof c==='object')o.push(['Research',fmtInt((c.rl|0)+(c.kl|0))]);return o}
+// pilot card: Score + lifetime passengers / cargo / days played (4 cells)
+function playDays(t){t=+t||0;return t>0?Math.max(1,Math.floor((Date.now()-t)/864e5)+1):1}
+function scCardStats(s,c,p,own){p=p||{};
+ let pax,cg,cr;
+ if(own){pax=Math.floor(S.pax||0);cg=Math.floor((S.cgP&&S.cgP.tons)||0);cr=S.created||0}
+ else{pax=p.paxL!=null&&p.paxL!==''?Math.floor(+p.paxL):null;cg=p.cgL!=null&&p.cgL!==''?Math.floor(+p.cgL):null;cr=+(p.created||p.createdAt||0)||0}
+ return[['Score',fmtPts1(s)],['Passengers',pax!=null?fmt(Math.max(0,pax)):'—'],['Cargo',cg!=null?fmt(Math.max(0,cg)):'—'],['Days',cr?String(playDays(cr)):'—']]}
 
 function tick(dt){if(!(tick.sc>0)||Date.now()-tick.sc>1000){tick.sc=Date.now();scUpd()} // build 30: pilot score follows every unlock path
  const m=adMult();let cash=0,pax=0;
@@ -4607,7 +4611,7 @@ function profileHtml(pl,ctx){ctx=ctx||{};const eq=Object.assign({},DEFEQ,pl.eq),
   '<h4>Equipped</h4><div class="eqs">'+(tiles||'<div class="sm">Standard kit</div>')+'</div><h4>Event trophies</h4><div class="tros">'+trophies+'</div></div>'}
 function itemThumbFor(x,pl){if(x.slot==='title')return'<div class="ttlth" style="color:'+rarCol(x.r)+'">“'+x.name+'”</div>';const eq=Object.assign({},DEFEQ,{[x.slot]:x.id});if(x.slot!=='frame')eq.frame='frm_none';if(x.slot==='glasses'||x.slot==='outfit'||x.slot==='epa')eq.cap='cap_none';return avImg({cfg:pl.cfg,eq},60,{crop:(x.slot==='cap'||x.slot==='glasses')?'head':null,round:10},'th2')}
 function ownProfile(){const me=meP();me.me=true;me.name=myName();me.trophies=(S.evh||[]).filter(h=>h.place).map(h=>({ev:h.name,place:h.place<=3?h.place:10,when:h.when}));
- me.stats=[['Gates',gateCount()+'/50'],['Passengers',fmt(S.pax||0)],['Lifetime cash',money(S.life||0)]];if(prLvl())me.stats.push(['Prestige','★ '+prLvl()]);return me}
+ me.stats=scCardStats(scUpd(),S.scC,null,1);return me}
 const mockCache=new Map();
 function mockPilot(name,rank,o){o=o||{};const key=name+'|'+(rank<=10?rank:0)+'|'+(o.cash||0);if(mockCache.has(key))return mockCache.get(key);
  const rnd=mkRnd(hash(name)),pick=n=>Math.floor(rnd()*n),g=rnd()<.5?'m':'f';
@@ -4622,7 +4626,7 @@ function mockPilot(name,rank,o){o=o||{};const key=name+'|'+(rank<=10?rank:0)+'|'
  else if(rank!=null&&rank<=10){if(rnd()<.5)eq.outfit='out_plat';if(rnd()<.5)eq.frame='frm_plat';if(rnd()<.5)eq.glasses='gl_star';if(rank<=10&&rank>=4&&rnd()<.75)eq.frame='frm_p'+(11-rank)}
  const nT=rank!=null&&rank<=10?1+pick(2):pick(2);for(let i=0;i<nT;i++)tr.push({ev:['Spring Airlift','Peak Season Rush','Night Cargo Sprint'][(pick(3)+i)%3],place:[1,2,3,3,10,10][pick(6)],when:['Mar','May','Jul','Aug'][i%4]+' 2026'});
  const cs=Math.max(o.cash||1e6,2e3),gates=clamp(Math.round(4+4.2*(Math.log10(cs)-3)),2,50),pax=Math.round(cs/800);
- const r={name,cfg,eq,trophies:tr,stats:[['Gates',gates+'/50'],['Passengers',fmt(pax)],['Lifetime cash',money(o.cash||1e6)]]};if(IT[eq.frame]&&IT[eq.frame].pf)r.stats.push(['Prestige','★ '+IT[eq.frame].pf]);mockCache.set(key,r);return r}
+ const r={name,cfg,eq,trophies:tr,stats:[['Score',fmtPts1((o.score!=null?o.score:cs/500)||0)],['Passengers',fmt(pax)],['Cargo',fmt(Math.round(cs/5000))],['Days',String(1+pick(120))] ]};mockCache.set(key,r);return r}
 function openProfile(pl,ctx){const b=$('popBox');b.classList.add('prof');showPopup('prof',profileHtml(pl,ctx)+'<div class="pbtns"><button data-k="popClose">Close</button>'+(pl.me?'<button class="alt" data-k="pilotEdit">✎ Edit pilot</button>':'<button class="alt" data-k="pilotReport">⚑ Report name</button>')+'</div>')}
 const _closePopup0=closePopup;closePopup=function(){$('popBox').classList.remove('prof');_closePopup0()};
 function openProfileByAttr(s){const [nm,rk,cash]=decodeURIComponent(s).split('|');if(nm==='\u0001me')return openProfile(ownProfile(),{rank:+rk||0,label:rk?'rank':''});openProfile(mockPilot(nm,+rk,{cash:+cash}),{rank:+rk,label:'rank'})}
@@ -5277,7 +5281,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button[data-k]')
 const RK={week:null,life:null,pax:null,cargo:null,train:null,score:null,at:{},busy:{},err:{},errAt:{}};
 let rkLastPush=0,rkPushBusy=false;
 function rkProfile(){const p=pil();const eq={};for(const sl in DEFEQ)eq[sl]=p.eq[sl];const fr=IT[eq.frame];const dyn=fr&&fr.champ?(S.dyn||[]).find(d=>d.id===fr.id):null;
- return{cfg:Object.assign({},p.cfg),eq,dyn:dyn?{id:dyn.id,tier:dyn.tier,lab:dyn.lab,name:dyn.name}:null,pr:prLvl(),gates:gateCount(),title:(IT[eq.title]||{}).name||''}}
+ return{cfg:Object.assign({},p.cfg),eq,dyn:dyn?{id:dyn.id,tier:dyn.tier,lab:dyn.lab,name:dyn.name}:null,pr:prLvl(),gates:gateCount(),title:(IT[eq.title]||{}).name||'',paxL:Math.floor(S.pax||0),cgL:Math.floor((S.cgP&&S.cgP.tons)||0),created:S.created||0}}
 window.__rkPush=f=>rkScorePush(f);async function rkScorePush(force){if(rkPushBusy)return null;if(!force&&Date.now()-rkLastPush<240e3)return null;rkPushBusy=true;rkLastPush=Date.now();
  try{const N=NAT(),pg=N&&N.pgsState?N.pgsState():null,E=S.ev;
   const body={life:Math.floor(S.life||0),week:Math.floor(weeklyScore()),weekStart:S.wk?S.wk.k:0,name:S.name||'',profile:rkProfile(),pgs:pg&&pg.signedIn?String(pg.player||'').slice(0,64):'',
@@ -5292,13 +5296,14 @@ function rkPilot(x){const p=x.p&&typeof x.p==='object'?x.p:{},cfg=Object.assign(
  if(p.cfg&&typeof p.cfg==='object')for(const k in CFGK){const v=Math.floor(+p.cfg[k]);if(v>=0&&v<CFGK[k])cfg[k]=v}cfg.g=p.cfg&&p.cfg.g==='f'?'f':'m';
  if(p.dyn&&p.dyn.id&&!IT[p.dyn.id])dynReg({id:p.dyn.id,slot:'frame',tier:p.dyn.tier,lab:p.dyn.lab,name:p.dyn.name});
  const eq=Object.assign({},DEFEQ);if(p.eq&&typeof p.eq==='object')for(const sl in DEFEQ){const it=IT[p.eq[sl]];if(it&&it.slot===sl)eq[sl]=it.id}
- return{cfg,eq,name:String(x.n||'Pilot').slice(0,16),trophies:[],stats:[['Prestige',p.pr?'★ '+(p.pr|0):'—'],['Gates',(p.gates|0)+'/50']]}}
+ const pax=p.paxL!=null?Math.floor(+p.paxL): (x.paxL!=null?Math.floor(+x.paxL):null),cg=p.cgL!=null?Math.floor(+p.cgL):(x.cgL!=null?Math.floor(+x.cgL):null),cr=+(p.created||p.createdAt||x.created||x.createdAt||0)||0;
+ return{cfg,eq,name:String(x.n||'Pilot').slice(0,16),trophies:[],stats:[['Passengers',pax!=null?fmt(Math.max(0,pax)):'—'],['Cargo',cg!=null?fmt(Math.max(0,cg)):'—'],['Days',cr?String(playDays(cr)):'—']]}}
 const RKP=new Map();
 function rkRow(x,unit){const me=!!x.me,pl=me?meP():rkPilot(x),nm=me?myName():pl.name,key='r'+(RKP.size%500);if(!me)RKP.set(key,{pl,x,unit});
  const val=unit==='t'?fmtT(x.s||0)+' t':money(x.s||0);
  return'<div class="lbrow av '+(me?'me':'')+(hasPF(pl)?' pfr':'')+'" data-pl="'+encodeURIComponent(me?'\u0001me|'+(x.r||0)+'|0':'\u0002'+key)+'"><b>'+(x.r?'#'+x.r:'—')+'</b>'+avImg(pl,34,{round:8,crop:'head'})+'<span class="nm"><b>'+esc(nm)+(me?' <span class="sm">(you)</span>':'')+'</b>'+(x.f?'<span class="sm">under review</span>':'')+'</span><span class="'+(me?'gold':'')+'"><b>'+val+'</b></span></div>'}
-function openProfileByAttr(s){const d=decodeURIComponent(s);if(d.charAt(0)==='\u0002'){const e=RKP.get(d.slice(1));if(!e)return;const pl=Object.assign({},e.pl);if(e.unit==='pts'){pl.stats=scCardStats(e.x.s,e.x.c,e.x.p);return openProfile(pl,{rank:e.x.r||0,label:'rank'})}pl.stats=(pl.stats||[]).concat([[e.unit==='%'?'Growth this week':e.unit==='t'?'Tonnes':e.unit==='pax'?'Passengers this week':e.unit==='col'?'Colonists':'Score',e.unit==='%'?fmtGrowth(e.x.s):e.unit==='t'?fmtT(e.x.s||0)+' t':e.unit==='pax'||e.unit==='col'?fmt(e.x.s||0):money(e.x.s||0)]]);return openProfile(pl,{rank:e.x.r||0,label:'rank'})}
- const [nm,rk]=d.split('|');if(nm==='\u0001me'){const o=ownProfile();if(rkCtx==='score'){scUpd();o.stats=scCardStats(S.sc,S.scC)}return openProfile(o,{rank:+rk||0,label:rk&&+rk?'rank':''})}}
+function openProfileByAttr(s){const d=decodeURIComponent(s);if(d.charAt(0)==='\u0002'){const e=RKP.get(d.slice(1));if(!e)return;const pl=Object.assign({},e.pl);if(e.unit==='pts'){const xp=Object.assign({},e.x.p||{},{paxL:e.x.paxL!=null?e.x.paxL:(e.x.p&&e.x.p.paxL),cgL:e.x.cgL!=null?e.x.cgL:(e.x.p&&e.x.p.cgL),created:e.x.created||e.x.createdAt||(e.x.p&&(e.x.p.created||e.x.p.createdAt))||0});pl.stats=scCardStats(e.x.s,e.x.c,xp);return openProfile(pl,{rank:e.x.r||0,label:'rank'})}pl.stats=(pl.stats||[]).concat([[e.unit==='%'?'Growth this week':e.unit==='t'?'Tonnes':e.unit==='pax'?'Passengers this week':e.unit==='col'?'Colonists':'Score',e.unit==='%'?fmtGrowth(e.x.s):e.unit==='t'?fmtT(e.x.s||0)+' t':e.unit==='pax'||e.unit==='col'?fmt(e.x.s||0):money(e.x.s||0)]]);return openProfile(pl,{rank:e.x.r||0,label:'rank'})}
+ const [nm,rk]=d.split('|');if(nm==='\u0001me'){const o=ownProfile();if(rkCtx==='score'){scUpd();o.stats=scCardStats(S.sc,S.scC,null,1)}return openProfile(o,{rank:+rk||0,label:rk&&+rk?'rank':''})}}
 function renderRank(force){const now=Date.now();if(!force&&sigs.rankT&&now-sigs.rankT<1000)return;sigs.rankT=now;rollMonth();
  if(rkTab!=='week'&&rkTab!=='life')rkTab='week';const kind=rkTab,D=RK[kind],mine=kind==='week'?weeklyScore():(S.life||0);
  setHTML($('rkTabs'),[['week','This week'],['life','Lifetime']].map(([k,n])=>`<button data-k="rkTab" data-a="${k}" class="${k===rkTab?'on':''}">${n}</button>`).join(''));
