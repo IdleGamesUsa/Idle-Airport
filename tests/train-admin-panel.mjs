@@ -1,10 +1,10 @@
-// Admin Train/Rail only. Does not exercise or change the boarding clock.
+// Admin Train/Rail still renders on the popularity-boarding release.
 // Browser: TRAIN_ADMIN_BROWSER=1 node tests/train-admin-panel.mjs
 import fs from 'fs';
 import assert from 'assert';
 import { createRequire } from 'module';
 
-const FILE_ID = '202611070348';
+const FILE_ID = '202611071257';
 const rootUrl = new URL('../game-v37-trains.html', import.meta.url);
 const betaUrl = new URL('../beta/game-v37-trains.html', import.meta.url);
 const rootTxt = fs.readFileSync(rootUrl, 'utf8');
@@ -13,9 +13,9 @@ assert.strictEqual(rootTxt, betaTxt, 'root and beta game HTML diverged');
 assert.strictEqual(rootTxt.split('Loaded file ' + FILE_ID).length - 1, 1, 'loaded-file label');
 assert.ok(rootTxt.includes('TRAIN / RAIL'), 'train section missing');
 assert.ok(rootTxt.includes("catch(e){bits+=card('TRAIN','Locked')}"), 'rail cards can still abort Admin');
-assert.ok(rootTxt.includes('STG.selN'), 'production boarding lock was removed');
+assert.ok(!rootTxt.includes('STG.selN'), 'platform re-entry still mints a new boarding clock');
 for (const boarding of ['function stFresh', 'STG.hold', 'RN.pop', 'tPlan(c,i,RN.pop)']) {
-  assert.ok(!rootTxt.includes(boarding), 'admin branch contains boarding change ' + boarding);
+  assert.ok(rootTxt.includes(boarding), 'boarding latch missing: ' + boarding);
 }
 assert.ok(rootTxt.includes('function prMul(){var p=Math.floor(+T.pr||0);if(p<0)p=0;else if(p>PRMAX)p=PRMAX;return Math.pow(2,p)}'), 'prestige multiplier changed');
 assert.ok(rootTxt.includes('function rkTrainRival'), 'ranks filter missing');
