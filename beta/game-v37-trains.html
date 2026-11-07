@@ -7208,7 +7208,7 @@ function renderAdmin(){var host=document.getElementById('admBody');if(!host)retu
  +card('CASH',G().money(sv.cash))+card('INCOME/MIN',est?G().money(est.perSec*60):'—')+card('PAY BONUS','×'+(+G().payBonus()).toFixed(2))+card('GATES',gates+'/50')+card('TERMINALS',(sv.term|0)+'/5')+card('TICKETS',cgpFmt(sv.tickets||0))+card('PAX BOOST',fmtLeft(sv.boostEnd||0))
  +'<div class="admSec">CARGO</div>'
  +(c&&c.unlocked?card('CARGO CREDITS',cgpFmt(c.cc)+' CC')+card('CC/MIN',cgpFmt(r.cc))+card('TONNES',cgpFmt(c.tons)+' t')+card('RAMPS',c.un.filter(function(x){return x}).length+'/10')+card('CARGO BOOST',fmtLeft(sv.cgBoostEnd||0))+card('WILD ×2.5',c.wildEnd?fmtLeft(c.wildEnd):'off'):card('CARGO','Locked'))
- +(function(){var t=null;try{t=window.__trains&&window.__trains.admin()}catch(e){}return '<div class="admSec">TRAIN / RAIL</div>'+(t&&t.unlocked?card('RAIL TOKENS',t.rt)+card('RT/MIN',t.rate.replace(/ RT$/,''))+card('PAX (LIFETIME)',t.pax)+card('PAX THIS WEEK',t.paxWk)+card('PLATFORMS',t.plat)+card('TRAIN BOOST',t.boost)+card('RAIL PRESTIGE',t.pr+'/10'):card('TRAIN','Locked'))})()
+ +(function(){var t=null,bits='<div class="admSec">TRAIN / RAIL</div>';try{t=window.__trains&&window.__trains.admin()}catch(e){}try{if(t&&t.unlocked)bits+=card('RAIL TOKENS',t.rt)+card('RT/MIN',String(t.rate).replace(/ RT$/,''))+card('PAX (LIFETIME)',t.pax)+card('PAX THIS WEEK',t.paxWk)+card('PLATFORMS',t.plat)+card('TRAIN BOOST',t.boost)+card('RAIL PRESTIGE',t.pr+'/10');else bits+=card('TRAIN','Locked')}catch(e){bits+=card('TRAIN','Locked')}return bits})()
  +'</div>';if(host._h!==h){host._h=h;host.innerHTML=h}}
 function openAdmin(){if(window.__iaShowOnly)window.__iaShowOnly('vAdmin');var vm=document.getElementById('vMap'),vc=document.getElementById('vCargo'),va=document.getElementById('vAdmin');if(vm)vm.classList.add('hide');if(vc)vc.classList.add('hide');if(va)va.classList.remove('hide');try{window.scrollTo(0,0)}catch(e){}renderAdmin();try{rkSideRefresh(true)}catch(e){}}
 function closeAdmin(){var va=document.getElementById('vAdmin');if(va)va.classList.add('hide');try{G().setView('map')}catch(e){var vm=document.getElementById('vMap');if(vm)vm.classList.remove('hide')}}
@@ -7444,7 +7444,7 @@ function cc(){try{var c=window.__cargoBridge&&window.__cargoBridge.ensure();retu
 function prPrice(){return Math.round(2e7*Math.pow(6,T.pr))}
 function prCheck(){var o=T.un.filter(Boolean).length,b=0,p=0;for(var i=0;i<10;i++){if(T.un[i]&&T.bs[i]>=MAXLV)b++;if(T.un[i]&&T.pop[i]>=MAXLV)p++}
  var r={P:T.pr,next:T.pr+1,max:T.pr>=PRMAX,pl:{c:o,t:10,ok:o>=10},bs:{c:b,t:10,ok:b>=10},pop:{c:p,t:10,ok:p>=10},rt:{c:T.rt,t:prPrice(),ok:T.rt>=prPrice()}};r.reqOk=r.pl.ok&&r.bs.ok&&r.pop.ok;r.ready=!r.max&&r.reqOk&&r.rt.ok;return r}
-function prDo(){var R=prCheck();if(!R.ready)return;T.rt-=R.rt.t;T.un=[1,0,0,0,0,0,0,0,0,0];T.bs=T.bs.map(()=>1);T.pop=T.pop.map(()=>1);T.pr++;T.sel=0;save();tst('★ Train prestige '+T.pr+' · '+PRNAME[T.pr]);render()}
+function prDo(){var R=prCheck();if(!R.ready)return;T.rt-=R.rt.t;T.un=[1,0,0,0,0,0,0,0,0,0];T.bs=T.bs.map(()=>1);T.pop=T.pop.map(()=>1);T.pr++;T.sel=0;stFresh();save();tst('★ Train prestige '+T.pr+' · '+PRNAME[T.pr]);render()}
 /* milestones (Rewards → Trains) */
 var MS=[{k:'pl',n:'Platforms open',u:'platforms',tiers:[1,3,5,8,10],rw:[50,500,5e3,5e4,5e5],cur:()=>T.un.filter(Boolean).length},
  {k:'px',n:'Train passengers',u:'passengers',tiers:[1e3,5e4,1e6,2e7,5e8],rw:[100,2e3,4e4,8e5,1.6e7],cur:()=>T.pax},
@@ -7534,7 +7534,7 @@ function seatG(g,x,y,f,s,fc){g.save();g.translate(x,y);g.scale(s,1);g.fillStyle=
 /* pace (Michael: "a small trolley should load at normal speed"): passengers walk at the gate speed x PSPD, and the visual boarding cycle is
    only as long as that boarding takes (+ departure) - capped by the economy cycle, which also drives the BOARDED % badge (same clock) */
 var PSPD=1.35;STG.tb={};STG.tbk={}; // ALL trains: passengers walk 1.35x the gate walking speed (PX.v); the door scan pause (SCAN_T) stays real-time
-function tPlan(c,i){var v0=PX.v,n=c.cabin.seats.length;if(i!=null)n=Math.max(1,Math.round(n*popFrac(T.pop[i])));PX.v=v0*PSPD;try{return buildPlan(c,n)}finally{PX.v=v0}}
+function tPlan(c,i,popLv){var v0=PX.v,n=c.cabin.seats.length;if(i!=null)n=Math.max(1,Math.round(n*popFrac(popLv!=null?popLv:T.pop[i])));PX.v=v0*PSPD;try{return buildPlan(c,n)}finally{PX.v=v0}}
 function vcyc(i){var base=60/(0.6+0.08*T.bs[i]),tk=i+'_'+T.pop[i];if(STG.tbk[i]!==tk){STG.tbk[i]=tk;STG.tb[i]=null}if(STG.tb[i]==null){try{var L=trLayout(i);STG.tb[i]=Math.max.apply(null,L.cars.map(function(c){return tPlan(c,i).total}))+1.5}catch(e){return base}}
  return Math.min(base,STG.tb[i]/.84)}
 function rr(g,x,y,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)}
@@ -7551,12 +7551,15 @@ function hullPath(g,LK,a,b,y0,y1,first,last){var m=(y0+y1)/2,h=y1-y0,n=LK.nl,t=L
 /* Michael t1110u: boarding PAUSES when you leave a platform - each platform has its own visual clock that only advances while its stage is on screen (RT economy unaffected) */
 STG.vt={};function vclk(i){if(STG.vt[i]==null)STG.vt[i]=Date.now()/1000;return STG.vt[i]}
 function vtick(i){var w=Date.now()/1000;vclk(i);if(STG.lw&&STG.li===i){var d=w-STG.lw;if(d>0&&d<0.25)STG.vt[i]+=d}STG.lw=w;STG.li=i;return STG.vt[i]}
+function stFresh(){STG.hold={};STG.run={};STG.i=-1;STG.L=null;STG.cyc=-1;STG.tb={};STG.tbk={}} // prestige / debug reset: drop cached consists so the next boarding is the new roster
 function drawStage(){var cv=STG.cv;if(!cv||!cv.isConnected||!on('vTrain')){STG.raf=0;STG.lw=0;return}STG.raf=requestAnimationFrame(drawStage);
- var i=T.sel;if(STG.i!==i){STG.i=i;STG.L=trLayout(i);STG.cyc=-1;STG.uz=1;STG.px=0;STG.py=0;}var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=vtick(i),t=now;
- STG.run=STG.run||{};var RN=STG.run[i];if(!RN||STG.cyc===-1&&RN.sel!==STG.selN){var c0=vcyc(i);RN=STG.run[i]={s:now-(now%c0),c:c0,tb:STG.tb[i],bs:T.bs[i],n:0};STG.selN=(STG.selN|0)+1;RN.sel=STG.selN;STG.cyc=-1}
- while(now>=RN.s+RN.c){RN.s+=RN.c;RN.c=vcyc(i);RN.tb=STG.tb[i];RN.bs=T.bs[i];RN.n++;if(now-RN.s>RN.c*50)RN.s=now-(now-RN.s)%RN.c} // upgrades (Efficiency/Popularity) only take effect at the next departure
- var cyc=RN.c,cn=RN.n,ph=(now-RN.s)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND,TB=RN.tb==null?BEND*cyc:RN.tb;
- if(STG.cyc!==cn){STG.cyc=cn;L.cars.forEach(function(c){c.plan=tPlan(c,i)})} // a fresh boarding plan per departure, like each new plane
+ var i=T.sel;STG.hold=STG.hold||{};STG.run=STG.run||{};
+ if(STG.i!==i){if(STG.L&&STG.i>=0)STG.hold[STG.i]=STG.L;STG.i=i;STG.L=STG.hold[i]||(STG.hold[i]=trLayout(i));STG.uz=1;STG.px=0;STG.py=0}
+ var L=STG.L,LK=LOOK[i],g=cv.getContext('2d'),now=vtick(i),t=now,RN=STG.run[i];
+ if(!RN){var c0=vcyc(i);RN=STG.run[i]={s:now,c:c0,tb:STG.tb[i],bs:T.bs[i],pop:T.pop[i]|0,n:0,built:-1}} // start this boarding at the platform, not at a random wall-clock phase
+ var guard=0;while(now>=RN.s+RN.c&&guard++<80){RN.s+=RN.c;RN.pop=T.pop[i]|0;RN.bs=T.bs[i];RN.c=vcyc(i);RN.tb=STG.tb[i];RN.n++;if(!(RN.c>0.05))RN.c=0.05;if(guard>=80)RN.s=now} // Popularity and Efficiency change the NEXT boarding only
+ var cyc=RN.c,ph=(now-RN.s)/cyc,BEND=.84,f=Math.min(1,ph/BEND),dep=ph>BEND,TB=RN.tb==null?BEND*cyc:RN.tb;
+ if(RN.built!==RN.n||!(L.cars[0]&&L.cars[0].plan)){RN.built=RN.n;L.cars.forEach(function(c){c.plan=tPlan(c,i,RN.pop)})} // headcount stays on the cycle that already started, including after a platform change
  var dx=0;if(ph>.9)dx=-Math.pow((ph-.9)/.05,2)*2400;if(ph>.95)dx=Math.pow(1-(ph-.95)/.05,2)*2400; // departs to the left (front first), the next train arrives from the right
  var HB=HULL0+(HULL1-HULL0)*LK.hh,SB=Math.max(312,HB+16); // scene bottom grows for the Twin Deck's taller hull
  var z=Math.min(2.2,940/L.W),H=Math.min(720,Math.max(320,Math.round((SB-8)*z*2)));if(cv.height!==H){cv.height=H;cv.style.aspectRatio='960/'+H}
@@ -7640,6 +7643,6 @@ document.addEventListener('click',function(e){var t=e.target.closest?e.target.cl
  if(t.dataset.trms){var m=MS.find(x=>x.k===t.dataset.trms),cl=T.ms[m.k]|0;if(m.cur()>=m.tiers[cl]){T.rt+=m.rw[cl];T.ms[m.k]=cl+1;save();tst('+'+rt(m.rw[cl]));try{window.__trainCos&&__trainCos.sync()}catch(_){}}try{window.__msGo('trains')}catch(_){}return}
 });
 setInterval(function(){if(!document.hidden)render()},1000);
-window.__trainsDebug={give:function(n){load();T.rt+=n;save();render()},maxAll:function(){load();T.unlocked=1;T.un=T.un.map(()=>1);T.bs=T.bs.map(()=>MAXLV);T.pop=T.pop.map(()=>MAXLV);save();render()},reset:function(){localStorage.removeItem(KEY);T=null;render()}};
+window.__trainsDebug={give:function(n){load();T.rt+=n;save();render()},maxAll:function(){load();T.unlocked=1;T.un=T.un.map(()=>1);T.bs=T.bs.map(()=>MAXLV);T.pop=T.pop.map(()=>MAXLV);save();render()},reset:function(){localStorage.removeItem(KEY);T=null;stFresh();render()}};
 })();
 </script></body></html>
