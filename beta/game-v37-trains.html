@@ -159,6 +159,7 @@ h3.gsh{margin:14px 0 6px;font-size:14px;color:var(--acc,#38d39f)}h3.gsh .sm{font
 .lbrow{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:7px 4px;border-bottom:1px solid var(--line);font-size:14px;align-items:center}.lbrow.me{background:#14304a;border-radius:8px;border:1px solid var(--acc)}
 #lbPin{position:fixed;left:0;right:0;bottom:64px;z-index:5;max-width:520px;margin:0 auto;padding:0 10px}#lbPin .lbrow{background:#14304a;box-shadow:0 -6px 14px #000a;padding:9px 8px}#vRank{padding-bottom:70px}
 .mrw{display:flex;justify-content:flex-end;margin-top:3px}.mrw button{padding:5px 12px;font-size:12px}.mrw .tixi,#milestones .tixi{height:12px;width:auto;vertical-align:-2px}
+.wbOff{margin:10px 0 0;padding:8px 10px;border:1px solid rgba(245,197,66,.45);border-radius:10px;background:rgba(245,197,66,.08)}.wbOff p.sm{margin:0 0 8px}.wbOffBtn{display:block;width:100%;padding:11px 10px;font-size:14px;font-weight:800;background:var(--warn);color:#2b1c00;border:0;border-radius:9px;white-space:normal;overflow-wrap:anywhere}
 .dbtn{display:block;text-align:center;background:#5865f2;color:#fff;font-weight:700;font-size:15px;padding:12px 10px;border-radius:10px;text-decoration:none;margin:0 0 12px}.dbtn:active{background:#4752c4}
 .rdm{display:flex;gap:8px}.rdm input{flex:1;min-width:0;background:#0b1220;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font:14px system-ui,sans-serif}.rdm input:disabled{opacity:.6}
 
@@ -448,7 +449,7 @@ header .hrow2{display:none!important}
 <div class="view hide" id="vRew"><section><h2>Daily login rewards</h2><div id="daily"></div></section><section><h2 id="msH">Milestones</h2><div id="milestones"></div></section></div>
 <div class="view hide" id="vRank"><section style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><button class="alt" id="rkBack" type="button">‹ Back</button><b id="rkAreaT" style="font-size:18px">🏆 Ranks</b></section><section><a id="discordBtn" class="dbtn" href="https://discord.gg/gvywqZ5H29" target="_blank" rel="noopener noreferrer">💬 Join our Discord</a><h2 id="rkH">Ranks</h2><div class="tabs" id="rkTabs"></div><div id="lb"></div></section></div>
 <div class="view hide" id="vEv"><div id="evBody"></div></div>
-<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611072243</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
+<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611101345</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vCargo"><div class="cgpWrap"><section style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><button class="alt" id="cgpBack" type="button">‹ Ramps</button><b style="font-size:18px">📦 Cargo</b><button class="iaInfoBtn" type="button" data-iainfo="cargo">i</button><span style="flex:1"></span><button class="alt rkAreaBtn" type="button" data-rkarea="cargo">🏆 Ranks</button><button class="alt cgpNav" id="cgpPrev" type="button" aria-label="Previous ramp">‹</button><button class="alt cgpNav" id="cgpNext" type="button" aria-label="Next ramp">›</button></section><div id="cgpBody"></div><section id="cgPrSec" style="margin-top:12px"></section><section id="cgLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vSpace">
  <div class="card sp3top"><button class="alt" id="sp_back" type="button">‹ Pads</button><b>Spaceport</b><span class="sm sp3c">Colony <b id="sp_colony">0</b></span><span class="sm" id="sp_left"></span></div>
@@ -2551,6 +2552,7 @@ const sigs={};
 let cashShown=null,cashShownT=0;
 function shownCash(force){const now=performance.now();if(cashShown===null||force===true||S.cash<=cashShown||S.cash-cashShown<1)cashShown=S.cash;else cashShown+=(S.cash-cashShown)*(1-Math.exp(-(now-cashShownT)/350));cashShownT=now;return cashShown}
 function render(force){
+ try{if(popKind==='wb'){const e=$('wbOff');if(e&&+e.dataset.lv!==(S.off||0))wbOffFill()}}catch(x){}
  if(view==='set'){const n=Date.now();if(force||!render._st||n-render._st>1000){render._st=n;renderSettings(force)}}
  if(view!=='up')updateUpTimers();
  const est=estimate();
@@ -2837,7 +2839,17 @@ function doneHTML(d){if(!d||!d.length)return'';const m={};for(const e of d)m[e.i
 const DISCORD_URL='https://discord.gg/gvywqZ5H29',DISCORD_HTML=`<a class="dbtn" id="wbDiscord" style="margin:10px 0 0" href="${DISCORD_URL}" target="_blank" rel="noopener noreferrer">💬 Join our Discord</a>`;
 function wbHTML(){const p=S.pending,cc=+p.cc||0,ccT=n=>fmt(n)+' CC',rtv=+p.rt||0,rtT=n=>fmt(n)+' RT';return`<h3>Welcome back!</h3><p>Your gates earned <b class="gold">${money(p.amount)}</b> while you were away (${hm(p.secs)}).</p>`+(cc>0?`<p>Your cargo ramps earned <b class="gold">${ccT(cc)}</b> (Cargo Credits).</p>`:'')+(rtv>0?`<p>Your train platforms earned <b class="gold">${rtT(rtv)}</b> (Rail Tokens).</p>`:'')+
  (p.capped?`<p class="sm">⏱ Capped at ${p.capH}h of offline income${(S.off||0)<2?' — upgrade Offline Storage in Upgrades for a bigger cap.':'.'}</p>`:'')+(p.boostSecs>0?`<p class="sm">Includes ${hm(p.boostSecs)} of 2x boost.</p>`:'')+doneHTML(p.done)+
- `<div class="pbtns"><button data-k="wbCollect">Collect ${money(p.amount)}${cc>0?' + '+ccT(cc):''}${rtv>0?' + '+rtT(rtv):''}</button><button class="ad" data-k="wbDouble">▶ Watch ad to double · ${money(p.amount*2)}${cc>0?' + '+ccT(cc*2):''}${rtv>0?' + '+rtT(rtv*2):''}</button></div>`+DISCORD_HTML}
+ `<div class="pbtns"><button data-k="wbCollect">Collect ${money(p.amount)}${cc>0?' + '+ccT(cc):''}${rtv>0?' + '+rtT(rtv):''}</button><button class="ad" data-k="wbDouble">▶ Watch ad to double · ${money(p.amount*2)}${cc>0?' + '+ccT(cc*2):''}${rtv>0?' + '+rtT(rtv*2):''}</button></div><div id="wbOff" data-lv="-1" data-cap="${p.capped?(+p.capH||0):0}"></div>`+DISCORD_HTML}
+/* Nov 10 2026 (Michael): Idle Bank offer in the welcome-back popup = the NEXT Offline Storage tier the player does not own, bought ONLY through the
+   app's real Google Play store (buy('off1'|'off2') is replaced by the Android wrapper's Play Billing path; the wrapper grants only after Play
+   confirms the purchase). Shown only when Google Play returned that product with a price (so: never on the web copy, never while the store is
+   off, hidden once Offline Storage II is owned). Collect / Watch-ad buttons above are unchanged. */
+const WB_OFF=[null,{k:'off1',id:'offline_storage_1',n:'Offline Storage I',cap:12},{k:'off2',id:'offline_storage_2',n:'Offline Storage II',cap:24}];
+function wbOffFill(){const el=$('wbOff');if(!el)return;const own=S.off||0,o=WB_OFF[own+1],N=window.IdleNative;el.dataset.lv=own;
+ if(!o||!N||!N.isNative||typeof N.getProducts!=='function'){el.innerHTML='';return}
+ Promise.resolve(N.getProducts([o.id])).then(L=>{const e=$('wbOff');if(!e||popKind!=='wb'||(S.off||0)!==own)return;
+  const x=Array.isArray(L)&&L.find(q=>q&&q.id===o.id&&q.price);if(!x){e.innerHTML='';return}
+  const cap=+e.dataset.cap||0;e.innerHTML=`<div class="wbOff"><p class="sm">🏦 <b>Idle Bank</b> · ${cap?'your airport stopped earning at the '+cap+'h cap. ':''}${o.n} stores up to <b>${o.cap}h</b> of offline income from now on (one-time purchase).</p><button data-k="${o.k}" class="wbOffBtn">🏦 ${o.n} · ${o.cap}h cap · ${esc(x.price)}</button></div>`},()=>{})}
 function dailyHTML(){const st=dailyState();return`<h3>🎁 Daily reward · Day ${st.next}/7</h3><p>${rewardText(st.next,1,true)}</p><p class="sm">Streak ${st.streak}/7</p>`+
  `<div class="pbtns"><button data-k="dailyClaim">Claim</button>${dailyAd(st.next)?`<button class="ad" data-k="dailyDouble">▶ Watch ad to double · ${rewardText(st.next,2,true)}</button>`:''}<button class="alt" data-k="popClose">Later</button></div>`}
 function creditPending(mult){const p=S.pending;if(!p)return;const pcc=+p.cc||0,prt=+p.rt||0;if(prt>0){try{window.__trainOffline&&__trainOffline.credit(prt*mult)}catch(e){errLog(e)}}if(pcc>0&&S.cgP){S.cgP.cc=(+S.cgP.cc||0)+pcc*mult;try{__cargoBridge.render&&!document.getElementById('vCargo').classList.contains('hide')&&__cargoBridge.render()}catch(e){}}S.cash+=p.amount*mult;S.life+=p.amount*mult;try{rollWeek();if(S.wk&&+p.pre>0&&+p.wkK===+S.wk.k)S.wk.l0=Math.min(S.life,(+S.wk.l0||0)+p.pre*mult)}catch(e){errLog(e)}S.pax+=p.pax;S.pending=null;save();toast('Collected '+money(p.amount*mult)+(pcc>0?' + '+fmt(pcc*mult)+' CC':'')+(prt>0?' + '+fmt(prt*mult)+' RT':'')+' offline income'+(mult>1?' (doubled!)':''));closePopup();render(true);nextPopup()}
@@ -2861,7 +2873,7 @@ function nameSkip(){S.name=(e=>e&&nameCheck(e.value).name)($('nameIn'))||S.name|
 function nextPopup(){if(!$('adScr').classList.contains('hide'))return;
  if(popKind==='name')return; // never replace the name box while the player is typing
  if(!S.nameAsked&&!(DEBUG&&qget('name')!=='1')){openName(true);return}
- if(S.pending){showPopup('wb',wbHTML());return}
+ if(S.pending){showPopup('wb',wbHTML());try{wbOffFill()}catch(e){}return}
  if(S.lfPop&&lfShowPop())return;if(S.rxPop&&rxShowPop())return;
  const st=dailyState();if(st.claimable&&S.dailyShown!==todayStr()){S.dailyShown=todayStr();save();showPopup('daily',dailyHTML());return}
  if(evEndPrompt())return;
@@ -6932,7 +6944,7 @@ const SP_BUNDLED={id:'spaceport-2026-10',start:'2026-10-26T19:00:00-04:00',end:'
 const SP_RC_KEY='ia.spRc',SP_TEST_KEY='ia.spTestStart';
 function spNorm(e){if(!e||typeof e!=='object')return null;if(e.off===true)return{off:1,src:e.src||''};const s=typeof e.start==='number'?e.start:Date.parse(e.start),en=typeof e.end==='number'?e.end:Date.parse(e.end);
  if(!isFinite(s)||!isFinite(en)||en<=s||en-s>14*864e5)return null;const ch=Math.max(0,Math.min(72,isFinite(+e.claimHours)?+e.claimHours:24));
- return{id:typeof e.id==='string'&&/^[a-z0-9][a-z0-9_.-]{2,40}$/i.test(e.id)?e.id:'spaceport-'+s,start:s,end:en,claimEnd:en+ch*36e5,claimHours:ch,src:e.src||''}}
+ return{id:typeof e.id==='string'&&/^[a-z0-9][a-z0-9_.-]{2,40}$/i.test(e.id)?e.id:'spaceport-'+s,start:s,end:en,claimEnd:en+ch*36e5,claimHours:ch,src:e.src||'',pid:typeof e.pass==='string'&&/^sp_pass_premium(_\d{4}_\d{2})?$/.test(e.pass)?e.pass:''}}
 function spLs(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
 function spDef(){
  if(window.__SP_TEST_START_NOW){let s=+spLs(SP_TEST_KEY);if(!(s>1.7e12)){s=Date.now();spLs(SP_TEST_KEY,String(s))}return spNorm({id:'spaceport-test',start:s,end:s+6*864e5,claimHours:24,src:'test-preview'})}
@@ -7115,9 +7127,19 @@ const SPP={
  TH:[16,40,70,100,160,220,300,450,600,800,1100,1600,2000,2400,3000,3500,4200,5000,6000,7000,8000,9500,11000,12000,14000,16000,18000,20000,23000,26000],
  F:[{leg:0},{tk:5},{min:10},{leg:1},{tk:10},{boost:15},{leg:2},{min:20},{tk:10},{leg:3},{min:30},{leg:4},{tk:15},{min:30},{leg:5},{boost:30},{tk:15},{leg:6},{min:40},{tk:20},{leg:7},{min:50},{tk:20},{leg:8},{min:60},{tk:25},{min:60},{leg:9,tk:30},null,null],
  P:[{it:'ttl_spcrew',tk:15},{min:15},{tk:10},{boost:30},{min:20},{tk:15},{it:'cap_patch',tk:10},{tk:15},{boost:30},{it:'frm_nebula',tk:15},{tk:20},{min:40},{boost:30},{tk:20},{it:'out_reddust',tk:15},{min:50},{tk:25},{it:'gl_ion'},{tk:25},{boost:30},{it:'ttl_navigator',tk:20},{tk:25},{min:60},{skin:'aurora'},{tk:30},{boost:30},{tk:30},{it:'cap_comet',tk:30},{min:90},{it:'frm_orbit',it2:'ttl_commander',tk:50}],
- PROD:{prem:'sp_pass_premium'},PRICE:{prem:'$9.99'},
+ PROD:{prem:'sp_pass_premium'},PRICE:{prem:'$9.99'}, /* PROD.prem = the October 2026 product (1.6.2). Nov 10 2026: one product PER EVENT, see ppProd() */
  AURORA:{a:'#2fe3a0',b:'#7a4dff'}};
-function ppS(){if(!ST)return null;let p=ST.pass;if(!p||typeof p!=='object')p=ST.pass={prem:0,f:{},p:{},log:[]};p.f=p.f||{};p.p=p.p||{};p.log=p.log||[];return p}
+/* Nov 10 2026: Space Pass Premium product for the CURRENT event. spaceport-2026-10 = sp_pass_premium (Oct, app 1.6.2); spaceport-YYYY-MM = sp_pass_premium_YYYY_MM
+   (pre-registered in app 1.6.11+); a schedule entry may name it explicitly with "pass". '' = this event has no Premium product (test link). */
+function ppProd(d){d=d||spDef();if(!d||d.off)return'';if(d.pid)return d.pid;const m=/^spaceport-(\d{4})-(\d{2})$/.exec(d.id||'');if(!m)return'';const k=m[1]+'_'+m[2];return k==='2026_10'?SPP.PROD.prem:'sp_pass_premium_'+k}
+/* the pass belongs to ONE event (ST.eid). A save carried into a new event (unfinished colony) never keeps the earlier event's Premium. */
+function ppS(){if(!ST)return null;let p=ST.pass;if(!p||typeof p!=='object')p=ST.pass={prem:0,f:{},p:{},log:[]};p.f=p.f||{};p.p=p.p||{};p.log=p.log||[];
+ if(ST.eid&&p.eid!==ST.eid){
+  if(p.eid){p=ST.pass={prem:0,f:{},p:{},log:[['event',Date.now(),p.eid+'>'+ST.eid]],fb:p.fb||[]}} /* tagged pass of an earlier event: fresh pass */
+  else if(p.prem){const t=p.log.filter(x=>x&&x[0]==='prem').map(x=>+x[1]||0),st=+ST.start||0;  /* untagged (before Nov 10 2026): Premium bought before this event opened = October */
+   if(!t.length||Math.max.apply(null,t)<st){p.prem=0;p.p={};delete p.tok;delete p.pid;p.log.push(['event',Date.now(),'legacy>'+ST.eid])}}
+  p.eid=ST.eid}
+ return p}
 function ppMain(){return mainS()||{}}
 function ppColTier(){return SPP.TH.filter(t=>ST.colony>=t).length}
 /* tier = real colony tiers only (nothing can be bought) */
@@ -7138,24 +7160,34 @@ function ppClaim(trk,i){const p=ppS();if(i>=ppTier())return false;
 /* opt (native Play Billing, via store-ui grantToGame): {token, restore}. IDEMPOTENT: a restore / re-delivery of the same purchase never grants twice.
    Returns true when the purchase is (now or already) honoured, false only when the game/save is not ready (Play re-delivers it next start). */
 function ppGrant(kind,opt){if(kind!=='prem')return false;if(!ST){if(!mainS())return false;load()}const p=ppS(),m=ppMain(),tok=opt&&opt.token?String(opt.token).slice(-24):'';
+ const pid=opt&&opt.pid?String(opt.pid):'',want=ppProd();
+ if(pid&&pid!==want){                                           /* Nov 10 2026: a pass product of ANOTHER event (restore of an old purchase, or a late payment) never unlocks this event */
+  if(opt.restore||!tok)return true;
+  if((m.spTok||[]).indexOf(tok)>=0||(p.fb||[]).indexOf(tok)>=0)return true;
+  m.tickets=(m.tickets||0)+240;(p.fb=p.fb||[]).push(tok);(m.spTok=m.spTok||[]).push(tok);save();try{if(window._ui&&typeof toast==='function')toast('That Space Pass was for an earlier Spaceport event, so we added 240 tickets instead.')}catch(e){}return true}
  if(p.prem)return true;                                         /* already Premium: restore / second delivery = nothing more */
  if(tok&&(m.spTok||[]).indexOf(tok)>=0)return true;           /* this Play purchase already unlocked an EARLIER Spaceport event: never carries over */
  if(tok&&(p.fb||[]).indexOf(tok)>=0)return true;               /* this token was already paid out as the 240-ticket fallback */
  const ph=spPh();if(ph!=='live'&&ph!=='claim'){m.tickets=(m.tickets||0)+240;if(tok){(p.fb=p.fb||[]).push(tok);(m.spTok=m.spTok||[]).push(tok)}save();try{if(window._ui&&typeof toast==='function')toast('The Spaceport event had already ended, so we added 240 tickets instead.')}catch(e){}return true}
- p.prem=1;if(tok){p.tok=tok;(m.spTok=m.spTok||[]).push(tok)}p.log.push([kind,Date.now()]);save();PASS.render();try{if(window._ui&&typeof toast==='function')toast('⭐ Space Pass Premium active! Every premium reward you reached is ready to claim.')}catch(e){}return true}
-function ppRevoke(){if(!ST){if(!mainS())return false;load()}const p=ppS();if(!p.prem||!p.tok)return false;p.prem=0;p.log.push(['revoked',Date.now()]);save();try{PASS.render()}catch(e){}return true} /* refund: only a Play-paid pass */
-function ppBuy(kind){if(kind!=='prem')return;if(ppS().prem||spPh()!=='live'){try{PASS.render()}catch(e){}return}const id=SPP.PROD.prem,N=(window.IdleNative&&window.IdleNative.isNative)?window.IdleNative:null;
+ p.prem=1;if(tok){p.tok=tok;(m.spTok=m.spTok||[]).push(tok)}if(pid)p.pid=pid;p.log.push([kind,Date.now()]);save();PASS.render();try{if(window._ui&&typeof toast==='function')toast('⭐ Space Pass Premium active! Every premium reward you reached is ready to claim.')}catch(e){}return true}
+function ppRevoke(pid){if(!ST){if(!mainS())return false;load()}const p=ppS();if(!p.prem||!p.tok)return false;if(pid&&p.pid!==pid)return false; /* Nov 10 2026: only the refunded product's own pass */p.prem=0;p.log.push(['revoked',Date.now()]);save();try{PASS.render()}catch(e){}return true} /* refund: only a Play-paid pass */
+function ppUnavail(){const N=window.IdleNative,m='Store coming soon – the Space Pass isn’t on sale yet.';try{if(N&&typeof N.getAppInfo==='function')return Promise.resolve(N.getAppInfo()).then(i=>{const vc=i&&+i.appVersionCode||0;toast(vc>0&&vc<20?'Update Idle Airport on Google Play to get Space Pass Premium.':m)},()=>toast(m))}catch(e){}toast(m)}
+let ppPr={};function ppPriceTxt(){const id=ppProd();return ppPr[id]||SPP.PRICE.prem}
+function ppPriceFetch(){const id=ppProd(),N=(window.IdleNative&&window.IdleNative.isNative)?window.IdleNative:null;if(!id||!N||typeof N.getProducts!=='function'||ppPr['?'+id])return;ppPr['?'+id]=1;
+ Promise.resolve(N.getProducts([id])).then(L=>{const x=Array.isArray(L)&&L.find(q=>q&&q.id===id&&q.price);if(x){ppPr[id]=String(x.price).replace(/[<>&"]/g,'');try{PASS.render()}catch(e){}}else delete ppPr['?'+id]},()=>{delete ppPr['?'+id]})}
+function ppBuy(kind){if(kind!=='prem')return;if(!ST){if(!mainS())return;load()}if(ppS().prem||spPh()!=='live'){try{PASS.render()}catch(e){}return}const id=ppProd()||SPP.PROD.prem,N=(window.IdleNative&&window.IdleNative.isNative)?window.IdleNative:null;
+ if(N&&N.purchase&&!ppProd()){ppUnavail();return}
  /* real app: Google Play only. billing.js fulfils a PURCHASED sp_pass_premium -> store-ui grantToGame -> __spPass.grant('prem',{token}) (never granted here) */
- if(N&&N.purchase)return N.purchase(id).then(r=>{try{PASS.render()}catch(e){}if(r&&!r.success&&r.status!=='cancelled'){try{toast(r.status==='unavailable'?'Store coming soon – the Space Pass isn’t on sale yet.':r.status==='pending'?'Payment pending – the pass unlocks as soon as Google Play confirms it.':'Purchase didn’t go through. Please try again.')}catch(e){}}});
+ if(N&&N.purchase)return N.purchase(id).then(r=>{try{PASS.render()}catch(e){}if(r&&!r.success&&r.status!=='cancelled'&&r.status!=='busy'){if(r.status==='unavailable'||r.status==='not_implemented'){ppUnavail();return}try{toast(r.status==='pending'?'Payment pending – the pass unlocks as soon as Google Play confirms it.':'Purchase didn’t go through. Please try again.')}catch(e){}}});
  const go=()=>ppGrant('prem'),body='<p>Space Pass Premium for this event? Every premium reward, including tiers you already reached.</p><p class="sm">MOCK PURCHASE (test build) · nothing is charged · product '+id+'</p>';
  if(typeof askConfirm==='function')return askConfirm({title:'Purchase (test) · '+SPP.PRICE.prem,body,ok:'Buy'},go);return go()}
 const PASS={
- render(){if(!ST)return;const p=ppS(),T=ppTier(),ct=ppColTier(),nxt=SPP.TH[ct];let cf=0,cp=0;
+ render(){if(!ST)return;try{ppPriceFetch()}catch(e){}const p=ppS(),T=ppTier(),ct=ppColTier(),nxt=SPP.TH[ct];let cf=0,cp=0;
   for(let i=0;i<T;i++){if(SPP.F[i]&&!ppFreeDone(i))cf++;if(p.prem&&!p.p[i])cp++}
   $s('sp_passTab').textContent='Pass'+(cf+cp?' ('+(cf+cp)+')':'');
   $s('sp_passHead').innerHTML='Tier '+T+' / 30'+'<small class="sp3cn">Colony '+nf(ST.colony)+(nxt?' · next '+nf(nxt):' · max')+'</small>';
   const pc=Math.min(100,T>=30?100:((T>0?(ST.colony-(SPP.TH[ct-1]||0)):ST.colony)/Math.max(1,(nxt||1)-(SPP.TH[ct-1]||0))*100));$s('sp_passBar').style.width=Math.max(2,pc)+'%';
-  $s('sp_passBuy').innerHTML=!p.prem&&spPh()!=='live'?'<div class="sp3own sp3ended">Premium sales have ended for this event</div>':!p.prem?'<button class="sp3b1" data-spbuy="prem">Premium '+SPP.PRICE.prem+'<small>Every premium reward, even for tiers already reached</small></button>':'<div class="sp3own">⭐ Premium active · all premium rewards unlocked</div>';
+  $s('sp_passBuy').innerHTML=!p.prem&&spPh()!=='live'?'<div class="sp3own sp3ended">Premium sales have ended for this event</div>':!p.prem?'<button class="sp3b1" data-spbuy="prem">Premium '+ppPriceTxt()+'<small>Every premium reward, even for tiers already reached</small></button>':'<div class="sp3own">⭐ Premium active · all premium rewards unlocked</div>';
   $s('sp_tiersList').innerHTML=SPP.TH.map((t,i)=>{const got=i<T,fr=SPP.F[i],pr=SPP.P[i];let fc;
    if(!fr)fc='<span class="sp3rw sp3dim">free track complete</span>';else{const done=ppFreeDone(i),attr=fr.leg!=null?'data-spclaim="'+fr.leg+'"':'data-spfree="'+i+'"',lg=fr.leg!=null&&IT[TPRIZE[fr.leg]];
     const th=lg?(lg.slot==='title'?'<span class="sp3th sp3tt">★</span>':typeof itemThumb==='function'?'<span class="sp3th">'+itemThumb(lg)+'</span>':''):'';
@@ -7168,7 +7200,7 @@ const PASS={
   if(b.dataset.spfree!=null)return ppClaim('f',+b.dataset.spfree);if(b.dataset.spprem!=null)return ppClaim('p',+b.dataset.spprem);
   if(b.dataset.spbuy)return ppBuy(b.dataset.spbuy)}};
 function ppSkinLiv(id){const m=ppMain();if(!(m.spSkin&&m.spSkin.own&&m.spSkin.on))return null;return Object.assign({},shipGeo(id).def.liv,SPP.AURORA)}
-window.__spPass={SPP,state:()=>ppS(),tier:ppTier,colTier:ppColTier,claim:ppClaim,grant:ppGrant,revoke:ppRevoke,buy:ppBuy,left:ppLeft,render:()=>PASS.render()};
+window.__spPass={SPP,prod:()=>ppProd(),state:()=>ppS(),tier:ppTier,colTier:ppColTier,claim:ppClaim,grant:ppGrant,revoke:ppRevoke,buy:ppBuy,left:ppLeft,render:()=>PASS.render()};
 
 })();
 function cgpPrewarm(i){try{var c=cgpEnsure();if(!c||!c.unlocked||!c.un[i]||!window.EVR)return;var g=cgpGateFor(i);if(!g||g._warm)return;g._warm=1;var t=document.createElement('canvas');t.width=t.height=2;var x=t.getContext('2d');if(g.img)x.drawImage(g.img,0,0,2,2);if(g.bg)x.drawImage(g.bg,0,0,2,2)}catch(e){}}

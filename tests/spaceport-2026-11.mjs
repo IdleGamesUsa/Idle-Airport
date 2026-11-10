@@ -1,7 +1,7 @@
 // November 2026 Spaceport window.
 // The shipped client (game-v37-trains.html) decides the phase in spDef()/spPh().
-// GitHub Pages remote-config.json "spaceport" overrides SP_BUNDLED. No HTML edit:
-// a changed game file would no longer match the signed version.json sha256.
+// GitHub Pages remote-config.json "spaceport" overrides SP_BUNDLED. The HTML only changes together
+// with a re-signed version.json (OTA 202611101345: per-event Space Pass product id).
 // Run: node tests/spaceport-2026-11.mjs
 import fs from 'fs';
 import vm from 'vm';
@@ -65,6 +65,7 @@ const defSrc = extractFn(root, 'function def(){const d=spDef()');
 const loadSrc = extractFn(root, 'function load(){const m=mainS()');
 const ppSSrc = extractFn(root, 'function ppS(){');
 const ppGrantSrc = extractFn(root, 'function ppGrant(kind,opt)');
+const ppProdSrc = extractFn(root, 'function ppProd(d){');
 
 function boot() {
   const store = new Map();
@@ -97,9 +98,10 @@ function boot() {
   sandbox.save = () => {};
   sandbox.PASS = { render() {} };
   sandbox.toast = () => {};
+  sandbox.SPP = { PROD: { prem: 'sp_pass_premium' } };
   vm.runInNewContext(
-    `${schedSrc}\n${defSrc}\n${loadSrc}\nfunction ppMain(){return mainS()||{}}\n${ppSSrc}\n${ppGrantSrc}\n` +
-      'this.api={spDef,spPh,spOk,spNorm,apply:window.__spRc,load,ppS,ppGrant,get ST(){return ST},BUNDLED:SP_BUNDLED};',
+    `${schedSrc}\n${defSrc}\n${loadSrc}\nfunction ppMain(){return mainS()||{}}\n${ppProdSrc}\n${ppSSrc}\n${ppGrantSrc}\n` +
+      'this.api={spDef,spPh,spOk,spNorm,apply:window.__spRc,load,ppS,ppGrant,ppProd,get ST(){return ST},BUNDLED:SP_BUNDLED};',
     sandbox
   );
   return sandbox;
@@ -199,7 +201,7 @@ assert.strictEqual(reset.pass.prem, 1, 'a new purchase during the live window ke
 // Same id keeps the tracks (a reload mid-event is not a reset).
 const mid = freshSave({
   v: 3, eid: ID, colony: 120, fin: 0, sel: 0, claimed: { 0: 1 },
-  pass: { prem: 1, f: { 1: 1 }, p: {}, log: [] }, pads: pads()
+  pass: { prem: 1, f: { 1: 1 }, p: {}, log: [['prem', START + 500]] }, pads: pads()   // bought during this event (every grant is logged)
 });
 mid.api.load();
 assert.strictEqual(mid.api.ST.colony, 120);
@@ -207,18 +209,46 @@ assert.strictEqual(mid.api.ST.pass.prem, 1);
 assert.strictEqual(mid.api.ST.pass.f[1], 1);
 assert.strictEqual(mid.api.ST.claimed[0], 1);
 
-// Shipped rule: an unfinished save adopts the new id and KEEPS colony and both tracks.
+// An unfinished save adopts the new id and KEEPS its colony (known carry-over, unchanged).
 // spFinal() only runs while the phase is "closed", so a player who never opened the app
 // after the October claim window will not have fin set once this remote-config is live.
+// Nov 10 2026 (OTA 202611101345): the Space Pass is bound to its event, so the October Premium
+// (bought before this event opened) no longer carries into November.
 const carried = freshSave({
   v: 3, eid: 'spaceport-2026-10', colony: 8400, sel: 0, claimed: { 0: 1 },
-  pass: { prem: 1, f: {}, p: { 4: 1 }, log: [] }, pads: pads()
+  pass: { prem: 1, f: {}, p: { 4: 1 }, log: [['prem', Date.parse('2026-10-27T12:00:00-04:00')]], tok: 'old-play-token' }, pads: pads()
 });
 carried.api.load();
 assert.strictEqual(carried.api.ST.eid, ID);
-assert.strictEqual(carried.api.ST.colony, 8400, 'unfinalized October colony is kept by the shipped client');
-assert.strictEqual(carried.api.ST.pass.prem, 1, 'unfinalized premium flag is kept by the shipped client');
-assert.strictEqual(carried.api.ST.pass.p[4], 1);
+assert.strictEqual(carried.api.ST.colony, 8400, 'unfinalized October colony is still kept');
+assert.strictEqual(carried.api.ST.pass.prem, 0, 'October Premium does not carry into November');
+assert.strictEqual(JSON.stringify(carried.api.ST.pass.p), '{}', 'October premium claims cleared');
+assert.strictEqual(carried.api.ST.pass.eid, ID, 'pass is tagged with its event');
+
+// Per-event Space Pass product ids (app 1.6.11 pre-registers sp_pass_premium_YYYY_MM).
+assert.strictEqual(carried.api.ppProd(), 'sp_pass_premium_2026_11');
+assert.strictEqual(carried.api.ppProd({ id: 'spaceport-2026-10' }), 'sp_pass_premium');
+assert.strictEqual(carried.api.ppProd({ id: 'spaceport-2027-01' }), 'sp_pass_premium_2027_01');
+assert.strictEqual(carried.api.ppProd({ id: 'spaceport-test' }), '');
+assert.strictEqual(carried.api.ppProd({ id: 'spaceport-x', pid: 'sp_pass_premium_2027_03' }), 'sp_pass_premium_2027_03');
+assert.strictEqual(carried.api.spNorm({ id: 'spaceport-2027-02', start: START, end: END, pass: 'sp_pass_premium_2027_02' }).pid, 'sp_pass_premium_2027_02');
+assert.strictEqual(carried.api.spNorm({ id: 'spaceport-2027-02', start: START, end: END, pass: 'lifetime_2x_pay' }).pid, '', 'only Space Pass ids accepted');
+carried.clock = START + 1000;
+assert.strictEqual(carried.api.ppGrant('prem', { token: 'old-play-token', pid: 'sp_pass_premium', restore: true }), true, 'Oct purchase acknowledged');
+assert.strictEqual(carried.api.ST.pass.prem, 0, 'Oct purchase never unlocks November');
+assert.strictEqual(carried.api.ppGrant('prem', { token: 'dec-token-xxxxxxxxxxxxxxxx', pid: 'sp_pass_premium_2026_12', restore: true }), true);
+assert.strictEqual(carried.api.ST.pass.prem, 0, 'another event product never unlocks November');
+assert.strictEqual(carried.api.ppGrant('prem', { token: 'nov-token-xxxxxxxxxxxxxxxx', pid: 'sp_pass_premium_2026_11' }), true);
+assert.strictEqual(carried.api.ST.pass.prem, 1, 'the November product unlocks November');
+assert.strictEqual(carried.api.ST.pass.pid, 'sp_pass_premium_2026_11');
+
+// Next event after a tagged November pass: a fresh pass.
+carried.api.apply({ spaceport: { id: 'spaceport-2026-12', start: '2026-12-14T07:00:00-05:00', end: '2026-12-20T07:00:00-05:00', claimHours: 24 } });
+carried.clock = Date.parse('2026-12-15T07:00:00-05:00');
+carried.saveObj.sp = carried.api.ST; carried.api.load();
+assert.strictEqual(carried.api.ST.eid, 'spaceport-2026-12');
+assert.strictEqual(carried.api.ST.pass.prem, 0, 'November Premium does not carry into December');
+assert.strictEqual(carried.api.ppProd(), 'sp_pass_premium_2026_12');
 
 // Server contract the deployed function must enforce. Source of api/ is not in this repo.
 // Score posts are accepted only inside [start, claimEnd). Ranks and finalize must still
