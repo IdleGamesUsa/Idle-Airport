@@ -4,7 +4,7 @@ import fs from 'fs';
 import assert from 'assert';
 import { createRequire } from 'module';
 
-const FILE_ID = '202611101345';
+const FILE_ID = '202611121300';
 const rootUrl = new URL('../game-v37-trains.html', import.meta.url);
 const betaUrl = new URL('../beta/game-v37-trains.html', import.meta.url);
 const rootTxt = fs.readFileSync(rootUrl, 'utf8');

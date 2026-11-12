@@ -23,7 +23,8 @@ assert.ok(
   'bundled fallback stays the ended October window (remote-config overrides it)'
 );
 assert.ok(root.includes("id:'cargo-2026-10-10',type:'cargo'"), 'cargo bundled event must be unchanged');
-assert.ok(!root.includes('spaceport-2026-11'), 'the new id is remote-config only, not baked into the OTA file');
+assert.strictEqual(root.split('spaceport-2026-11').length - 1, 1, 'the new id is remote-config only for the SCHEDULE; it appears once, as the key of its Space Pass prize data');
+assert.ok(root.includes("passEvent({id:'spaceport-2026-11',"), 'November Space Pass prize data is registered under the event id (Event Pass template, OTA Nov 2026)');
 
 assert.deepStrictEqual(rc.frames, {
   beta: { end: '2026-10-26T17:30:00-04:00' },

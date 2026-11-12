@@ -328,6 +328,52 @@ body.cleanView #b3hud{display:none}
 #vSpace .sp3cp{border-color:#4a3f8a;background:#171a3a}#vSpace .sp3rw{flex:1;min-width:0;font-size:12px;line-height:1.25;overflow-wrap:anywhere}
 #vSpace .sp3cf button,#vSpace .sp3cp button{flex:none;padding:4px 6px;font-size:11px;min-width:0}#vSpace .sp3star{color:#b9a4ff;margin-right:2px}#vSpace .sp3lk{flex:none;opacity:.85}#vSpace .sp3dim{color:var(--dim);font-style:italic}
 #vSpace .sp3cf .sp3th{width:30px;height:30px;flex:0 0 30px}#vSpace .sp3cf .sp3th img,#vSpace .sp3cf .sp3th canvas,#vSpace .sp3cf .sp3th svg{max-width:30px;max-height:30px}#vSpace .sp3cf .sp3tt{font-size:16px}
+#vSpace .sp3pass{--epA:#ffd45a;--epA2:#f2a516;--epH1:#5b2ea6;--epH2:#24135a;--epH3:#0d0f2e;--epP:#7a62d8;--epP1:#2b1f5e;--epP2:#171334}
+#vSpace .epHero{position:relative;border-radius:14px;overflow:hidden;padding:11px 10px 10px;margin-bottom:8px;background:radial-gradient(120% 90% at 85% 0%,var(--epH1) 0%,var(--epH2) 45%,var(--epH3) 100%);border:1.5px solid #c9a24a;box-shadow:0 0 16px #f2a51633}
+#vSpace .epStars{position:absolute;inset:0;pointer-events:none;opacity:.8;background-image:radial-gradient(1.4px 1.4px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 120px 80px,#cfe,transparent),radial-gradient(1.2px 1.2px at 300px 20px,#fff,transparent),radial-gradient(1px 1px at 350px 110px,#fff,transparent),radial-gradient(1.3px 1.3px at 230px 140px,#ffe9a8,transparent),radial-gradient(1px 1px at 60px 170px,#fff,transparent)}
+#vSpace .epRib{position:relative;display:inline-block;background:linear-gradient(90deg,var(--epA),var(--epA2));color:#2a1a00;font-weight:800;font-size:11px;letter-spacing:.08em;padding:3px 9px;border-radius:5px}
+#vSpace .epHero h3{position:relative;margin:7px 0 2px;font-size:21px;line-height:1.1}#vSpace .epHero h3 em{font-style:normal;color:var(--epA)}
+#vSpace .epHero p{position:relative;margin:0 0 9px;font-size:12px;color:#d6d0f5}
+#vSpace .epShow{position:relative;display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px}
+#vSpace .epSc{border-radius:11px;background:linear-gradient(180deg,#2a1d63,#151034);border:1px solid #6b55c9;padding:16px 4px 6px;text-align:center;position:relative;min-width:0}
+#vSpace .epSc.epBig{background:linear-gradient(180deg,#5a3a08,#2b1a05 70%);border:1.5px solid var(--epA);box-shadow:inset 0 0 14px #ffd45a44}
+#vSpace .epTi{position:absolute;top:4px;left:5px;font-size:9.5px;font-weight:800;color:#2a1a00;background:var(--epA);border-radius:4px;padding:1px 4px}
+#vSpace .epArt{height:66px;display:flex;align-items:center;justify-content:center;overflow:hidden}#vSpace .epArt svg{width:54px;height:54px}#vSpace .epArt img,#vSpace .epArt canvas{max-width:64px;max-height:64px;border-radius:8px}
+#vSpace .epSc b{display:block;font-size:11.5px;line-height:1.15;overflow-wrap:anywhere}#vSpace .epSc small{display:block;font-size:9.5px;color:#cbbcf5;margin-top:2px}
+#vSpace .epBuy{position:relative;margin-top:9px;display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:12px;padding:9px 11px;background:linear-gradient(180deg,#ffe07a,var(--epA2));color:#2a1700;box-shadow:0 3px 0 #a86a00,0 0 14px #ffc84a66;text-align:left;font:inherit}
+#vSpace .epBuy .l{flex:1;min-width:0}#vSpace .epBuy b{display:block;font-size:16px}#vSpace .epBuy small{display:block;font-size:11px;opacity:.85;font-weight:400}#vSpace .epBuy .pr{flex:none;font-size:19px;font-weight:900;background:#2a1700;color:var(--epA);border-radius:9px;padding:5px 9px}
+#vSpace .epBuy.sm{margin:0}#vSpace .epBuy.sm b{font-size:14px}
+#vSpace .epOwn{margin-top:9px;position:relative;flex:1;border-radius:11px;padding:8px;text-align:center;font-weight:800;color:var(--epA);background:#2a1d0866;border:1px solid var(--epA)}
+#vSpace #sp_passHero .sp3buy{margin:0}
+#vSpace .epVal{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+#vSpace .epVal .vb{border-radius:10px;padding:6px 8px;font-size:11px;line-height:1.4;background:var(--card);border:1px solid var(--line);min-width:0}
+#vSpace .epVal h4{margin:0 0 3px;font-size:10.5px;letter-spacing:.08em;color:var(--dim)}#vSpace .epVal .vb.p{background:linear-gradient(180deg,#261a52,#171236);border-color:var(--epP)}#vSpace .epVal .vb.p h4{color:var(--epA)}
+#vSpace .epVal .ln{display:flex;gap:5px;align-items:center;margin:1px 0}#vSpace .epMi{flex:none;width:16px;height:16px;display:inline-flex}#vSpace .epMi svg{width:16px;height:16px}
+#vSpace .epAll{width:100%;margin:0 0 8px;font-weight:800;background:#35d39b;color:#06281c;border-radius:9px;padding:8px}
+#vSpace .epSkin{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:0 0 8px;font-size:12px}#vSpace .epSkin span{color:var(--dim);margin-right:2px}#vSpace .epSkin button{padding:4px 8px;font-size:11px}#vSpace .epSkin button.on{outline:2px solid var(--epA)}
+#vSpace .sp3hd.ep{grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);text-align:center;font-weight:800;letter-spacing:.08em;position:sticky;top:0;z-index:2;background:var(--bg,#0b1220);padding:4px 0}
+#vSpace .sp3hd.ep span:first-child{color:#9fe8c9}#vSpace .sp3hd.ep span:last-child{color:var(--epA)}
+#vSpace .epRow{display:grid;grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);gap:5px;margin-bottom:5px}
+#vSpace .epNode{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+#vSpace .epNode:before{content:"";position:absolute;top:-5px;bottom:-5px;width:4px;left:14px;background:#22304d;border-radius:2px}#vSpace .epRow.got .epNode:before{background:#35d39b}
+#vSpace .epNode b{position:relative;width:28px;height:28px;border-radius:50%;background:#18233b;border:2px solid #3a4a6e;display:flex;align-items:center;justify-content:center;font-size:12px}
+#vSpace .epRow.got .epNode b{background:#123a2e;border-color:#35d39b;color:#bff5df}#vSpace .epRow.nx .epNode b{border-color:var(--epA);color:var(--epA);box-shadow:0 0 8px #ffd45a88}
+#vSpace .epNode small{position:relative;font-size:8.5px;color:var(--dim);margin-top:1px;background:var(--bg,#0b1220);padding:0 1px}
+#vSpace .epCell{border-radius:10px;padding:5px;display:flex;align-items:center;gap:5px;min-height:58px;position:relative;background:var(--card);border:1px solid var(--line);min-width:0}
+#vSpace .epIco{flex:none;width:42px;height:42px;border-radius:8px;background:#0d1526;display:flex;align-items:center;justify-content:center;position:relative}
+#vSpace .epIco svg{width:36px;height:36px}#vSpace .epIco img,#vSpace .epIco canvas{max-width:42px;max-height:42px;border-radius:7px}#vSpace .epIco .ttlth{font-size:8px;line-height:1.1;text-align:center}
+#vSpace .epTx{flex:1;min-width:0;font-size:11px;line-height:1.2}#vSpace .epTx b{display:block;font-size:11.5px;overflow-wrap:anywhere}#vSpace .epTx small{display:block;color:var(--dim);font-size:9.5px;margin-top:1px;overflow-wrap:anywhere}
+#vSpace .epCell button{display:block;margin-top:3px;padding:3px 10px;font-size:10.5px;font-weight:800;min-width:0;background:#35d39b;color:#06281c;border-radius:7px;line-height:1.3}
+#vSpace .epDone{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:#123a2e;border:1.5px solid #35d39b;color:#35d39b;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+#vSpace .epCell.pr{background:linear-gradient(160deg,var(--epP1),var(--epP2));border-color:var(--epP)}#vSpace .epCell.pr.gl{border:1.5px solid var(--epA);box-shadow:inset 0 0 10px #ffd45a33}#vSpace .epCell.pr .epIco{background:#120d2c}
+#vSpace .epCell.done{opacity:.62}#vSpace .epOk{flex:none;color:#35d39b;font-weight:900;font-size:15px}
+#vSpace .epLock{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:#2a1700;border:1.5px solid var(--epA);display:flex;align-items:center;justify-content:center}#vSpace .epLock svg{width:10px;height:10px}
+#vSpace .epTag{position:absolute;top:-6px;right:5px;font-size:8.5px;font-weight:900;letter-spacing:.05em;padding:1px 4px;border-radius:4px;background:var(--epA);color:#2a1700;z-index:1}#vSpace .epTag.n{background:#5fd4ff;color:#03202c}
+#vSpace .epNone{background:transparent;border-style:dashed;justify-content:center;font-size:11px}
+#vSpace .epFin{margin:6px 0 8px;border-radius:14px;padding:11px;background:radial-gradient(100% 120% at 50% 0%,#6b4a0c,#2a1c05 60%,#140d03);border:2px solid var(--epA);box-shadow:0 0 18px #ffc84a55;text-align:center}
+#vSpace .epFin h3{margin:6px 0 2px;font-size:18px}#vSpace .epFin p{margin:0;font-size:11.5px;color:#f1dca6}#vSpace .epFinArt{display:flex;justify-content:center;margin:4px 0}#vSpace .epFinArt img{width:120px;height:120px}#vSpace .epFinArt svg{width:90px;height:90px}
+#vSpace .epFl{display:inline-flex;gap:5px;align-items:center;margin-top:7px;font-size:11px;color:var(--epA);font-weight:700}#vSpace .epFl svg{width:12px;height:12px}#vSpace .epFl.ok{color:#35d39b}#vSpace .epFin button{margin-top:7px;background:#35d39b;color:#06281c;font-weight:800;border-radius:8px;padding:6px 14px}
+#vSpace #sp_passSticky{position:sticky;bottom:0;z-index:3;padding:6px 0 2px;background:linear-gradient(180deg,rgba(11,18,32,0),var(--bg,#0b1220) 35%)}#vSpace #sp_passSticky:empty{display:none}
 
 #b3detail.hide{display:none}
 .b3gate.cgspot{width:40px;height:40px;margin:-20px 0 0 -20px;font-size:8px;padding:1px;line-height:1.05}
@@ -449,7 +495,7 @@ header .hrow2{display:none!important}
 <div class="view hide" id="vRew"><section><h2>Daily login rewards</h2><div id="daily"></div></section><section><h2 id="msH">Milestones</h2><div id="milestones"></div></section></div>
 <div class="view hide" id="vRank"><section style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><button class="alt" id="rkBack" type="button">‹ Back</button><b id="rkAreaT" style="font-size:18px">🏆 Ranks</b></section><section><a id="discordBtn" class="dbtn" href="https://discord.gg/gvywqZ5H29" target="_blank" rel="noopener noreferrer">💬 Join our Discord</a><h2 id="rkH">Ranks</h2><div class="tabs" id="rkTabs"></div><div id="lb"></div></section></div>
 <div class="view hide" id="vEv"><div id="evBody"></div></div>
-<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611101345</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
+<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611121300</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vCargo"><div class="cgpWrap"><section style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><button class="alt" id="cgpBack" type="button">‹ Ramps</button><b style="font-size:18px">📦 Cargo</b><button class="iaInfoBtn" type="button" data-iainfo="cargo">i</button><span style="flex:1"></span><button class="alt rkAreaBtn" type="button" data-rkarea="cargo">🏆 Ranks</button><button class="alt cgpNav" id="cgpPrev" type="button" aria-label="Previous ramp">‹</button><button class="alt cgpNav" id="cgpNext" type="button" aria-label="Next ramp">›</button></section><div id="cgpBody"></div><section id="cgPrSec" style="margin-top:12px"></section><section id="cgLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vSpace">
  <div class="card sp3top"><button class="alt" id="sp_back" type="button">‹ Pads</button><b>Spaceport</b><span class="sm sp3c">Colony <b id="sp_colony">0</b></span><span class="sm" id="sp_left"></span></div>
@@ -461,7 +507,7 @@ header .hrow2{display:none!important}
   </div>
   <div id="sp_gwrap"><canvas id="sp_cv"></canvas></div>
  </div>
- <div id="sp_screen-pass" hidden><div class="card sp3pass"><div class="sp3hero"><div class="sp3ring"></div><div><b>Space Pass</b><small>Free for everyone · Tier 30: Orbit Ring Frame + Spaceport Commander</small></div></div><b id="sp_passHead"></b><div class="sp3bar"><i id="sp_passBar"></i></div><div class="sp3buy" id="sp_passBuy"></div><div class="sp3hd"><span>Tier</span><span>Free</span><span>★ Premium</span></div><div id="sp_tiersList"></div><p class="sm" id="sp_passFoot"></p></div></div>
+ <div id="sp_screen-pass" hidden><div class="card sp3pass" id="sp_passCard"><div id="sp_passHero"></div><b id="sp_passHead"></b><div class="sp3bar"><i id="sp_passBar"></i></div><div id="sp_passVal"></div><div id="sp_passSkin"></div><div class="sp3hd ep"><span>Free</span><span>Tier</span><span>★ Premium</span></div><div id="sp_tiersList"></div><div id="sp_passShow"></div><p class="sm" id="sp_passFoot"></p><div id="sp_passSticky"></div></div></div>
  <div id="sp_screen-rank" hidden><div class="card"><b>Biggest colony at event end wins</b><div id="sp_lb"></div></div></div>
 </div>
 <div class="view hide" id="vSet"><section class="phead"><button class="alt" data-k="v4setBack">‹ Back</button><b>⚙️ Settings</b></section><div id="setBody"></div></div>
@@ -1562,14 +1608,17 @@ const msCount=()=>MILESTONES.filter(m=>S.ms[m.id]).length;
 // PAY_FULL=1: a xN bonus adds N (Michael's examples: 100 base, milestones only 184, + ad 384, + Lifetime 584; max x5.84 / Life Flight x10.84 / all x16.34)
 // PAY_FULL=0: a xN bonus adds N-1 (Lifetime +1, ad +1, Life Flight +4, Presidential Jet +2, Rescue Patrol +1.5)
 const PAY_FULL=1,payAdd=m=>PAY_FULL?m:m-1;
-const globalMult=()=>1+MS_BONUS*msCount()+(S.iap?payAdd(2):0); // V7: permanent pay bonus, ADDED: +4% per milestone + Lifetime 2x Pay
+const spPermAdd=()=>{const v=+S.spPerm;return v>0&&isFinite(v)?Math.min(v,1):0}; // Nov 2026 Event Pass: permanent +% income (ADDED like milestones)
+const spEvAdd=()=>{const q=S.spInc;return q&&+q.end>Date.now()&&+q.add>0?Math.min(+q.add,2):0}; // Nov 2026 Event Pass: +% income until the event ends
+const spWins=()=>{const q=S.spInc;return q&&+q.end>0&&+q.add>0?[[+q.end,PAY_FULL?Math.min(+q.add,2):Math.min(+q.add,2)+1]]:[]}; // offline window (rxInteg adds payAdd(w[1]))
+const globalMult=()=>1+MS_BONUS*msCount()+(S.iap?payAdd(2):0)+spPermAdd(); // V7: permanent pay bonus, ADDED: +4% per milestone + Lifetime 2x Pay
 const boostLeft=()=>Math.max(0,((S.boostEnd||0)-Date.now())/1000);
 // V7: every temporary boost ADDS payAdd(mult) to the pay bonus (PAY_FULL=1: ad +2, Life Flight +5, Presidential Jet +3, Rescue Patrol +2.5, 2x Income Weekend +2)
-function payParts(){const o=[['ms',MS_BONUS*msCount()]];if(S.iap)o.push(['iap',payAdd(2)]);if(boostLeft()>0)o.push(['ad',payAdd(BOOST_MULT)]);if(lfLeft()>0)o.push(['lf',payAdd(LF_MULT)]);for(const k in RXD)if(rxLeft(k)>0)o.push([k,payAdd(RXD[k].mult)]);if(ev2xMult()>1)o.push(['wk',payAdd(ev2xMult())]);return o}
-const tempAdd=()=>(boostLeft()>0?payAdd(BOOST_MULT):0)+(lfLeft()>0?payAdd(LF_MULT):0)+rxAdd()+(ev2xMult()>1?payAdd(ev2xMult()):0);
+function payParts(){const o=[['ms',MS_BONUS*msCount()]];if(S.iap)o.push(['iap',payAdd(2)]);if(boostLeft()>0)o.push(['ad',payAdd(BOOST_MULT)]);if(lfLeft()>0)o.push(['lf',payAdd(LF_MULT)]);for(const k in RXD)if(rxLeft(k)>0)o.push([k,payAdd(RXD[k].mult)]);if(ev2xMult()>1)o.push(['wk',payAdd(ev2xMult())]);if(spPermAdd()>0)o.push(['spp',spPermAdd()]);if(spEvAdd()>0)o.push(['spe',spEvAdd()]);return o}
+const tempAdd=()=>(boostLeft()>0?payAdd(BOOST_MULT):0)+(lfLeft()>0?payAdd(LF_MULT):0)+rxAdd()+(ev2xMult()>1?payAdd(ev2xMult()):0)+spEvAdd();
 const payBonus=()=>globalMult()+tempAdd(); // the header 'Pay bonus'
 // V7 header breakdown: base income (no bonus) x pay bonus, and what the pay bonus is made of (all parts ADD)
-function payLab(k){return{ms:'milestones',iap:'Lifetime 2x',ad:'⚡ ad boost',lf:'🚑 Life Flight',af1:'⭐ Presidential Jet',c130:'🛟 Rescue Patrol',wk:'2x weekend'}[k]}
+function payLab(k){return{ms:'milestones',iap:'Lifetime 2x',ad:'⚡ ad boost',lf:'🚑 Life Flight',af1:'⭐ Presidential Jet',c130:'🛟 Rescue Patrol',wk:'2x weekend',spp:'🚀 Space Pass (forever)',spe:'🚀 Space Pass event bonus'}[k]}
 function payBreak(est){const raw=est.base/globalMult();
  return tr29('base {b}/min × bonus x{m}',{b:money(raw*60),m:dec29(payBonus().toFixed(2))})+IB('pay')}
 function payInfo(){const P=payParts().filter(p=>p[1]>0),e=estimate(),raw=e.base/globalMult(),f=v=>dec29(String(+v.toFixed(2)));
@@ -1796,7 +1845,7 @@ function paxPerSec(){let s=0;for(let t=0;t<S.term;t++)for(let g=0;g<NG;g++){cons
 function calcAbsence(secs,startMs){const capS=offCap()*3600,cred=Math.min(capS,secs),endC=startMs+cred*1000,absEnd=startMs+secs*1000,bE=S.boostEnd||0,bs=Math.max(0,Math.min(cred,(bE-startMs)/1000));
  // piecewise: upgrades that finish during the absence raise the income rate from that moment on (completed ones are applied to S.lvl as we go)
  let t0=startMs,amount=0,pax=0;const done=[];
- const seg=t1=>{if(t1>t0){const len=(t1-t0)/1000;amount+=estimate().base*OFFLINE_RATE*rxInteg(t0,t1,[[bE,BOOST_MULT],[S.lfEnd||0,LF_MULT]].concat(rxWins()),globalMult());pax+=paxPerSec()*len;t0=t1}};
+ const seg=t1=>{if(t1>t0){const len=(t1-t0)/1000;amount+=estimate().base*OFFLINE_RATE*rxInteg(t0,t1,[[bE,BOOST_MULT],[S.lfEnd||0,LF_MULT]].concat(rxWins(),spWins()),globalMult());pax+=paxPerSec()*len;t0=t1}};
  let ev;while((ev=nextDone(absEnd))){seg(Math.max(t0,Math.min(ev.end,endC)));applyDone(ev);done.push(ev)}
  seg(endC);svcCount(cred); // #82: service departures during the credited offline time
  const wkK=weekStartOf(Date.now()),pre=cred>0&&startMs<wkK?amount*Math.max(0,Math.min(endC,wkK)-startMs)/(cred*1000):0;
@@ -3369,7 +3418,18 @@ FR.push({name:'Circuit Board',line:'Beta Tester: thick green PCB ring with solde
    crown(g,50,88,.62,['#fff3b0','#f0b020','#a86a00'],['#3cb8ff','#ffffff','#0a5a9a'],{n:5,w:24,h:10,gr:2.6});
    plate(g,10,t,{shape:'diamond',w:22,h:20,fill:['#bff0ff','#18a0c8','#0a4a7a'],rim:'#ffd34a',rimW:2.4,txt:'#fff',fs:12.5,glow:'rgba(255,210,80,.95)',glowB:12,cy:99,shine:1})}}];
  CGF.forEach(f=>FR.push(f));
-return{M,TOT,FR,addChamp,CGF_BASE,names:FR.map(f=>f&&f.name),setQ(low,gs){LOW=!!low;GS=gs||1},draw(g,L,t){(FR[L]||FR[0]).draw(g,t)}}})();
+ // ================= SPACE PASS Nov 2026 — "Supernova" (premium tier 28, animated): PF.FR[SPN] =================
+ // gold->magenta->violet thick ring with a sweeping shine, a pulsing star burst + rotating rays on top, sparkles travelling round the ring, a gem badge below.
+ function supernova(g,t){
+  if(!LOW){g.save();g.globalCompositeOperation='lighter';g.translate(50,-1);g.rotate(t*.35);for(let i=0;i<12;i++){g.rotate(TAU/12);const L=15+4*Math.sin(t*2+i);const gr=g.createLinearGradient(0,0,L,0);gr.addColorStop(0,'rgba(255,220,120,.85)');gr.addColorStop(1,'rgba(255,120,40,0)');g.fillStyle=gr;g.beginPath();g.moveTo(0,0);g.lineTo(L,-2.2);g.lineTo(L,2.2);g.closePath();g.fill()}g.restore()}
+  glow(g,'rgba(255,170,60,.6)',6);cfThickRing(g,9,3,13,cfLg(g,0,0,100,100,['#fff2a8','#ffb13d','#ff5fa8','#8b4dff','#ffb13d']));noGlow(g);
+  g.save();cfRingClip(g,9,3,13);const p=((t*.4)%1.6)-.3,a=p*200-30,sg=g.createLinearGradient(a,a,a+30,a+30);sg.addColorStop(0,'rgba(255,255,255,0)');sg.addColorStop(.5,'rgba(255,255,255,.85)');sg.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=sg;g.fillRect(-10,-10,120,120);g.restore();
+  g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=.9;g.beginPath();cfRr2(g,7.5,7.5,85,85,9);g.stroke();
+  const n=QN(10);for(let i=0;i<n;i++){const q=perim(i/n+t*.04,0),ph=Math.sin(t*3+i*1.7);star4(g,q[0],q[1],2.6+1.2*Math.abs(ph),Math.max(0,ph),t+i,i%2?'#ffffff':'#ffe9a0')}
+  g.save();glow(g,'rgba(255,230,150,.95)',10);star4(g,50,-1,9+1.5*Math.sin(t*3),1,t*.6,'#fff7d6');noGlow(g);g.restore();cfCirc(g,50,-1,2.6,'#ffffff',.6);
+  gem(g,50,99,5.2,['#ffe9b0','#ff8a3d','#a0306a'],{})}
+ const SPN=FR.push({name:'Supernova',line:'Space Pass Nov 2026 (premium tier 28): gold-to-violet ring with a sweeping shine, a pulsing star burst with rotating rays on top, travelling sparkles and a gem badge.',draw:supernova})-1;
+return{M,TOT,FR,addChamp,SPN,CGF_BASE,names:FR.map(f=>f&&f.name),setQ(low,gs){LOW=!!low;GS=gs||1},draw(g,L,t){(FR[L]||FR[0]).draw(g,t)}}})();
 
 /* ---- v18 Raeylann's Life Flight (hidden rare plane) + Gold Berry Crest frame: ported from /workspace/idle-airport-lifeflight (design B 'Skyline Medevac') ---- */
 const LFX=(()=>{
@@ -3645,6 +3705,7 @@ return{build,drawBerry,TEND,TLOAD,TPOP,drawDot:dotPerson,drawAmb:drawAmbulance,d
 function sanitizePr(){try{rxFix()}catch(e){errLog(e)}
  const p=Math.floor(+S.pr);S.pr=p>=0&&p<=PR_MAX?p:0;
  if(!S.prT||typeof S.prT!=='object'||Array.isArray(S.prT))S.prT={};
+ S.spPerm=Math.max(0,Math.min(1,+S.spPerm||0));{const q=S.spInc;S.spInc=(q&&typeof q==='object'&&+q.add>0&&+q.end>0&&isFinite(+q.end))?{add:Math.min(2,+q.add),end:Math.min(+q.end,Date.now()+10*86400e3),eid:String(q.eid||'')}:null}
  S.lfN=Math.max(0,Math.floor(+S.lfN)||0);S.lfEnd=+S.lfEnd>0&&isFinite(+S.lfEnd)?Math.min(+S.lfEnd,Date.now()+3*86400e3):0;
  const r=S.rr;S.rr=(r&&typeof r==='object'&&RARE_BY[r.id]&&Number.isInteger(r.t)&&Number.isInteger(r.g)&&r.t>=0&&r.t<NT&&r.g>=0&&r.g<NG&&isFinite(+r.el))?{id:r.id,t:r.t,g:r.g,el:Math.max(0,+r.el)}:null;
  const q=S.lfPop;S.lfPop=(q&&typeof q==='object'&&isFinite(+q.bonus))?{bonus:+q.bonus,first:!!q.first,n:Math.floor(+q.n)||1,stage:q.stage===1?1:0}:null}
@@ -4244,6 +4305,10 @@ const SPX={
     for(const[x,y,r,cl]of[[18,20,16,'rgba(255,120,220,.35)'],[80,30,18,'rgba(80,230,220,.32)'],[30,84,17,'rgba(140,110,255,.35)'],[84,82,14,'rgba(255,170,120,.28)']]){const rg=g.createRadialGradient(x,y,0,x,y,r);rg.addColorStop(0,cl);rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(0,0,100,100)}
     let s=11;const r=()=>(s=(s*9301+49297)%233280)/233280;g.fillStyle='rgba(255,255,255,.9)';for(let k=0;k<45;k++){g.beginPath();g.arc(r()*100,r()*100,k%6?.5:1,0,6.3);g.fill()}});
    for(const[x,y]of[[50,4],[96,50],[4,50]])spStar(g,x,y,3.6,'#bff6ff');return}
+  if(fr.sf==='comet'){band(8,g=>{const bg=g.createLinearGradient(0,0,100,100);bg.addColorStop(0,'#071a3a');bg.addColorStop(.6,'#0f4f8a');bg.addColorStop(1,'#1fb8e0');g.fillStyle=bg;g.fillRect(0,0,100,100);let s=5;const r=()=>(s=(s*9301+49297)%233280)/233280;g.fillStyle='rgba(255,255,255,.85)';for(let k=0;k<40;k++){g.beginPath();g.arc(r()*100,r()*100,k%6?.5:1,0,6.3);g.fill()}});
+   {const tg=g.createLinearGradient(4,70,84,5);tg.addColorStop(0,'rgba(95,212,255,0)');tg.addColorStop(.7,'rgba(160,235,255,.75)');tg.addColorStop(1,'rgba(240,252,255,1)');g.save();g.lineCap='round';g.strokeStyle=tg;g.lineWidth=3.4;g.beginPath();g.moveTo(4,70);g.quadraticCurveTo(6,6,82,5);g.stroke();g.lineWidth=1.2;g.strokeStyle='rgba(255,255,255,.8)';g.beginPath();g.moveTo(9,50);g.quadraticCurveTo(12,11,80,6);g.stroke();g.restore()}
+   g.beginPath();g.arc(85,5.5,4.8,0,6.3);{const cg=g.createRadialGradient(84,4.5,.5,85,5.5,5);cg.addColorStop(0,'#ffffff');cg.addColorStop(1,'#5fd4ff');pFill(g,cg,1.2)}
+   for(const[x,y,s]of[[50,96,4.6],[96,50,3.4],[96,94,3]])spStar(g,x,y,s,'#bff6ff');return}
   if(fr.sf==='orbit'){band(8,g=>{const bg=g.createRadialGradient(50,50,30,50,50,72);bg.addColorStop(0,'#1a2a6a');bg.addColorStop(1,'#070c26');g.fillStyle=bg;g.fillRect(0,0,100,100)});
    g.beginPath();rrect(g,4.5,4.5,91,91,R+2);g.strokeStyle='#9fd6ff';g.lineWidth=1.3;g.stroke();
    const a=((typeof performance!=='undefined'?performance.now():0)/2600)%(Math.PI*2),mx=50+Math.cos(a)*45.5,my=50+Math.sin(a)*45.5; /* moon circles the portrait (re-drawn = moves) */
@@ -4253,6 +4318,57 @@ const SPX={
 function spStar(g,x,y,r,c){g.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,q=k%2?r*.45:r;g.lineTo(x+Math.cos(a)*q,y+Math.sin(a)*q)}g.closePath();pFill(g,c,1.2)}
 
 SP_ITEMS.forEach(x=>{x.sp=1;ITEMS.push(x);IT[x.id]=x});
+/* ===== EVENT PASS DATA (Nov 12 2026). Michael: "Use this pass format for all future events as well. Just fill in the new prizes."
+   One passEvent({...}) per event. The pass screen + reward logic (spaceport block: ppEv/PASS) reads ONLY this data. How-to: EVENT-PASS-TEMPLATE.md.
+   id        = the Spaceport schedule id (remote-config "spaceport".id), e.g. 'spaceport-2026-12'. Premium product = sp_pass_premium_YYYY_MM (ppProd), or schedule "pass".
+   ver       = prize-table version tag (set it once; a pass loaded before its event opens drops claim flags left over from an older table)
+   F / P     = 30 tiers each (free / premium), index 0 = tier 1, at the colonist counts PASS_TH. null = nothing on that track at that tier.
+               reward fields: leg 0..9 (original Spaceport prize, free track only) it/it2 item id, tk tickets, min minutes-of-income cash, boost min of 2x,
+               inc +% income until the event ends, perm +% income forever, skin shuttle skin id, alt cash minutes if the item is already owned.
+   preview   = top-3 premium pictures in the hero: {tier:N} (picture + name from that premium tier) or {sum:'perm'|'min'} (track total); optional name/sub/tag/big.
+   show      = tier-30 showcase card {tier, title, text}.   theme = colours.   items / skins = NEW cosmetics this event adds (existing renderers only).
+   alt       = {f,p} default cash minutes for an already-owned item.   def:1 = default data set for an event id that has no data. */
+const PASS_TH=[16,40,70,100,160,220,300,450,600,800,1100,1600,2000,2400,3000,3500,4200,5000,6000,7000,8000,9500,11000,12000,14000,16000,18000,20000,23000,26000];
+const PASS_EVENTS={},PASS_SKINS={aurora:{name:'Aurora Livery',a:'#2fe3a0',b:'#7a4dff',sub:'Shuttle livery'}};let PASS_DEFAULT='';const PASS_SKIN_PAD=4; /* the delta-wing shuttle (marigold) shows skins best */
+const PASS_THEME_SPACE={accent:'#ffd45a',accent2:'#f2a516',hero:['#5b2ea6','#24135a','#0d0f2e'],lane:'#7a62d8',laneBg:['#2b1f5e','#171334']};
+function passEvent(d){(d.items||[]).forEach(x=>{if(!IT[x.id]){x.sp=1;ITEMS.push(x);IT[x.id]=x}});for(const k in d.skins||{})if(!PASS_SKINS[k])PASS_SKINS[k]=d.skins[k];
+ PASS_EVENTS[d.id]=d;if(d.def||!PASS_DEFAULT)PASS_DEFAULT=d.id;return d}
+/* October 2026 (ended): the original table, kept so October saves finalise with what they were promised */
+passEvent({id:'spaceport-2026-10',name:'Space Pass',theme:PASS_THEME_SPACE,alt:{f:30,p:60},
+ F:[{leg:0},{tk:5},{min:10},{leg:1},{tk:10},{boost:15},{leg:2},{min:20},{tk:10},{leg:3},{min:30},{leg:4},{tk:15},{min:30},{leg:5},{boost:30},{tk:15},{leg:6},{min:40},{tk:20},{leg:7},{min:50},{tk:20},{leg:8},{min:60},{tk:25},{min:60},{leg:9,tk:30},null,null],
+ P:[{it:'ttl_spcrew',tk:15},{min:15},{tk:10},{boost:30},{min:20},{tk:15},{it:'cap_patch',tk:10},{tk:15},{boost:30},{it:'frm_nebula',tk:15},{tk:20},{min:40},{boost:30},{tk:20},{it:'out_reddust',tk:15},{min:50},{tk:25},{it:'gl_ion'},{tk:25},{boost:30},{it:'ttl_navigator',tk:20},{tk:25},{min:60},{skin:'aurora'},{tk:30},{boost:30},{tk:30},{it:'cap_comet',tk:30},{min:90},{it:'frm_orbit',it2:'ttl_commander',tk:50}],
+ preview:[{tier:30,big:1},{tier:28},{tier:24}],show:{tier:30}});
+/* November 2026 Spaceport (Nov 16-22): Michael approved Nov 12 ("swap the not-ready items for other outfits or cash"). Fewer tickets/boosts, more income + glamour. */
+passEvent({id:'spaceport-2026-11',ver:'sp-2026-11.1',def:1,name:'Space Pass',theme:PASS_THEME_SPACE,alt:{f:30,p:60},
+ items:[
+  {id:'ttl_novacrew',slot:'title',name:'Nova Crew',r:2,src:'Space Pass Nov 2026 · Premium tier 1'},
+  {id:'out_starlight',slot:'outfit',name:'Starlight Flight Suit',r:2,kind:'jacket',col:'#e9f3ff',lap:'#bcd6f2',trim:'#5fd4ff',src:'Space Pass Nov 2026 · Premium tier 3'},
+  {id:'cap_neonpatch',slot:'cap',name:'Neon Patch Cap',r:2,kind:'sp_patch',sk:'patch',col:'#2a1458',trim:'#ff4fd8',src:'Space Pass Nov 2026 · Premium tier 6'},
+  {id:'cap_halo',slot:'cap',name:'Halo Helmet',r:3,kind:'sp_comet',sk:'comet',col:'#ffe7a0',trim:'#8b4dff',src:'Space Pass Nov 2026 · Premium tier 7'},
+  {id:'frm_comet',slot:'frame',name:'Comet Tail Frame',r:3,sf:'comet',src:'Space Pass Nov 2026 · Premium tier 10'},
+  {id:'gl_solar',slot:'glasses',name:'Solar Flare Visor',r:2,kind:'sp_visor',sk:'visor',col:'#ffe2c4',lens:['#ffd45a','#ff5a1f'],src:'Space Pass Nov 2026 · Premium tier 13'},
+  {id:'gl_neon',slot:'glasses',name:'Neon Navigator Visor',r:3,kind:'sp_visor',sk:'visor',col:'#f0e6ff',lens:['#ff4fd8','#5a22a0'],src:'Space Pass Nov 2026 · Premium tier 15'},
+  {id:'out_cmdgold',slot:'outfit',name:'Commander Gold Coat',r:3,kind:'jacket',col:'#d9a521',lap:'#f2c94c',trim:'#fff4cf',src:'Space Pass Nov 2026 · Premium tier 17'},
+  {id:'cap_starhood',slot:'cap',name:'Starburst Hood',r:3,kind:'sp_hood',sk:'hood',col:'#2a1458',trim:'#ffd45a',src:'Space Pass Nov 2026 · Premium tier 20'},
+  {id:'ttl_gtycoon',slot:'title',name:'Galaxy Tycoon',r:3,src:'Space Pass Nov 2026 · Premium tier 21'},
+  {id:'out_flightcrew',slot:'outfit',name:'Mission Orange Flight Suit',r:3,kind:'jacket',col:'#ff8a3d',lap:'#ffb37a',trim:'#ffffff',src:'Space Pass Nov 2026 · Premium tier 26'},
+  {id:'frm_supernova',slot:'frame',name:'Supernova Frame',r:3,an:PF.SPN,src:'Space Pass Nov 2026 · Premium tier 28 (animated)'},
+  {id:'ttl_splegend',slot:'title',name:'Spaceport Legend',r:3,src:'Space Pass Nov 2026 · Premium tier 30'},
+  {id:'cap_silvermoon',slot:'cap',name:'Silver Moon Cap',r:2,kind:'sp_moon',sk:'moon',col:'#d9e2f0',trim:'#ffffff',src:'Space Pass Nov 2026 · Free tier 6'},
+  {id:'out_mctrl',slot:'outfit',name:'Mission Control Jacket',r:2,kind:'jacket',col:'#2f5fb8',lap:'#4a7fd8',trim:'#e8eefc',src:'Space Pass Nov 2026 · Free tier 25'},
+  {id:'ttl_spgrad',slot:'title',name:'Spaceport Graduate',r:2,src:'Space Pass Nov 2026 · Free tier 30'}],
+ skins:{
+  nebula:{name:'Nebula Hull Livery',a:'#9b5bff',b:'#ff7ad9',sub:'Shuttle livery'},
+  celestial:{name:'Celestial Gold Shuttle',a:'#c98a12',b:'#fff1b0',c:'#fff7d6',gold:1,sub:'Exclusive solid-gold shuttle skin'}},
+ F:[{leg:0},{min:15},{inc:10},{leg:1},{min:20},{it:'cap_silvermoon'},{leg:2},{min:30},{perm:2},{leg:3},
+    {min:40},{leg:4},{inc:10},{min:45},{leg:5},{tk:15},{min:60},{leg:6},{perm:3},{min:75},
+    {leg:7},{boost:30},{min:90},{leg:8},{it:'out_mctrl'},{min:120},{tk:15},{leg:9,min:120},{min:150},{it:'ttl_spgrad'}],
+ P:[{it:'ttl_novacrew',inc:20},{min:30},{it:'out_starlight'},{perm:3},{min:45},{it:'cap_neonpatch'},{it:'cap_halo'},{min:60},{inc:20},{it:'frm_comet'},
+    {min:75},{perm:3},{it:'gl_solar'},{min:90},{it:'gl_neon'},{min:100},{it:'out_cmdgold'},{perm:4},{min:120},{it:'cap_starhood'},
+    {it:'ttl_gtycoon'},{min:150},{inc:20},{skin:'nebula'},{min:180},{it:'out_flightcrew'},{perm:5},{it:'frm_supernova',min:240},{min:300,tk:25},{skin:'celestial',it:'ttl_splegend'}],
+ preview:[{tier:30,big:1,sub:'Exclusive skin'},{tier:28,sub:'Animated frame'},{sum:'perm'}],
+ show:{tier:30,title:'Celestial Gold Shuttle',text:'Exclusive solid-gold skin for every shuttle on your pads<br>+ “Spaceport Legend” title'}});
+/* ===== /EVENT PASS DATA ===== */
 /* TRAINS cosmetics: reuse the existing pilot dresser kinds (no new art pipeline). trm = train milestone track (pl|px|lv), trt = tiers claimed needed */
 const TR_ITEMS=[
  {id:'ttl_commuter',slot:'title',name:'Commuter',r:1,trm:'pl',trt:1,src:'Trains milestone · Platforms open tier 1'},
@@ -6918,6 +7034,8 @@ function drawShipTop(c,id,o){o=o||{};const g=shipGeo(id),s=o.s||8,res=o.res||1,p
   const pane=(a,b)=>{const m=px(.75);c.beginPath();c.moveTo(lerp(-w1,w1,a)+m,y1+m*1.2);c.lineTo(lerp(-w1,w1,b)-m,y1+m*1.2);c.lineTo(lerp(-w2,w2,b)-m,y2-m);c.lineTo(lerp(-w2,w2,a)+m,y2-m);c.closePath();c.fillStyle=lg(c,0,y1,0,y2,[[0,'#08101f'],[.55,'#263f6a'],[1,'#6c8fc4']]);c.fill()};
   for(const[a,b]of[[0,.18],[.18,.5],[.5,.82],[.82,1]])pane(a,b);
   c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.moveTo(-w1*.62,y1+(y2-y1)*.22);c.lineTo(-w1*.2,y1+(y2-y1)*.22);c.lineTo(-w2*.3,y1+(y2-y1)*.42);c.lineTo(-w2*.72,y1+(y2-y1)*.42);c.closePath();c.fill()}
+ // ---- Space Pass Nov 2026: Celestial Gold skin (Lv.gold) tints the whole hull, wings and pods gold, keeping the shading ----
+ if(Lv.gold){c.save();c.globalCompositeOperation='multiply';c.fillStyle=lg(c,-R,0,R,0,[[0,'#a8740c'],[.35,'#ffd45a'],[.55,'#ffe9a0'],[1,'#a0700c']]);shapeAll();c.globalCompositeOperation='screen';c.globalAlpha=.16;c.fillStyle='#fff3c0';hullPath(c,g);c.fill();c.restore()}
  // ---- fins (edge-on from above) in livery colour + beacon ----
  both(c,()=>{for(const f of g.fins){const a=Math.max(.18,R*.06);c.beginPath();c.moveTo(f.x-a*.55,f.y);c.quadraticCurveTo(f.x,f.y-a*1.4,f.x+a*.55,f.y);c.lineTo(f.x+a*1.1,f.y+f.len*.6);c.lineTo(f.x+a*.7,f.y+f.len*.95);c.lineTo(f.x-a*.7,f.y+f.len*.95);c.lineTo(f.x-a*1.1,f.y+f.len*.6);c.closePath();
   c.fillStyle=lg(c,f.x-a,0,f.x+a,0,[[0,'#121826'],[.35,Lv.a],[.62,Lv.a],[1,'#121826']]);c.fill();line(.6);c.stroke();c.strokeStyle=Lv.b;c.lineWidth=px(1.1);c.beginPath();c.moveTo(f.x,f.y+f.len*.12);c.lineTo(f.x,f.y+f.len*.62);c.stroke()}});
@@ -7008,7 +7126,7 @@ function bgFor(i,k){const key='bg'+i+'|'+k;if(CACHE[key])return CACHE[key];const
  g.fillStyle='#2b374f';g.fillRect(SW-210,1,208,17);g.fillStyle='#cfe0ff';g.font='bold 13px sans-serif';g.textAlign='right';g.fillText('SPACEPORT · PAD '+(i+1),SW-8,14);g.textAlign='left';
  const sp=fdSpots(geo);for(let s=0;s<2;s++)fdWall(g,sp[s],s,true,0,true,0);
  g.restore();return CACHE[key]=c}
-function shipFor(i,k,roof){const liv=ppSkinLiv(PADS[i].ship),key='sh'+i+'|'+k+'|'+roof+(liv?'|au':'');if(CACHE[key])return CACHE[key];const sc=scene(i),[c,g]=canvasFor(SW+sc.g.L*sc.s*0+0,sc.Hc,k);
+function shipFor(i,k,roof){const liv=ppSkinLiv(PADS[i].ship),key='sh'+i+'|'+k+'|'+roof+(liv?'|'+(liv.sk||'au'):'');if(CACHE[key])return CACHE[key];const sc=scene(i),[c,g]=canvasFor(SW+sc.g.L*sc.s*0+0,sc.Hc,k);
  g.save();g.translate(sc.nx,sc.cy);g.rotate(Math.PI/2);g.scale(sc.s,sc.s);drawShipTop(g,sc.id,{liv:liv||undefined,s:sc.s,res:k,roof,rot:Math.PI/2,seated:[],plan:{seed4:i},K:k});g.restore();return CACHE[key]=c}
 // ---------- cycle state ----------
 const RT={}; // runtime per pad: plan, plan scaling
@@ -7111,7 +7229,7 @@ window.__spOpen=function(){if(!spOk())return false;['vMap','vCargo','vAdmin','vH
 window.__spClose=function(){save();const vs=$s('vSpace');if(vs)vs.classList.add('hide');lastT=0;if(window.__b3GoMap)window.__b3GoMap()};
 /* after the claim window: every reward the player reached but did not claim is added automatically (once per event) */
 function spFinal(){try{if(spPh()!=='closed')return 0;const m=mainS();if(!m||!m.sp||m.sp.v!==3)return 0;if(!ST)load();if(!ST||ST.fin)return 0;let n=0;const p=ppS(),T=ppTier();
- for(let i=0;i<T;i++){const r=SPP.F[i];if(r&&!ppFreeDone(i)){if(r.leg==null)p.f[i]=1;ppGive(r);n++}if(p.prem&&!p.p[i]){p.p[i]=1;ppGive(SPP.P[i]);n++}}
+ for(let i=0;i<T;i++){const r=SPP.F[i];if(r&&!ppFreeDone(i)){if(r.leg==null)p.f[i]=1;ppGive(r,'f');n++}if(p.prem&&!p.p[i]&&SPP.P[i]){p.p[i]=1;ppGive(SPP.P[i],'p');n++}}
  spRankPrize();
  ST.fin=1;ST.finN=n;try{pilotPersist()}catch(e){}save();if(n&&window._ui)try{toast('🚀 The Spaceport event has ended. '+n+' unclaimed reward'+(n===1?' was':'s were')+' added for you.')}catch(e){}return n}catch(e){return 0}}
 setTimeout(spFinal,3000);setInterval(spFinal,60e3);
@@ -7119,26 +7237,36 @@ window.__spSched={def:spDef,phase:spPh,now:spNow,ok:spOk,dur:spDur,final:spFinal
 window.__spOn=function(){const p=spPh();return p==='live'||p==='claim'};
 window.__sp={pass:()=>window.__spPass,EVENT_LIVE,get S(){return ST},PADS,TIERS,boardSecs,cycleSecs,paxOf,showTab,selPad,save,get sel(){return sel},frame:()=>window.__spFrame||null,watching:()=>watching(sel)};
 
-/* ---------- SPACE PASS (Michael approved Oct 22, 2026; changed 09:31: two tracks only) ----------
-   30 tiers keyed to the SAME colony count (passengers on watched departures). Free track for everyone; ONE Premium track $9.99 (sp_pass_premium).
-   No tier skips, no Plus, no Ticket buy-back. Buying Premium late unlocks every premium reward for tiers already reached. Tier 30 needs 26,000 real colonists.
-   The 10 original Spaceport prizes stay on the free track at their original colonist counts and keep data-spclaim=0..9 + ST.claimed[k] (old saves keep their claims). */
+/* ---------- EVENT PASS (template, Nov 12 2026). Michael: "Use this pass format for all future events as well. Just fill in the new prizes."
+   The UI + reward logic below is EVENT-AGNOSTIC. Each event only supplies DATA via passEvent({...}) (see PASS_EVENTS near SP_ITEMS and EVENT-PASS-TEMPLATE.md):
+   prize list per tier (F = free, P = premium), top-3 premium preview, tier-30 showcase, theme colours + names, optional new items/skins, product id (sp_pass_premium_YYYY_MM).
+   Tiers are keyed to the SAME colony count (passengers on watched departures). Free track for everyone; ONE Premium track (per-event Play product, ppProd()).
+   No tier skips, no Plus, no Ticket buy-back. Buying Premium late unlocks every premium reward for tiers already reached (claim them, or "Claim all").
+   The 10 original Spaceport prizes keep data-spclaim=0..9 + ST.claimed[k] (old saves keep their claims). A prize the player already owns pays income-scaled cash instead.
+   Reward fields (any mix): leg (original prize 0..9) it/it2 (item id) tk (tickets) min (minutes of income as cash) boost (min of 2x) inc (+% income until the event ends)
+   perm (+% income forever, adds to the permanent pay bonus) skin (shuttle skin id) alt (cash minutes if an item is already owned). */
 const SPP={
- TH:[16,40,70,100,160,220,300,450,600,800,1100,1600,2000,2400,3000,3500,4200,5000,6000,7000,8000,9500,11000,12000,14000,16000,18000,20000,23000,26000],
- F:[{leg:0},{tk:5},{min:10},{leg:1},{tk:10},{boost:15},{leg:2},{min:20},{tk:10},{leg:3},{min:30},{leg:4},{tk:15},{min:30},{leg:5},{boost:30},{tk:15},{leg:6},{min:40},{tk:20},{leg:7},{min:50},{tk:20},{leg:8},{min:60},{tk:25},{min:60},{leg:9,tk:30},null,null],
- P:[{it:'ttl_spcrew',tk:15},{min:15},{tk:10},{boost:30},{min:20},{tk:15},{it:'cap_patch',tk:10},{tk:15},{boost:30},{it:'frm_nebula',tk:15},{tk:20},{min:40},{boost:30},{tk:20},{it:'out_reddust',tk:15},{min:50},{tk:25},{it:'gl_ion'},{tk:25},{boost:30},{it:'ttl_navigator',tk:20},{tk:25},{min:60},{skin:'aurora'},{tk:30},{boost:30},{tk:30},{it:'cap_comet',tk:30},{min:90},{it:'frm_orbit',it2:'ttl_commander',tk:50}],
+ get TH(){return ppEv().TH||PASS_TH},get F(){return ppEv().F},get P(){return ppEv().P},get E(){return ppEv()},
  PROD:{prem:'sp_pass_premium'},PRICE:{prem:'$9.99'}, /* PROD.prem = the October 2026 product (1.6.2). Nov 10 2026: one product PER EVENT, see ppProd() */
  AURORA:{a:'#2fe3a0',b:'#7a4dff'}};
+/* the pass data of the save's event (falls back to the scheduled event, then the newest data set) */
+function ppEv(){let id='';try{id=(ST&&ST.eid)||((spDef()||{}).id)||''}catch(e){}return PASS_EVENTS[id]||PASS_EVENTS[PASS_DEFAULT]}
 /* Nov 10 2026: Space Pass Premium product for the CURRENT event. spaceport-2026-10 = sp_pass_premium (Oct, app 1.6.2); spaceport-YYYY-MM = sp_pass_premium_YYYY_MM
    (pre-registered in app 1.6.11+); a schedule entry may name it explicitly with "pass". '' = this event has no Premium product (test link). */
 function ppProd(d){d=d||spDef();if(!d||d.off)return'';if(d.pid)return d.pid;const m=/^spaceport-(\d{4})-(\d{2})$/.exec(d.id||'');if(!m)return'';const k=m[1]+'_'+m[2];return k==='2026_10'?SPP.PROD.prem:'sp_pass_premium_'+k}
-/* the pass belongs to ONE event (ST.eid). A save carried into a new event (unfinished colony) never keeps the earlier event's Premium. */
+/* the pass belongs to ONE event (ST.eid). A save carried into a new event (unfinished colony) never keeps the earlier event's Premium.
+   Nov 12 2026: p.tv = prize-table version. A pass that has no tv yet and is loaded BEFORE its event opens can only hold claims from an
+   earlier table (October carry-over), so its free/premium claim flags are cleared once. After the start, flags are kept (never double-grants). */
 function ppS(){if(!ST)return null;let p=ST.pass;if(!p||typeof p!=='object')p=ST.pass={prem:0,f:{},p:{},log:[]};p.f=p.f||{};p.p=p.p||{};p.log=p.log||[];
  if(ST.eid&&p.eid!==ST.eid){
   if(p.eid){p=ST.pass={prem:0,f:{},p:{},log:[['event',Date.now(),p.eid+'>'+ST.eid]],fb:p.fb||[]}} /* tagged pass of an earlier event: fresh pass */
   else if(p.prem){const t=p.log.filter(x=>x&&x[0]==='prem').map(x=>+x[1]||0),st=+ST.start||0;  /* untagged (before Nov 10 2026): Premium bought before this event opened = October */
    if(!t.length||Math.max.apply(null,t)<st){p.prem=0;p.p={};delete p.tok;delete p.pid;p.log.push(['event',Date.now(),'legacy>'+ST.eid])}}
   p.eid=ST.eid}
+ const E=typeof ppEv==='function'?ppEv():null;
+ if(E&&E.ver&&p.tv!==E.ver){const now=typeof spNow==='function'?spNow():Date.now();
+  if(p.tv==null&&(+ST.start||0)>now){if(Object.keys(p.f).length||Object.keys(p.p).length)p.log.push(['table',Date.now(),E.ver]);p.f={};p.p={}}
+  p.tv=E.ver}
  return p}
 function ppMain(){return mainS()||{}}
 function ppColTier(){return SPP.TH.filter(t=>ST.colony>=t).length}
@@ -7146,16 +7274,62 @@ function ppColTier(){return SPP.TH.filter(t=>ST.colony>=t).length}
 function ppTier(){return ppColTier()}
 function ppLeft(){const d=spDef();return d&&!d.off?Math.max(0,d.end-spNow()):0} /* premium sales close when the event (not the claim window) ends */
 const TKI='<svg class="tixi sp3ti" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 1h20a1 1 0 0 1 1 1v3.2a2.8 2.8 0 0 0 0 5.6V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3.2a2.8 2.8 0 0 0 0-5.6V2a1 1 0 0 1 1-1z" fill="#2f6fd8" stroke="#f5c542" stroke-width="1.5"/><polygon fill="#f5c542" points="12,3.4 13.3,6.5 16.6,6.7 14.1,8.8 14.9,12 12,10.3 9.1,12 9.9,8.8 7.4,6.7 10.7,6.5"/></svg>'; /* same blue ticket as the header Tickets cell */
-function ppTxt(r){if(!r)return'';const a=[];if(r.leg!=null)a.push(pName(TPRIZE[r.leg]));if(r.it)a.push(pName(r.it));if(r.it2)a.push(pName(r.it2));if(r.skin)a.push('Aurora Livery shuttle skin');if(r.tk)a.push(TKI+' '+r.tk);if(r.min)a.push('💵 '+r.min+' min');if(r.boost)a.push('⚡ '+r.boost+' min 2x');return a.join(' + ')}
-function ppGive(r){if(!r)return;const m=ppMain();if(r.leg!=null){ST.claimed[r.leg]=1;spGrant([TPRIZE[r.leg]])}if(r.tk)m.tickets=(m.tickets||0)+r.tk;
- if(r.min){try{const a=typeof evRewardCash==='function'?evRewardCash(r.min):0;m.cash=(m.cash||0)+a;m.life=(m.life||0)+a}catch(e){}}
- if(r.boost){try{if(typeof addBoostSecs==='function')addBoostSecs(r.boost*60)}catch(e){}}
- const ids=[r.it,r.it2].filter(Boolean);if(ids.length)spGrant(ids);if(r.skin){m.spSkin={own:1,on:1};for(const k in CACHE)if(k.startsWith('sh'))delete CACHE[k]}}
+/* ---- reward pictures (original SVG / existing item renderers / the real shuttle renderer) ---- */
+const PPI={
+ cash:'<svg viewBox="0 0 48 48"><rect x="4" y="12" width="40" height="24" rx="4" fill="#2f9e5b" stroke="#bff5c9" stroke-width="2"/><circle cx="24" cy="24" r="7" fill="#bff5c9"/><text x="24" y="28.5" font-size="11" font-weight="900" text-anchor="middle" fill="#1d6b3c">$</text><rect x="8" y="8" width="32" height="4" rx="2" fill="#56c785"/></svg>',
+ inc:'<svg viewBox="0 0 48 48"><rect x="6" y="30" width="7" height="12" rx="1.5" fill="#5fd4ff"/><rect x="17" y="23" width="7" height="19" rx="1.5" fill="#5fd4ff"/><rect x="28" y="15" width="7" height="27" rx="1.5" fill="#5fd4ff"/><path d="M6 24 L20 13 L28 18 L42 6" stroke="#ffd45a" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M34 5h9v9" stroke="#ffd45a" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>',
+ perm:'<svg viewBox="0 0 48 48"><path d="M24 22c-5-7-15-7-15 0s10 7 15 0 15-7 15 0-10 7-15 0z" stroke="#ffd45a" stroke-width="4.5" fill="none"/><path d="M24 22c-5-7-15-7-15 0s10 7 15 0 15-7 15 0-10 7-15 0z" stroke="#fff6cc" stroke-width="1.2" fill="none"/><text x="24" y="42" font-size="8.5" font-weight="900" text-anchor="middle" fill="#ffd45a">FOREVER</text></svg>',
+ tk:'<svg viewBox="0 0 48 48"><path d="M5 13h38v7a4 4 0 0 0 0 8v7H5v-7a4 4 0 0 0 0-8z" fill="#2f6fd8" stroke="#f5c542" stroke-width="2"/><polygon fill="#f5c542" points="24,17 26,22 31,22.3 27.2,25.6 28.4,30.5 24,27.8 19.6,30.5 20.8,25.6 17,22.3 22,22"/></svg>',
+ boost:'<svg viewBox="0 0 48 48"><polygon points="27,4 10,27 22,27 18,44 38,19 26,19" fill="#ffd45a" stroke="#fff3b0" stroke-width="1.5"/></svg>',
+ title:c=>'<svg viewBox="0 0 48 48"><path d="M4 14h40l-4 10 4 10H4l4-10z" fill="'+c+'"/><rect x="10" y="16" width="28" height="16" rx="2" fill="#fff4cf"/><path d="M15 21h18M15 26h12" stroke="#7a5a00" stroke-width="2.4" stroke-linecap="round"/><polygon fill="#ffd45a" stroke="#7a5a00" stroke-width=".8" points="24,4 25.6,8.4 30,8.6 26.5,11.3 27.7,15.6 24,13.2 20.3,15.6 21.5,11.3 18,8.6 22.4,8.4"/></svg>',
+ lock:'<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2" fill="#ffd45a"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#ffd45a" stroke-width="3" fill="none"/></svg>'};
+const ppSkinCache={};
+/* a real top-down picture of the pad shuttle in a pass skin (drawShipTop = the same renderer the pads use) */
+function ppSkinPic(k,px){px=px||44;const ck=k+'|'+px;if(ppSkinCache[ck])return ppSkinCache[ck];let url='';
+ try{const sk=PASS_SKINS[k],id=PADS[PASS_SKIN_PAD].ship,g=shipGeo(id),L=g.L,W=(g.Rmax||g.R)*2.6,Sz=px*3,s=Math.min(Sz*.92/L,Sz*.92/W),cv=document.createElement('canvas');cv.width=cv.height=Sz;const c=cv.getContext('2d');
+  c.translate(Sz/2,(Sz-L*s)/2);c.scale(s,s);drawShipTop(c,id,{liv:sk?Object.assign({},g.def.liv,sk):undefined,s,res:1,roof:true,rot:0,seated:[],plan:{seed4:1},K:1,shadow:false});url=cv.toDataURL()}catch(e){}
+ const h=url?'<img alt="" src="'+url+'" style="width:'+px+'px;height:'+px+'px">':PPI.boost;return ppSkinCache[ck]=h}
+function ppPic(r,px){if(!r)return'';const E=ppEv(),id=r.leg!=null?TPRIZE[r.leg]:(r.it||null),x=id&&IT[id];
+ if(r.skin)return ppSkinPic(r.skin,px);
+ if(x)return x.slot==='title'?PPI.title(rarCol(x.r)):(typeof itemThumb==='function'?itemThumb(x):'');
+ if(r.perm)return PPI.perm;if(r.inc)return PPI.inc;if(r.min)return PPI.cash;if(r.tk)return PPI.tk;if(r.boost)return PPI.boost;return''}
+const PP_SLOT={title:'Title',cap:'Pilot cap',glasses:'Pilot visor',outfit:'Pilot outfit',frame:'Pilot-card frame',epa:'Pilot badge'};
+/* text parts of one reward: [[name, sub], ...] (first = the big line) */
+function ppParts(r){if(!r)return[];const a=[],it=id=>{const x=IT[id];if(x)a.push([x.name+(x.an?' (animated)':''),PP_SLOT[x.slot]||x.slot])};
+ if(r.skin){const s=PASS_SKINS[r.skin];a.push([s?s.name:r.skin,s&&s.sub||'Exclusive shuttle skin'])}
+ if(r.leg!=null)it(TPRIZE[r.leg]);if(r.it)it(r.it);if(r.it2)it(r.it2);
+ if(r.perm)a.push(['+'+r.perm+'% income','forever · every airport']);
+ if(r.inc)a.push(['+'+r.inc+'% income','until the event ends']);
+ if(r.min){let v='';try{v=typeof evRewardCash==='function'&&typeof money==='function'?' · '+money(evRewardCash(r.min)):''}catch(e){}a.push(['Cash × '+r.min+' min','of your income'+v])}
+ if(r.tk)a.push([r.tk+' tickets','']);if(r.boost)a.push(['2x boost',r.boost+' min']);return a}
+function ppTxt(r){return ppParts(r).map(x=>x[0]).join(' + ')}
+function ppIsGlam(r){return !!(r&&(r.skin||r.it||r.it2||r.leg!=null))}
+function ppSkinFlush(){for(const k in CACHE)if(k.startsWith('sh'))delete CACHE[k]}
+/* give ONE tier reward. trk 'f'|'p'. Returns the list of things received (for the toast). Already-owned items pay alt minutes of income as cash. */
+function ppGive(r,trk){if(!r)return[];const m=ppMain(),E=ppEv(),alt=r.alt!=null?r.alt:((E&&E.alt||{})[trk==='p'?'p':'f']||30),got=[];
+ const cash=min=>{let a=0;try{a=typeof evRewardCash==='function'?evRewardCash(min):0}catch(e){}if(a>0&&isFinite(a)){m.cash=(m.cash||0)+a;m.life=(m.life||0)+a}else a=0;return a};
+ const item=id=>{if(!id)return;if(IT[id]&&spGrant([id]).length){got.push(pName(id));return}cash(alt);got.push(pName(id)+' already owned → '+alt+' min of cash')};
+ if(r.leg!=null){ST.claimed[r.leg]=1;item(TPRIZE[r.leg])}
+ item(r.it);item(r.it2);
+ if(r.tk){m.tickets=(m.tickets||0)+r.tk;got.push(r.tk+' tickets')}
+ if(r.min){cash(r.min);got.push(r.min+' min of cash')}
+ if(r.boost){try{if(typeof addBoostSecs==='function')addBoostSecs(r.boost*60)}catch(e){}got.push(r.boost+' min 2x boost')}
+ if(r.inc){const d=spDef(),now=spNow(),end=d&&!d.off&&d.id===ST.eid?+d.end||0:0;
+  if(end>now){const q=m.spInc&&+m.spInc.end===end?m.spInc:{add:0,end,eid:ST.eid};q.add=Math.min(2,Math.round(((+q.add||0)+r.inc/100)*1e4)/1e4);m.spInc=q;got.push('+'+r.inc+'% income until the event ends')}
+  else{const mm=r.inc*3;cash(mm);got.push(mm+' min of cash (event income bonus after the event)')}}
+ if(r.perm){m.spPerm=Math.min(1,Math.round(((+m.spPerm||0)+r.perm/100)*1e4)/1e4);got.push('+'+r.perm+'% income forever')}
+ if(r.skin){const k=r.skin;if(m.spSkins&&m.spSkins[k]){cash(alt);got.push((PASS_SKINS[k]||{}).name+' already owned → '+alt+' min of cash')}
+  else{m.spSkins=Object.assign({},m.spSkins||{},{[k]:1});m.spSkinOn=k;if(k==='aurora')m.spSkin={own:1,on:1};ppSkinFlush();got.push((PASS_SKINS[k]||{name:k}).name)}}
+ return got}
 function ppFreeDone(i){const r=SPP.F[i];if(!r)return true;return r.leg!=null?!!ST.claimed[r.leg]:!!ppS().f[i]}
-function ppClaim(trk,i){const p=ppS();if(i>=ppTier())return false;
- if(trk==='f'){const r=SPP.F[i];if(!r||ppFreeDone(i))return false;if(r.leg==null)p.f[i]=1;ppGive(r)}
- else{if(!p.prem||p.p[i])return false;p.p[i]=1;ppGive(SPP.P[i])}
- try{pilotPersist()}catch(e){}save();PASS.render();return true}
+function ppClaim(trk,i,quiet){const p=ppS();if(i>=ppTier())return false;let got;
+ if(trk==='f'){const r=SPP.F[i];if(!r||ppFreeDone(i))return false;if(r.leg==null)p.f[i]=1;got=ppGive(r,'f')}
+ else{if(!p.prem||p.p[i]||!SPP.P[i])return false;p.p[i]=1;got=ppGive(SPP.P[i],'p')}
+ try{pilotPersist()}catch(e){}save();PASS.render();ppLast=got;if(!quiet)try{if(window._ui&&typeof toast==='function'&&got.length)toast((trk==='p'?'★ ':'')+'Tier '+(i+1)+': '+got.join(' · '))}catch(e){}return true}
+let ppLast=[];
+/* claim every reachable reward on both tracks (free, and premium when owned). Each tier is flagged before it is given: never twice. */
+function ppClaimAll(){const p=ppS(),T=ppTier();let n=0;for(let i=0;i<T;i++){if(SPP.F[i]&&!ppFreeDone(i)&&ppClaim('f',i,1))n++;if(p.prem&&!p.p[i]&&ppClaim('p',i,1))n++}
+ try{if(n&&window._ui&&typeof toast==='function')toast('🚀 Claimed '+n+' Space Pass reward'+(n===1?'':'s'))}catch(e){}return n}
 /* purchase grant (mock in web/test builds; native Play Billing result calls the same grant) */
 /* opt (native Play Billing, via store-ui grantToGame): {token, restore}. IDEMPOTENT: a restore / re-delivery of the same purchase never grants twice.
    Returns true when the purchase is (now or already) honoured, false only when the game/save is not ready (Play re-delivers it next start). */
@@ -7181,26 +7355,61 @@ function ppBuy(kind){if(kind!=='prem')return;if(!ST){if(!mainS())return;load()}i
  if(N&&N.purchase)return N.purchase(id).then(r=>{try{PASS.render()}catch(e){}if(r&&!r.success&&r.status!=='cancelled'&&r.status!=='busy'){if(r.status==='unavailable'||r.status==='not_implemented'){ppUnavail();return}try{toast(r.status==='pending'?'Payment pending – the pass unlocks as soon as Google Play confirms it.':'Purchase didn’t go through. Please try again.')}catch(e){}}});
  const go=()=>ppGrant('prem'),body='<p>Space Pass Premium for this event? Every premium reward, including tiers you already reached.</p><p class="sm">MOCK PURCHASE (test build) · nothing is charged · product '+id+'</p>';
  if(typeof askConfirm==='function')return askConfirm({title:'Purchase (test) · '+SPP.PRICE.prem,body,ok:'Buy'},go);return go()}
+/* totals of a track (value box + hero line) */
+function ppSum(L){const o={min:0,inc:0,perm:0,tk:0,boost:0,glam:0,newg:0};(L||[]).forEach(r=>{if(!r)return;o.min+=r.min||0;o.inc+=r.inc||0;o.perm+=r.perm||0;o.tk+=r.tk||0;o.boost+=r.boost||0;
+ const n=(r.leg!=null?1:0)+(r.it?1:0)+(r.it2?1:0)+(r.skin?1:0);o.glam+=n;o.newg+=n-(r.leg!=null?1:0)});return o}
+const ppH=m=>m>=60?(Math.round(m/6)/10)+' h':m+' min';
+/* one picture tile of the premium preview / showcase */
+function ppPrevTile(q,E,i){const P=E.P,N=P.length;let pic='',name=q.name||'',sub=q.sub||'',tag=q.tag||'';
+ if(q.sum){const s=ppSum(P);if(q.sum==='perm'){pic=PPI.perm;name=name||'+'+s.perm+'% income';sub=sub||'Forever';tag=tag||P.filter(r=>r&&r.perm).length+' TIERS'}
+  else if(q.sum==='min'){pic=PPI.cash;name=name||ppH(s.min)+' of cash';sub=sub||'income-scaled';tag=tag||P.filter(r=>r&&r.min).length+' TIERS'}}
+ else{const t=Math.max(1,Math.min(N,q.tier|0)),r=P[t-1]||{},pp=ppParts(r);pic=q.skin?ppSkinPic(q.skin,q.big?64:52):ppPic(r,q.big?64:52);name=name||(pp[0]||[''])[0];sub=sub||(pp[0]||['',''])[1];tag=tag||'TIER '+t}
+ return'<div class="epSc'+(q.big||i===0?' epBig':'')+'"><span class="epTi">'+tag+'</span><div class="epArt">'+pic+'</div><b>'+name+'</b><small>'+sub+'</small></div>'}
+function ppCell(r,trk,i,got,p){const E=ppEv();if(!r)return'<div class="epCell epNone"><span class="sp3dim">'+(trk==='f'?'free track complete':'')+'</span></div>';
+ const parts=ppParts(r),glam=ppIsGlam(r),prem=trk==='p',lockd=prem&&!p.prem;let done,btn='';
+ if(prem)done=!!p.p[i];else done=ppFreeDone(i);
+ if(lockd)btn='';else if(done)btn='<span class="epOk">✓</span>';
+ else if(got)btn=prem?'<button data-spprem="'+i+'">Claim</button>':'<button '+(r.leg!=null?'data-spclaim="'+r.leg+'"':'data-spfree="'+i+'"')+'>Claim</button>';
+ const isNew=glam&&!(r.leg!=null&&!r.it&&!r.skin);
+ const tg=prem&&glam?'<span class="epTag">EXCLUSIVE</span>':(!prem&&isNew?'<span class="epTag n">NEW</span>':'');
+ const sub=parts.slice(1).map(x=>(x[0][0]==='+'?'':'+ ')+x[0]).join(' ')||(parts[0]||['',''])[1];
+ const ok=btn.indexOf('epOk')>0;
+ return'<div class="epCell'+(prem?' pr':'')+(prem&&(glam||r.perm)?' gl':'')+(done&&!lockd?' done':'')+(lockd?' lk':'')+'">'+tg+'<div class="epIco">'+ppPic(r,44)+(lockd?'<span class="epLock">'+PPI.lock+'</span>':'')+(ok?'<span class="epDone">✓</span>':'')+'</div><div class="epTx"><b>'+(parts[0]||[''])[0]+'</b><small>'+sub+'</small>'+(ok?'':btn)+'</div></div>'}
 const PASS={
- render(){if(!ST)return;try{ppPriceFetch()}catch(e){}const p=ppS(),T=ppTier(),ct=ppColTier(),nxt=SPP.TH[ct];let cf=0,cp=0;
-  for(let i=0;i<T;i++){if(SPP.F[i]&&!ppFreeDone(i))cf++;if(p.prem&&!p.p[i])cp++}
+ render(){if(!ST)return;try{ppPriceFetch()}catch(e){}const E=ppEv(),th=E.theme||{},p=ppS(),T=ppTier(),ct=ppColTier(),TH=SPP.TH,N=TH.length,nxt=TH[ct],live=spPh()==='live';let cf=0,cp=0;
+  for(let i=0;i<T;i++){if(SPP.F[i]&&!ppFreeDone(i))cf++;if(p.prem&&!p.p[i]&&SPP.P[i])cp++}
+  const pl=p.prem?0:SPP.P.slice(0,T).filter(Boolean).length;
   $s('sp_passTab').textContent='Pass'+(cf+cp?' ('+(cf+cp)+')':'');
-  $s('sp_passHead').innerHTML='Tier '+T+' / 30'+'<small class="sp3cn">Colony '+nf(ST.colony)+(nxt?' · next '+nf(nxt):' · max')+'</small>';
-  const pc=Math.min(100,T>=30?100:((T>0?(ST.colony-(SPP.TH[ct-1]||0)):ST.colony)/Math.max(1,(nxt||1)-(SPP.TH[ct-1]||0))*100));$s('sp_passBar').style.width=Math.max(2,pc)+'%';
-  $s('sp_passBuy').innerHTML=!p.prem&&spPh()!=='live'?'<div class="sp3own sp3ended">Premium sales have ended for this event</div>':!p.prem?'<button class="sp3b1" data-spbuy="prem">Premium '+ppPriceTxt()+'<small>Every premium reward, even for tiers already reached</small></button>':'<div class="sp3own">⭐ Premium active · all premium rewards unlocked</div>';
-  $s('sp_tiersList').innerHTML=SPP.TH.map((t,i)=>{const got=i<T,fr=SPP.F[i],pr=SPP.P[i];let fc;
-   if(!fr)fc='<span class="sp3rw sp3dim">free track complete</span>';else{const done=ppFreeDone(i),attr=fr.leg!=null?'data-spclaim="'+fr.leg+'"':'data-spfree="'+i+'"',lg=fr.leg!=null&&IT[TPRIZE[fr.leg]];
-    const th=lg?(lg.slot==='title'?'<span class="sp3th sp3tt">★</span>':typeof itemThumb==='function'?'<span class="sp3th">'+itemThumb(lg)+'</span>':''):'';
-    fc=th+'<span class="sp3rw">'+ppTxt(fr)+'</span><button '+attr+' '+(!got||done?'disabled':'')+'>'+(done?'Claimed':got?'Claim':'Locked')+'</button>'}
-   const pd=!!p.p[i],pc2='<span class="sp3rw"><span class="sp3star">★</span>'+ppTxt(pr)+'</span>'+(p.prem?'<button data-spprem="'+i+'" '+(!got||pd?'disabled':'')+'>'+(pd?'Claimed':got?'Claim':'Locked')+'</button>':'<span class="sp3lk">🔒</span>');
-   return '<div class="sp3tr'+(got?' got':i===T?' nx':'')+'" data-tier="'+(i+1)+'"><div class="sp3tn"><b>'+(i+1)+'</b><small>'+nf(t)+'</small></div><div class="sp3cf">'+fc+'</div><div class="sp3cp'+(p.prem?' on':'')+'">'+pc2+'</div></div>'}).join('');
-  $s('sp_passFoot').textContent='Pass tiers follow your colony. Premium never adds colonists, so pads and Ranks stay fair. Cosmetics are yours forever.'},
+  const card=$s('sp_passCard');if(card){const v={'--epA':th.accent||'#ffd45a','--epA2':th.accent2||'#f2a516','--epH1':(th.hero||[])[0]||'#5b2ea6','--epH2':(th.hero||[])[1]||'#24135a','--epH3':(th.hero||[])[2]||'#0d0f2e','--epP':th.lane||'#7a62d8','--epP1':(th.laneBg||[])[0]||'#2b1f5e','--epP2':(th.laneBg||[])[1]||'#171334'};for(const k in v)card.style.setProperty(k,v[k])}
+  const sP=ppSum(SPP.P),sF=ppSum(SPP.F),nm=E.name||'Space Pass';
+  const buyBtn=(big)=>'<button class="epBuy'+(big?'':' sm')+'" data-spbuy="prem"><span class="l"><b>'+(big?'Unlock Premium':'Unlock Premium'+(pl?' · '+pl+' reward'+(pl===1?'':'s')+' waiting':''))+'</b><small>'+(big||!pl?'Every premium reward, even tiers you already reached':'Tier 1–'+T+' premium rewards unlock instantly')+'</small></span><span class="pr">'+ppPriceTxt()+'</span></button>';
+  const buy=!p.prem&&!live?'<div class="sp3own sp3ended">Premium sales have ended for this event</div>':!p.prem?buyBtn(1):'<div class="epOwn">★ Premium active · all premium rewards unlocked</div>';
+  $s('sp_passHero').innerHTML='<div class="epHero"><div class="epStars"></div><span class="epRib">★ PREMIUM PREVIEW</span><h3>'+nm+' <em>Premium</em></h3><p>'+(E.tagline||(sP.glam+' exclusive items · +'+sP.perm+'% income forever · '+ppH(sP.min)+' of cash'))+'</p><div class="epShow">'+(E.preview||[]).slice(0,3).map((q,i)=>ppPrevTile(q,E,i)).join('')+'</div><div class="sp3buy" id="sp_passBuy">'+buy+'</div></div>';
+  $s('sp_passHead').innerHTML='Tier '+T+' / '+N+'<small class="sp3cn">Colony '+nf(ST.colony)+(nxt?' · next tier at '+nf(nxt):' · max')+'</small>';
+  const pc=Math.min(100,T>=N?100:((T>0?(ST.colony-(TH[ct-1]||0)):ST.colony)/Math.max(1,(nxt||1)-(TH[ct-1]||0))*100));$s('sp_passBar').style.width=Math.max(2,pc)+'%';
+  const row=(k,t)=>'<div class="ln"><span class="epMi">'+k+'</span><span>'+t+'</span></div>';
+  $s('sp_passVal').innerHTML='<div class="epVal"><div class="vb"><h4>FREE TRACK</h4>'+row(PPI.cash,ppH(sF.min)+' of cash')+(sF.inc?row(PPI.inc,'+'+sF.inc+'% event income'):'')+(sF.perm?row(PPI.perm,'+'+sF.perm+'% income forever'):'')+row(PPI.title('#7a4dff'),sF.glam+' items'+(sF.newg?' ('+sF.newg+' new)':''))+'</div>'+
+   '<div class="vb p"><h4>★ PREMIUM ADDS</h4>'+row(PPI.cash,'+'+ppH(sP.min)+' of cash')+(sP.inc?row(PPI.inc,'+'+sP.inc+'% event income'):'')+(sP.perm?row(PPI.perm,'+'+sP.perm+'% income forever'):'')+row(PPI.title('#ffb13d'),sP.glam+' exclusive items')+'</div></div>'+
+   (cf+cp?'<button class="epAll" data-spall="1">Claim all ('+(cf+cp)+')</button>':'');
+  const m=ppMain(),own=Object.keys(m.spSkins||{}).filter(k=>PASS_SKINS[k]);if(m.spSkin&&m.spSkin.own&&own.indexOf('aurora')<0)own.unshift('aurora');
+  const on=ppSkinOn();$s('sp_passSkin').innerHTML=own.length?'<div class="epSkin"><span>Shuttle skin</span>'+['none'].concat(own).map(k=>'<button data-spskin="'+k+'" class="'+(on===k||(k==='none'&&!on)?'on':'')+'">'+(k==='none'?'Standard':PASS_SKINS[k].name)+'</button>').join('')+'</div>':'';
+  $s('sp_tiersList').innerHTML=TH.map((t,i)=>{const got=i<T;return'<div class="epRow'+(got?' got':i===T?' nx':'')+'" data-tier="'+(i+1)+'">'+ppCell(SPP.F[i],'f',i,got,p)+'<div class="epNode"><b>'+(i+1)+'</b><small>'+(t>=1000?(Math.round(t/100)/10)+'k':t)+'</small></div>'+ppCell(SPP.P[i],'p',i,got,p)+'</div>'}).join('');
+  const S=E.show||{tier:N},si=Math.max(1,Math.min(N,S.tier|0||N))-1,sr=SPP.P[si]||{},sp=ppParts(sr),sd=p.prem?(p.p[si]?'<span class="epFl ok">✓ Claimed</span>':si<T?'<button data-spprem="'+si+'">Claim</button>':'<span class="epFl ok">★ Premium · reach tier '+(si+1)+' to claim</span>'):'<span class="epFl">'+PPI.lock+' Premium only'+(SPP.F[si]?' · Free track: '+ppTxt(SPP.F[si]):'')+'</span>';
+  $s('sp_passShow').innerHTML='<div class="epFin"><span class="epRib">TIER '+(si+1)+' · '+nf(TH[si])+' COLONISTS</span><div class="epFinArt">'+(sr.skin?ppSkinPic(sr.skin,120):ppPic(sr,96))+'</div><h3>'+(S.title||(sp[0]||[''])[0])+'</h3><p>'+(S.text||sp.slice(1).map(x=>'+ '+x[0]).join(' '))+'</p>'+sd+'</div>';
+  $s('sp_passFoot').textContent=E.foot||'Pass tiers follow your colony. Premium never adds colonists, so pads and Ranks stay fair. Items, skins and permanent income bonuses are yours forever.';
+  $s('sp_passSticky').innerHTML=!p.prem&&live?buyBtn(0):''},
  click(e){const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.spclaim!=null){const k=+b.dataset.spclaim,i=SPP.F.findIndex(r=>r&&r.leg===k);if(i>=0)ppClaim('f',i);return}
   if(b.dataset.spfree!=null)return ppClaim('f',+b.dataset.spfree);if(b.dataset.spprem!=null)return ppClaim('p',+b.dataset.spprem);
+  if(b.dataset.spall)return ppClaimAll();if(b.dataset.spskin)return ppSkinSet(b.dataset.spskin);
   if(b.dataset.spbuy)return ppBuy(b.dataset.spbuy)}};
-function ppSkinLiv(id){const m=ppMain();if(!(m.spSkin&&m.spSkin.own&&m.spSkin.on))return null;return Object.assign({},shipGeo(id).def.liv,SPP.AURORA)}
-window.__spPass={SPP,prod:()=>ppProd(),state:()=>ppS(),tier:ppTier,colTier:ppColTier,claim:ppClaim,grant:ppGrant,revoke:ppRevoke,buy:ppBuy,left:ppLeft,render:()=>PASS.render()};
+/* shuttle skins: m.spSkins {id:1} + m.spSkinOn (id | 'none'). The October Aurora Livery (m.spSkin {own,on}) is read as skin 'aurora'. */
+function ppSkinOn(){const m=ppMain(),s=m.spSkins||{};if(m.spSkinOn==='none')return'';if(m.spSkinOn&&(s[m.spSkinOn]||(m.spSkinOn==='aurora'&&m.spSkin&&m.spSkin.own))&&PASS_SKINS[m.spSkinOn])return m.spSkinOn;
+ return m.spSkin&&m.spSkin.own&&m.spSkin.on?'aurora':''}
+function ppSkinSet(k){const m=ppMain();if(k!=='none'&&!((m.spSkins||{})[k]||(k==='aurora'&&m.spSkin&&m.spSkin.own)))return false;m.spSkinOn=k;if(m.spSkin)m.spSkin.on=k==='aurora'?1:0;ppSkinFlush();save();PASS.render();return true}
+function ppSkinLiv(id){const k=ppSkinOn(),sk=k&&PASS_SKINS[k];if(!sk)return null;return Object.assign({},shipGeo(id).def.liv,{a:sk.a,b:sk.b},sk.c?{c:sk.c}:{},sk.gold?{gold:1}:{},{sk:k})}
+/* ===== /EVENT PASS LOGIC ===== */
+window.__spPass={SPP,ev:()=>ppEv(),events:PASS_EVENTS,skins:PASS_SKINS,prod:()=>ppProd(),state:()=>ppS(),tier:ppTier,colTier:ppColTier,claim:ppClaim,claimAll:ppClaimAll,last:()=>ppLast,give:ppGive,grant:ppGrant,revoke:ppRevoke,buy:ppBuy,left:ppLeft,render:()=>PASS.render(),skinOn:ppSkinOn,skinSet:ppSkinSet,skinPic:ppSkinPic,sum:ppSum};
 
 })();
 function cgpPrewarm(i){try{var c=cgpEnsure();if(!c||!c.unlocked||!c.un[i]||!window.EVR)return;var g=cgpGateFor(i);if(!g||g._warm)return;g._warm=1;var t=document.createElement('canvas');t.width=t.height=2;var x=t.getContext('2d');if(g.img)x.drawImage(g.img,0,0,2,2);if(g.bg)x.drawImage(g.bg,0,0,2,2)}catch(e){}}
