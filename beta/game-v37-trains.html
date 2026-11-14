@@ -465,7 +465,7 @@ header .hrow2{display:none!important}
   <div><div class="lbl">Gates</div><div class="mid" id="ngates">0/50</div></div>
   <div style="display:none"><div class="mid" id="bonus">x1</div></div>
   <div id="tixBox" role="button" tabindex="0" aria-label="Plane tickets. Tap to see today’s free-ticket limit"><div class="lbl">Tickets</div><div class="mid"><svg class="tixi" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 1h20a1 1 0 0 1 1 1v3.2a2.8 2.8 0 0 0 0 5.6V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3.2a2.8 2.8 0 0 0 0-5.6V2a1 1 0 0 1 1-1z" fill="#2f6fd8" stroke="#f5c542" stroke-width="1.5"/><polygon fill="#f5c542" points="12,3.4 13.3,6.5 16.6,6.7 14.1,8.8 14.9,12 12,10.3 9.1,12 9.9,8.8 7.4,6.7 10.7,6.5"/></svg><span id="tix">0</span></div></div>
-  <button class="ad" id="btnAd">▶ 2x boost · +30 min</button><button id="setBtn" class="gearb" aria-label="Settings" title="Settings">⚙</button>
+  <button class="ad" id="btnAd">▶ 2x boost · +15 min</button><button id="setBtn" class="gearb" aria-label="Settings" title="Settings">⚙</button>
  </div>
  <div id="cgHud"><div class="cgTop"><span class="lbl2">Cargo CC / min</span><b id="cgHudRate" class="cgBig">0 CC</b><span class="cgSub"><span id="cgHudBase">base 0/min × bonus x1.00</span> <button class="iaInfoBtn" type="button" data-iainfo="cgbonus">i</button></span></div><span><span class="lbl2">CARGO CREDITS</span><b id="cgHudCc">0 CC</b></span><span><span class="lbl2">RAMPS</span><b id="cgHudRamps">0/10</b></span><b id="cgHudBonus" class="cgPill">⚡ 2× off</b></div><div id="ccChip" class="hide" role="button" aria-label="Cargo Credits - open Cargo"></div><div class="hrow2" style="display:none"><span class="chip" id="boostChip">⚡ 2x boost off</span></div>
  <div class="lfstrip hide" id="lfStrip"></div>
@@ -495,7 +495,7 @@ header .hrow2{display:none!important}
 <div class="view hide" id="vRew"><section><h2>Daily login rewards</h2><div id="daily"></div></section><section><h2 id="msH">Milestones</h2><div id="milestones"></div></section></div>
 <div class="view hide" id="vRank"><section style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><button class="alt" id="rkBack" type="button">‹ Back</button><b id="rkAreaT" style="font-size:18px">🏆 Ranks</b></section><section><a id="discordBtn" class="dbtn" href="https://discord.gg/gvywqZ5H29" target="_blank" rel="noopener noreferrer">💬 Join our Discord</a><h2 id="rkH">Ranks</h2><div class="tabs" id="rkTabs"></div><div id="lb"></div></section></div>
 <div class="view hide" id="vEv"><div id="evBody"></div></div>
-<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611121300</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
+<div class="view hide" id="vAdmin"><div class="admWrap"><section style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button class="alt" id="admBack" type="button">‹ Airport</button><b style="font-size:18px">Admin</b><span class="sm" id="admFile" style="flex-basis:100%;color:#8aa0c0;font-weight:650">Loaded file 202611132347</span></section><div id="admBody"></div><section id="admLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vCargo"><div class="cgpWrap"><section style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><button class="alt" id="cgpBack" type="button">‹ Ramps</button><b style="font-size:18px">📦 Cargo</b><button class="iaInfoBtn" type="button" data-iainfo="cargo">i</button><span style="flex:1"></span><button class="alt rkAreaBtn" type="button" data-rkarea="cargo">🏆 Ranks</button><button class="alt cgpNav" id="cgpPrev" type="button" aria-label="Previous ramp">‹</button><button class="alt cgpNav" id="cgpNext" type="button" aria-label="Next ramp">›</button></section><div id="cgpBody"></div><section id="cgPrSec" style="margin-top:12px"></section><section id="cgLb" style="margin-top:12px"></section></div></div>
 <div class="view hide" id="vSpace">
  <div class="card sp3top"><button class="alt" id="sp_back" type="button">‹ Pads</button><b>Spaceport</b><span class="sm sp3c">Colony <b id="sp_colony">0</b></span><span class="sm" id="sp_left"></span></div>
@@ -2609,7 +2609,7 @@ function render(force){
  $('ipm').textContent=money(est.perSec*60);$('cash').textContent=cashStr(shownCash(force));$('ngates').textContent=gateCount()+'/50';$('tix').textContent=fmtInt(S.tickets||0);$('bonus').textContent='x'+dec29(tm.toFixed(2))+(bl>0?' ⚡':'');
  setHTML($('ipmSub'),payBreak(est));
  const ch=$('boostChip');ch.textContent=bl>0?'⚡ 2x boost '+mmss(bl):'⚡ 2x boost off';ch.classList.toggle('on',bl>0);
- const ba=$('btnAd'),full=adFull(bl);ba.textContent=full?'⚡ 2x '+mmss(bl)+' · full':bl>0?'⚡ 2x '+mmss(bl)+' · ▶ +30m':'▶ 2x boost · +30 min';ba.classList.toggle('on',bl>0);ba.disabled=full;
+ const ba=$('btnAd'),full=adFull(bl);ba.textContent=full?'⚡ 2x '+mmss(bl)+' · full':bl>0?'⚡ 2x '+mmss(bl)+' · ▶ +15m':'▶ 2x boost · +15 min';ba.classList.toggle('on',bl>0);ba.disabled=full;
  // gate bar
  const {t,g}=S.sel,pi=S.g[t][g],T=TERMS[t];
  const bu=$('btnUp'),bg=$('btnGate');
@@ -2638,7 +2638,7 @@ const INFO_TXT={
  gs_fuel:()=>gsSvcInfo('fuel'),gs_cat:()=>gsSvcInfo('cat'),gs_bag:()=>gsSvcInfo('bag'),
  tix:()=>`<h3>Plane tickets</h3><p>A premium currency: skip an upgrade timer (24 tickets per hour left, minimum 6) or turn tickets into cash.</p><p><b>Watch a plane board and depart on the gate screen to earn 1 free ticket</b>, up to ${TUN.tixCap} per day. The count resets for everyone at the same moment: midnight UTC-7 (3:00 AM Eastern in summer, 2:00 AM in winter). Milestones, daily rewards and events give extra tickets on top of that. Your balance is in the header: tap it to see how many free tickets you have earned today.</p><p class="sm">Purchases in this build are MOCK: nothing is charged, real billing comes later.</p>`,
  cash:()=>`<h3>Buy cash with tickets</h3><p>5 tickets = ${CASH_MIN_PER_5} minutes of your CURRENT income. The cash amounts update live as your income grows.</p>`,
- boost:()=>`<h3>2x income boost</h3><p>Each (mock) rewarded ad adds <b>+30 min</b> of 2x income, up to <b>2 h</b> on the timer (4 ads fill it). The Cargo ad is separate: it boosts Cargo Credits only, also +30 min up to 2 h.</p><p>${tr29('It adds +{n}% to your pay bonus. All pay bonuses add up: milestones, Lifetime 2x Pay, this boost and rare-flight boosts.',{n:payAdd(BOOST_MULT)*100})} Free daily-reward boosts add their time on top and may go past 2 h; only the ad button stops at 2 h.</p>`,
+ boost:()=>`<h3>2x income boost</h3><p>Each (mock) rewarded ad adds <b>+15 min</b> of 2x income, up to <b>2 h</b> on the timer (8 ads fill it). The Cargo ad is separate: it boosts Cargo Credits only, also +15 min up to 2 h.</p><p>${tr29('It adds +{n}% to your pay bonus. All pay bonuses add up: milestones, Lifetime 2x Pay, this boost and rare-flight boosts.',{n:payAdd(BOOST_MULT)*100})} Free daily-reward boosts add their time on top and may go past 2 h; only the ad button stops at 2 h.</p>`,
  iap:()=>`<h3>Lifetime 2x Pay</h3><p>One-time ${IAP_PRICE}: ${tr29('adds +{n}% to your pay bonus forever. All pay bonuses add up (milestones, ad boost, rare flights).',{n:payAdd(2)*100})}</p><p class="sm">Mock purchase: no real billing yet.</p>`,
  off:()=>`<h3>Offline income</h3><p>While the app is closed you earn ${OFFLINE_RATE*100}% of your live rate (no penalty), up to the cap. The free cap is 4 h; Offline Storage I and II (one-time, mock purchases) raise it to 12 h and 24 h.</p>`,
  upg:()=>`<h3>Global upgrades</h3><p>Buying a level pays cash now and starts a real-time timer; the effect applies when it finishes, even while the app is closed. Timers grow from 10 s (Lv 1) to 24 h (Lv 100).</p><p>Watch an ad to shave 30 min off a running upgrade, or spend tickets to finish it now. An upgrade never restarts the plane on screen: the next plane gets the new numbers.</p>`,
@@ -2699,7 +2699,7 @@ function renderUp(force){renderPrestige(force);
  const bl=Math.ceil(boostLeft());const sig=JSON.stringify([S.lvl,S.tm,aff,bl,UPG_CFG.ticketsUI,S.rslots,Math.min(1000,S.tickets|0)>=100]);if(!force&&sigs.up===sig){updateUpTimers();return}sigs.up=sig;
  $('upgrades').innerHTML=rsCardHTML()+GLOBAL.map((u,i)=>(u.id==='ghe'?'<h3 class="gsh">Ground services <span class="sm"></span></h3>':'')+(u.hosp?fdHospHead():'')+upCard(u)).join('')+'';
  updateUpTimers();
- $('adRow').innerHTML=`<div class="up"><div><b>2x income boost ${bl>0?'· ⚡ '+mmss(bl)+' left':'· off'}</b>${IB('boost')}</div><button class="ad" data-k="ad" ${adFull(bl)?'disabled':''}>${adFull(bl)?'Full':'▶ Watch ad +30m'}</button></div>`;
+ $('adRow').innerHTML=`<div class="up"><div><b>2x income boost ${bl>0?'· ⚡ '+mmss(bl)+' left':'· off'}</b>${IB('boost')}</div><button class="ad" data-k="ad" ${adFull(bl)?'disabled':''}>${adFull(bl)?'Full':'▶ Watch ad +15m'}</button></div>`;
 }
 // ---------- store: ticket packs (MOCK purchases) + spend tickets on cash + premium upgrades ----------
 const TICKET_PACKS=[{usd:'$1.99',t:100,b:0},{usd:'$4.99',t:275,b:10},{usd:'$9.99',t:600,b:20},{usd:'$19.99',t:1300,b:30},{usd:'$49.99',t:3500,b:40},{usd:'$99.99',t:7500,b:50}];
@@ -2970,7 +2970,7 @@ let adCb=null;
 function openAd(cb){adCb=cb||grantBoost;adEnd=Date.now()+AD_SEC*1000;adDone=false;$('adScr').classList.remove('hide');$('adClose').disabled=true;adTick();clearInterval(adTimer);adTimer=setInterval(adTick,100)}
 function adTick(){const left=(adEnd-Date.now())/1000;$('adBar').style.width=clamp(100*(1-left/AD_SEC),0,100)+'%';
  if(left>0){$('adTxt').textContent='Ad playing… reward in '+Math.ceil(left)+'s';$('adClose').textContent='Please wait ('+Math.ceil(left)+')'}
- else{adDone=true;clearInterval(adTimer);const sh=adCb&&adCb.isShave;$('adTxt').textContent=(adCb===grantBoost||adCb===grantCargoBoost)?'Reward ready: +30 min of 2x boost!':sh?'Reward ready: −30 min on your upgrade!':'Reward ready: your bonus is doubled!';$('adClose').textContent=(adCb===grantBoost||adCb===grantCargoBoost)?'Close & claim +30 min boost':sh?'Close & shave 30 min':'Close & claim reward';$('adClose').disabled=false}}
+ else{adDone=true;clearInterval(adTimer);const sh=adCb&&adCb.isShave;$('adTxt').textContent=(adCb===grantBoost||adCb===grantCargoBoost)?'Reward ready: +15 min of 2x boost!':sh?'Reward ready: −30 min on your upgrade!':'Reward ready: your bonus is doubled!';$('adClose').textContent=(adCb===grantBoost||adCb===grantCargoBoost)?'Close & claim +15 min boost':sh?'Close & shave 30 min':'Close & claim reward';$('adClose').disabled=false}}
 function closeAd(){if(!adDone)return;$('adScr').classList.add('hide');const cb=adCb;adCb=null;if(cb)cb();render(true)}
 // ---------- debug / boot ----------
 /* ---- v18 prestige frames (PF): canvas ornaments around the 100x100 portrait; margin M=30 units for wings/crowns ---- */
@@ -6722,7 +6722,7 @@ function closeCargo(){var vc=document.getElementById('vCargo');if(vc)vc.classLis
 function renderCargo(){var host=document.getElementById('cgpBody');if(!host)return;var c=cgpEnsure();if(!c)return;cgpAccrue();var r=cgpRates(c),nl=c.un.indexOf(0),sel=c.sel,SR=CGP_RD[sel];
  var h='<div class="cgpHead"><div><div class="lbl" style="color:#c9a86a;font-size:11px">CARGO CREDITS '+CC_ICON+'</div><div class="big" id="cgpCC">'+cgpFmt(c.cc)+' CC</div><div style="color:#c9a86a;font-size:12px">'+cgpFmt(r.cc)+' CC/min</div></div><div style="text-align:right"><div style="color:#8aa0c0;font-size:11px">CARGO SCORE · TONNES SHIPPED</div><div class="mid" id="cgpTons">'+cgpFmt(c.tons)+' t</div><div style="color:#8aa0c0;font-size:12px">'+r.t.toFixed(1)+' t/min</div></div></div>';
  var wl=cgWildLeft(),bl2=cgBoostLeft(),mmss2=function(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)};
- h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+(wl>0?'<span id="cgpWildChip" style="background:#123d24;border:1px solid #3fae6a;color:#bff5d2;border-radius:999px;padding:5px 10px;font:800 12px system-ui">WILD CARGO ×2.5 CC · '+mmss2(wl)+'</span>':'<span id="cgpWildChip"></span>')+(bl2>0?'<span id="cgpBoostChip" style="background:#1a1409;border:1px solid #8a5a12;color:#ffd88a;border-radius:999px;padding:5px 10px;font:800 12px system-ui">⚡ ×2 CC · '+mmss2(bl2)+'</span>':'<span id="cgpBoostChip"></span>')+'<button type="button" id="cgpAdBtn" style="margin-left:auto;padding:8px 10px;border-radius:8px;border:1px solid #f5c542;background:#f59e0b;color:#111;font:800 12px system-ui">▶ Watch ad · +30 min 2× CC</button></div>';
+ h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+(wl>0?'<span id="cgpWildChip" style="background:#123d24;border:1px solid #3fae6a;color:#bff5d2;border-radius:999px;padding:5px 10px;font:800 12px system-ui">WILD CARGO ×2.5 CC · '+mmss2(wl)+'</span>':'<span id="cgpWildChip"></span>')+(bl2>0?'<span id="cgpBoostChip" style="background:#1a1409;border:1px solid #8a5a12;color:#ffd88a;border-radius:999px;padding:5px 10px;font:800 12px system-ui">⚡ ×2 CC · '+mmss2(bl2)+'</span>':'<span id="cgpBoostChip"></span>')+'<button type="button" id="cgpAdBtn" style="margin-left:auto;padding:8px 10px;border-radius:8px;border:1px solid #f5c542;background:#f59e0b;color:#111;font:800 12px system-ui">▶ Watch ad · +15 min 2× CC</button></div>';
  var sceneHtml='<div class="cgpSceneWrap"><canvas id="cgpScene" width="800" height="1280" aria-label="Animated freighter loading scene"></canvas><div class="cgpSceneCap"><b>Ramp '+(sel+1)+' · '+((cgpWild.gate&&cgpWild.ramp===sel)?'Wild Cargo · LIVE ANIMALS · BD05':SR.nm)+'</b><span id="cgpSceneSub">'+(c.un[sel]?('Loading · '+((cgpWild.gate&&cgpWild.ramp===sel&&cgpWild.gate.P.forklift)?'4 animal crates':Math.round(cgpFill(c.d[sel])*100)+'% load target')+' · '+(cgpTpm(sel,c.h[sel],c.d[sel])*CGP_PACE).toFixed(1)+' t/min'):'🔒 Locked · '+cgpFmt(cgpUnl(sel))+' CC to open')+'</span></div></div>';
  var cardHtml='';
  if(c.un[sel]){var hc2=c.h[sel]<CGP_MAXLV?cgpUpCost(sel,c.h[sel]):0,dc2=c.d[sel]<CGP_MAXLV?cgpDemCost(sel,c.d[sel]):0;
@@ -7552,7 +7552,7 @@ function renderCgSel(){var s=S(),host=$('csBody'),cb=window.__cargoBridge;if(!s|
  else{try{cb.accrue()}catch(e){}var nx=c.un.indexOf(0),own=c.un.filter(function(x){return x}).length,nm=function(i){var n='';try{n=window.EVR.PL[i].name||''}catch(e){}return n};
   var cell=function(i){var st=c.un[i]?'own':i===nx?'next':'lock',cost=cb.unlockCost(i);var pn='';try{pn=cb.rampName?cb.rampName(i):''}catch(e){}
    return '<button type="button" class="trG '+st+(c.sel===i&&st==='own'?' cur':'')+'" data-csr="'+i+'"><b>Ramp '+(i+1)+'</b><span class="pl">'+(st==='own'?'🛫':st==='next'?'🔓':'🔒')+'</span><small>'+(st==='own'?(pn||'Open'):ccf(cost))+'</small></button>'};
-  h='<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button type="button" id="csAdBtn" style="padding:8px 10px;border-radius:8px;border:1px solid #f5c542;background:#f59e0b;color:#111;font:800 12px system-ui">▶ Watch ad · +30 min 2× CC</button></div><div class="trApron"><div class="trRow">';for(var i=0;i<5;i++)h+=cell(i);h+='</div><div class="trBld">Cargo Terminal</div><div class="trRow">';for(i=5;i<10;i++)h+=cell(i);h+='</div></div>';
+  h='<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button type="button" id="csAdBtn" style="padding:8px 10px;border-radius:8px;border:1px solid #f5c542;background:#f59e0b;color:#111;font:800 12px system-ui">▶ Watch ad · +15 min 2× CC</button></div><div class="trApron"><div class="trRow">';for(var i=0;i<5;i++)h+=cell(i);h+='</div><div class="trBld">Cargo Terminal</div><div class="trRow">';for(i=5;i<10;i++)h+=cell(i);h+='</div></div>';
   h+='<div class="trInfo">'+own+'/10 ramps open · '+ccf(Math.floor(c.cc))+'<br>Tap an open ramp (green) to watch it · tap the gold ramp to unlock it with Cargo Credits.</div>'}
  setH(host,h)}
 function openCgSel(){try{G().setView('cgsel')}catch(e){window.__iaShowOnly('vCgSel')}renderCgSel()}
@@ -7896,4 +7896,451 @@ document.addEventListener('click',function(e){var t=e.target.closest?e.target.cl
 setInterval(function(){if(!document.hidden)render()},1000);
 window.__trainsDebug={give:function(n){load();T.rt+=n;save();render()},maxAll:function(){load();T.unlocked=1;T.un=T.un.map(()=>1);T.bs=T.bs.map(()=>MAXLV);T.pop=T.pop.map(()=>MAXLV);save();render()},reset:function(){localStorage.removeItem(KEY);T=null;stFresh();render()}};
 })();
-</script></body></html>
+</script>
+<script id="ia-banner-ads">
+/* Idle Airport banner ads (OTA test build)
+ *
+ * Real unit (Idle Airport Banner, app ~2618313023):
+ *   IA_BANNER_REAL_AD_UNIT_ID = ca-app-pub-7661878228130734/3280928471
+ * This test build keeps IA_BANNER_USE_TEST_ADS = true, so the Google
+ * test banner ID is used and showBanner is called with isTesting: true.
+ *
+ * Native banners overlay the WebView. This module only calls
+ * @capacitor-community/admob showBanner / hideBanner / resumeBanner /
+ * removeBanner, and only on Ranks, Admin, and the bottom of passenger
+ * Upgrades (after the Settings / Privacy footer is in view). It hides
+ * on every other screen, on popups, and for Ad-Free Rewards owners.
+ */
+(function () {
+  'use strict';
+  if (window.__iaBanner && window.__iaBanner.__v) return;
+
+  var IA_BANNER_REAL_AD_UNIT_ID = 'ca-app-pub-7661878228130734/3280928471';
+  var IA_BANNER_TEST_AD_UNIT_ID = 'ca-app-pub-3940256099942544/6300978111';
+  var IA_BANNER_USE_TEST_ADS = true;
+  var IA_BANNER_AD_UNIT_ID = IA_BANNER_USE_TEST_ADS ? IA_BANNER_TEST_AD_UNIT_ID : IA_BANNER_REAL_AD_UNIT_ID;
+
+  var BANNER_H = 50;
+  var BANNER_GAP = 14;
+  var SLOT_ID = 'iaBannerSlot';
+  var SIM_ID = 'iaBannerTestSim';
+  var STYLE_ID = 'iaBannerStyle';
+
+  var wanted = false;
+  var shown = false;
+  var reserved = false;
+  var failed = false;
+  var failAt = 0;
+  var adFreeCache = false;
+  var nativeBannerCreated = false;
+  var listenersBound = false;
+  var hooksBound = false;
+  var inflight = false;
+  var pendingTick = false;
+  var lastNavH = 58;
+
+  function navH() {
+    try {
+      var n = document.querySelector('nav');
+      if (n) {
+        var h = Math.round(n.getBoundingClientRect().height);
+        if (h > 20 && h < 120) { lastNavH = h; return h; }
+      }
+    } catch (e) {}
+    return lastNavH;
+  }
+  function slotPx() { return BANNER_H + BANNER_GAP; }
+
+  function isNative() {
+    try {
+      return !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+    } catch (e) { return false; }
+  }
+  function getAdMob() {
+    try {
+      if (!isNative()) return null;
+      var C = window.Capacitor;
+      var p = (C.Plugins && C.Plugins.AdMob) || (C.PluginRegistry && C.PluginRegistry.AdMob);
+      if (p && typeof p.showBanner === 'function') return p;
+    } catch (e) {}
+    return null;
+  }
+
+  function isAdFree() {
+    try {
+      if (window.__game && window.__game.S && window.__game.S.noads) return true;
+    } catch (e) {}
+    return !!adFreeCache;
+  }
+  function refreshAdFree() {
+    var fromSave = false;
+    try { fromSave = !!(window.__game && window.__game.S && window.__game.S.noads); } catch (e) {}
+    try {
+      var N = window.IdleNative;
+      if (N && typeof N.getEntitlements === 'function') {
+        return Promise.resolve(N.getEntitlements()).then(function (ents) {
+          var fromEnt = Array.isArray(ents) && ents.indexOf('remove_ads') >= 0;
+          adFreeCache = fromSave || fromEnt;
+          return adFreeCache;
+        }).catch(function () { adFreeCache = fromSave; return adFreeCache; });
+      }
+    } catch (e) {}
+    adFreeCache = fromSave;
+    return Promise.resolve(adFreeCache);
+  }
+
+  function elVisible(id) {
+    var e = document.getElementById(id);
+    return !!(e && !e.classList.contains('hide') && e.style.display !== 'none');
+  }
+  function popupOpen() {
+    try {
+      if (elVisible('popup')) return true;
+      if (elVisible('adScr')) return true;
+      var tut = document.getElementById('tutOv');
+      if (tut && !tut.classList.contains('hide') && tut.style.display !== 'none') {
+        var ts = window.getComputedStyle(tut);
+        if (ts.display !== 'none' && ts.visibility !== 'hidden') return true;
+      }
+      var info = document.getElementById('iaInfoPop');
+      if (info) {
+        var st = window.getComputedStyle(info);
+        if (st.display !== 'none' && st.visibility !== 'hidden') return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function activeAllowedView() {
+    if (elVisible('vAdmin')) return 'vAdmin';
+    if (elVisible('vRank')) return 'vRank';
+    if (elVisible('vUp')) return 'vUp';
+    return null;
+  }
+  function gameplayVisible() {
+    return elVisible('vGate') || elVisible('vTerms') || elVisible('vHome') ||
+      elVisible('vCargo') || elVisible('vCgSel') || elVisible('vTrain') ||
+      elVisible('vTrSel') || elVisible('vSpace') || elVisible('vSpPick') ||
+      elVisible('vMap');
+  }
+
+  function ensureSlot(viewEl) {
+    var slot = document.getElementById(SLOT_ID);
+    if (!slot) {
+      slot = document.createElement('div');
+      slot.id = SLOT_ID;
+      slot.setAttribute('aria-hidden', 'true');
+    }
+    if (viewEl && slot.parentNode !== viewEl) viewEl.appendChild(slot);
+    return slot;
+  }
+  function setSlotHeight(px) {
+    var slot = document.getElementById(SLOT_ID);
+    if (slot) {
+      slot.style.height = (px ? px : 0) + 'px';
+      slot.style.display = px ? 'block' : 'none';
+    }
+  }
+  function ensureSim() {
+    var el = document.getElementById(SIM_ID);
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = SIM_ID;
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<span class="iaBannerTestSimLabel">TEST AD</span><span class="iaBannerTestSimMeta">320×50 · Google test banner · not a live ad</span>';
+    document.body.appendChild(el);
+    return el;
+  }
+  function injectStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    var s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent =
+      '#' + SLOT_ID + '{width:100%;height:0;display:none;pointer-events:none;flex-shrink:0;background:transparent}' +
+      /* The document (not .view) is the scroller. Body already has 70px for the nav;
+         add the banner height plus gaps so the overlay never covers content. */
+      'body.iaBannerOn{padding-bottom:calc(70px + ' + BANNER_H + 'px + ' + BANNER_GAP + 'px + 8px)!important}' +
+      'body.iaBannerOn #lbPin{bottom:calc(70px + ' + BANNER_H + 'px + 8px)!important}' +
+      'body.iaBannerOn #toast{bottom:calc(76px + ' + BANNER_H + 'px + 8px)!important}' +
+      '#' + SIM_ID + '{display:none;position:fixed;left:50%;transform:translateX(-50%);width:320px;height:50px;z-index:85;' +
+      'box-sizing:border-box;background:#111;color:#f7e027;border:2px dashed #f7e027;border-radius:2px;' +
+      'font:800 14px/1 system-ui,sans-serif;letter-spacing:.06em;text-align:center;' +
+      'flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}' +
+      '#' + SIM_ID + '.on{display:flex}' +
+      '#' + SIM_ID + ' .iaBannerTestSimLabel{font:800 16px/1 system-ui,sans-serif}' +
+      '#' + SIM_ID + ' .iaBannerTestSimMeta{font:600 9px/1 system-ui,sans-serif;letter-spacing:.02em;color:#fff8a8;text-transform:none}';
+    document.head.appendChild(s);
+  }
+  function placeSim() {
+    var el = document.getElementById(SIM_ID);
+    if (!el) return;
+    var next = (navH() + 8) + 'px';
+    if (el.style.bottom !== next) el.style.bottom = next;
+  }
+  var reserveView = null;
+  function setReserved(on, viewId) {
+    on = !!on;
+    viewId = on ? viewId : null;
+    if (reserved === on && reserveView === viewId) {
+      if (on) placeSim();
+      return;
+    }
+    reserved = on;
+    reserveView = viewId;
+    try { document.body.classList.toggle('iaBannerOn', on); } catch (e) {}
+    ['vAdmin', 'vRank'].forEach(function (id) {
+      var v = document.getElementById(id);
+      if (v) v.classList.toggle('iaBannerPad', on && viewId === id);
+    });
+    var up = document.getElementById('vUp');
+    if (up) {
+      ensureSlot(up);
+      setSlotHeight(on && viewId === 'vUp' ? slotPx() : 0);
+    } else {
+      setSlotHeight(0);
+    }
+    placeSim();
+  }
+
+  function remainingScroll() {
+    var r = document.scrollingElement || document.documentElement;
+    return r.scrollHeight - r.scrollTop - window.innerHeight;
+  }
+  function upgradesAtFooter() {
+    var v = document.getElementById('vUp');
+    if (!v || !elVisible('vUp')) return false;
+    var remaining = remainingScroll();
+    // Hysteresis so adding/removing body padding does not flicker the banner.
+    if (reserved && shown) return remaining < (slotPx() + 140);
+    return remaining <= 24;
+  }
+
+  function shouldShow() {
+    if (isAdFree()) return false;
+    if (popupOpen()) return false;
+    var viewId = activeAllowedView();
+    if (!viewId) return false;
+    if (viewId === 'vUp') return upgradesAtFooter();
+    return viewId === 'vRank' || viewId === 'vAdmin';
+  }
+
+  function bindPluginListeners(plugin) {
+    if (listenersBound || !plugin || typeof plugin.addListener !== 'function') return;
+    listenersBound = true;
+    try {
+      plugin.addListener('bannerAdLoaded', function () { failed = false; });
+      plugin.addListener('bannerAdFailedToLoad', function () { onNativeFail(); });
+      plugin.addListener('FailedToLoad', function () { onNativeFail(); });
+      plugin.addListener('Loaded', function () { failed = false; });
+    } catch (e) {}
+  }
+  function onNativeFail() {
+    failed = true;
+    failAt = Date.now();
+    nativeBannerCreated = false;
+    shown = false;
+    setReserved(false, null);
+    try {
+      var sim = document.getElementById(SIM_ID);
+      if (sim) sim.classList.remove('on');
+    } catch (e) {}
+    try {
+      var p = getAdMob();
+      if (p && typeof p.removeBanner === 'function') p.removeBanner().catch(function () {});
+    } catch (e) {}
+  }
+  function canRetryFail() {
+    return failed && (Date.now() - failAt) > 30000;
+  }
+
+  function hideSim() {
+    var sim = document.getElementById(SIM_ID);
+    if (sim) sim.classList.remove('on');
+  }
+  function showSim() {
+    var sim = ensureSim();
+    placeSim();
+    sim.classList.add('on');
+  }
+
+  function hideNative() {
+    var p = getAdMob();
+    if (!p || !nativeBannerCreated) return Promise.resolve();
+    var fn = (typeof p.hideBanner === 'function') ? p.hideBanner.bind(p) : (typeof p.removeBanner === 'function' ? p.removeBanner.bind(p) : null);
+    if (!fn) return Promise.resolve();
+    return Promise.resolve(fn()).catch(function () {});
+  }
+
+  function showNative() {
+    var p = getAdMob();
+    if (!p) return Promise.reject(new Error('no plugin'));
+    bindPluginListeners(p);
+    if (nativeBannerCreated && typeof p.resumeBanner === 'function') {
+      return Promise.resolve(p.resumeBanner()).catch(function () {
+        nativeBannerCreated = false;
+        return showNativeFresh(p);
+      });
+    }
+    return showNativeFresh(p);
+  }
+  function showNativeFresh(p) {
+    return Promise.resolve(p.showBanner({
+      adId: IA_BANNER_AD_UNIT_ID,
+      adSize: 'BANNER',
+      position: 'BOTTOM_CENTER',
+      margin: navH(),
+      isTesting: !!IA_BANNER_USE_TEST_ADS
+    })).then(function () {
+      nativeBannerCreated = true;
+      failed = false;
+    });
+  }
+
+  function applyShow(viewId) {
+    var already = shown && reserved && reserveView === viewId;
+    setReserved(true, viewId);
+    if (viewId === 'vUp' && !already) {
+      try {
+        var r = document.scrollingElement || document.documentElement;
+        r.scrollTop = r.scrollHeight - window.innerHeight;
+      } catch (e) {}
+    }
+    if (already) return Promise.resolve();
+    if (!isNative()) {
+      showSim();
+      shown = true;
+      return Promise.resolve();
+    }
+    var p = getAdMob();
+    if (!p) {
+      // Plugin not reachable from this WebView: show nothing, drop reserve.
+      failed = true;
+      failAt = Date.now();
+      setReserved(false, null);
+      hideSim();
+      shown = false;
+      return Promise.resolve();
+    }
+    return showNative().then(function () {
+      shown = true;
+      hideSim();
+    }).catch(function () {
+      onNativeFail();
+    });
+  }
+  function applyHide() {
+    var was = shown || reserved;
+    shown = false;
+    setReserved(false, null);
+    hideSim();
+    if (!was) return Promise.resolve();
+    if (isNative() && getAdMob()) return hideNative();
+    return Promise.resolve();
+  }
+
+  function tick() {
+    pendingTick = true;
+    if (inflight) return;
+    inflight = true;
+    pendingTick = false;
+    Promise.resolve(refreshAdFree()).then(function () {
+      if (failed && isNative() && canRetryFail()) failed = false;
+      var want = shouldShow();
+      // After a native failure, do not keep a blank reserved strip.
+      if (failed && isNative() && !canRetryFail()) want = false;
+      wanted = want;
+      var viewId = want ? activeAllowedView() : null;
+      var op = want ? applyShow(viewId) : applyHide();
+      return op;
+    }).catch(function () {
+      try { applyHide(); } catch (e) {}
+    }).then(function () {
+      inflight = false;
+      if (pendingTick) tick();
+    });
+  }
+
+  function wrap(obj, name) {
+    if (!obj || typeof obj[name] !== 'function') return;
+    var orig = obj[name];
+    if (orig.__iaBannerWrapped) return;
+    var wrapped = function () {
+      var r;
+      try { r = orig.apply(this, arguments); } catch (e) { throw e; }
+      try { setTimeout(tick, 0); } catch (x) {}
+      return r;
+    };
+    wrapped.__iaBannerWrapped = true;
+    try { obj[name] = wrapped; } catch (e) {}
+  }
+  function bindHooks() {
+    if (hooksBound) return;
+    try {
+      if (window.__game) {
+        wrap(window.__game, 'setView');
+        wrap(window.__game, 'openSettings');
+        hooksBound = true;
+      }
+    } catch (e) {}
+    try {
+      if (window.__b3Bridge) {
+        wrap(window.__b3Bridge, 'openAdmin');
+        wrap(window.__b3Bridge, 'closeAdmin');
+      }
+    } catch (e) {}
+    try { wrap(window, '__iaShowOnly'); } catch (e) {}
+    try { wrap(window, '__iaOnView'); } catch (e) {}
+  }
+
+  function bindDom() {
+    injectStyle();
+    try {
+      window.addEventListener('scroll', tick, true);
+      window.addEventListener('resize', function () { placeSim(); tick(); }, true);
+    } catch (e) {}
+    // Watch only the screens and popups that gate the banner. A body-wide
+    // observer on class/style retriggers from every money-tick and freezes the UI.
+    ['vUp', 'vRank', 'vAdmin', 'popup', 'adScr', 'iaInfoPop', 'tutOv'].forEach(function (id) {
+      var v = document.getElementById(id);
+      if (!v) return;
+      if (id === 'vUp' || id === 'vRank' || id === 'vAdmin') {
+        v.addEventListener('scroll', tick, { passive: true });
+      }
+      try {
+        var obs = new MutationObserver(function () { tick(); });
+        obs.observe(v, { attributes: true, attributeFilter: ['class'] });
+      } catch (e) {}
+    });
+  }
+
+  function boot() {
+    try {
+      injectStyle();
+      bindHooks();
+      bindDom();
+      refreshAdFree().then(function () { tick(); });
+      setInterval(function () { bindHooks(); tick(); }, 400);
+    } catch (e) {}
+  }
+
+  window.__iaBanner = {
+    __v: 1,
+    IA_BANNER_REAL_AD_UNIT_ID: IA_BANNER_REAL_AD_UNIT_ID,
+    IA_BANNER_TEST_AD_UNIT_ID: IA_BANNER_TEST_AD_UNIT_ID,
+    IA_BANNER_USE_TEST_ADS: IA_BANNER_USE_TEST_ADS,
+    IA_BANNER_AD_UNIT_ID: IA_BANNER_AD_UNIT_ID,
+    shouldShow: shouldShow,
+    isShown: function () { return !!shown; },
+    isReserved: function () { return !!reserved; },
+    isFailed: function () { return !!failed; },
+    isAdFree: isAdFree,
+    isNative: isNative,
+    tick: tick,
+    refresh: tick
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+</body></html>
